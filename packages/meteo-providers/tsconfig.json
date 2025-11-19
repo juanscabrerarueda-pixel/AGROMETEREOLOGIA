@@ -7,7 +7,9 @@
     "baseUrl": ".",
     "paths": {
       "@pkg/core": ["../core/dist/index.d.ts"],
-      "@pkg/core/*": ["../core/dist/*"]
+      "@pkg/core/*": ["../core/dist/*"],
+      "@pkg/core/schemas": ["../core/dist/schemas.d.ts"],
+      "@pkg/core/schemas/*": ["../core/dist/*"]
     }
   },
   "include": ["src/**/*.ts"],
