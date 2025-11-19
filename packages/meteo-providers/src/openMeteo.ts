@@ -1,6 +1,6 @@
 import nodeFetch from 'node-fetch';
 import { Series, MuniKey, TimeRange } from '@pkg/core';
-import { SeriesSchema } from '@pkg/core/dist/schemas.js';
+import { SeriesSchema } from '@pkg/core/schemas.js';
 import { WeatherProvider } from './provider.js';
 import { resolveCoordinates, ResolvedCoords } from './utils.js';
 

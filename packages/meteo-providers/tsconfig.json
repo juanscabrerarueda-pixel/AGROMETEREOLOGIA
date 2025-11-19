@@ -9,6 +9,7 @@
       "@pkg/core": ["../core/dist/index.d.ts"],
       "@pkg/core/*": ["../core/dist/*"],
       "@pkg/core/schemas": ["../core/dist/schemas.d.ts"],
+      "@pkg/core/schemas.js": ["../core/dist/schemas.js"],
       "@pkg/core/schemas/*": ["../core/dist/*"]
     }
   },
