@@ -1,0 +1,22 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "baseUrl": ".",
+    "paths": {
+      "@pkg/core": ["../../packages/core/src"],
+      "@pkg/core/*": ["../../packages/core/src/*"],
+      "@pkg/cache": ["../../packages/cache/src"],
+      "@pkg/cache/*": ["../../packages/cache/src/*"],
+      "@pkg/insight-engine": ["../../packages/insight-engine/src"],
+      "@pkg/insight-engine/*": ["../../packages/insight-engine/src/*"],
+      "@pkg/meteo-calcs": ["../../packages/meteo-calcs/src"],
+      "@pkg/meteo-calcs/*": ["../../packages/meteo-calcs/src/*"],
+      "@pkg/meteo-providers": ["../../packages/meteo-providers/src"],
+      "@pkg/meteo-providers/*": ["../../packages/meteo-providers/src/*"]
+    }
+  },
+  "include": ["src", "vite.config.ts"]
+}

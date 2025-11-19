@@ -1,0 +1,16 @@
+{
+  "name": "tendencia-lluvias",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "build": "pnpm -r run build",
+  "test": "pnpm -r run test --filter './packages/**'",
+    "codex:cli": "node ./scripts/codex-cli.js",
+    "codex:preview": "node ./scripts/codex-cli.js preview",
+    "codex:apply": "node ./scripts/codex-cli.js apply"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0",
+    "vitest": "^1.6.0"
+  }
+}

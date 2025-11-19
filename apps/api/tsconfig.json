@@ -1,0 +1,29 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "composite": true,
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "baseUrl": ".",
+    "paths": {
+      "@pkg/core": ["../../packages/core/src/index.ts"],
+      "@pkg/core/*": ["../../packages/core/src/*"],
+      "@pkg/meteo-providers": ["../../packages/meteo-providers/src/index.ts"],
+      "@pkg/meteo-providers/*": ["../../packages/meteo-providers/src/*"],
+      "@pkg/cache": ["../../packages/cache/src/index.ts"],
+      "@pkg/cache/*": ["../../packages/cache/src/*"],
+      "@pkg/insight-engine": ["../../packages/insight-engine/src/index.ts"],
+      "@pkg/insight-engine/*": ["../../packages/insight-engine/src/*"],
+      "@pkg/meteo-calcs": ["../../packages/meteo-calcs/src/index.ts"],
+      "@pkg/meteo-calcs/*": ["../../packages/meteo-calcs/src/*"]
+    }
+  },
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "dist"
+  ]
+}

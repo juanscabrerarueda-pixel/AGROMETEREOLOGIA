@@ -1,0 +1,8 @@
+[build]
+  command = "pnpm install --frozen-lockfile && pnpm --filter web build"
+  publish = "apps/web/dist"
+
+[dev]
+  command = "pnpm --filter web dev"
+  targetPort = 5173
+  port = 8888

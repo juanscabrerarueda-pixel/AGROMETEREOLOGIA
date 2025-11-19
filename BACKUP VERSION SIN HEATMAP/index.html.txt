@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Tendencias de Lluvia – Colombia</title>
+  <?!= include('theme'); ?>
+</head>
+<body>
+  <div id="splash" class="splash">
+    <div class="splash-inner">
+      <div class="splash-brand">Tendencias de lluvia en Colombia</div>
+      <div class="spinner" aria-label="Cargando"></div>
+    </div>
+  </div>
+  <div class="wrap">
+    <header class="mb4">
+      <h1>Tendencias de Lluvia en Colombia</h1>
+      <p class="muted">Filtra por departamento y municipio. Alterna entre últimos 3 meses, 1 año, 5 años o la proyección de 14 días. Datos: <em>precipitación diaria (mm)</em>.</p>
+    </header>
+
+    <div id="help" class="help help--accent mb2">
+      <strong>Cómo usar (guía rápida)</strong>
+      <ol>
+        <li>Elige un <em>Departamento</em>. Opcional: selecciona un <em>Municipio</em> para ver esa ciudad.</li>
+        <li>Elige el <em>rango de tiempo</em>: 3 meses, 1 año, 5 años o Próx. 14 días.</li>
+        <li>Activa la <em>línea de tendencia</em> y elige <em>MA</em> o <em>EMA</em> (no aplica a Próx. 14 días). <br>
+            <b>MA</b>: media móvil (promedio de los últimos N días: 7 en 3m, 30 en 1a, 60 en 5a). <b>EMA</b>: media móvil exponencial (pondera más lo reciente).</li>
+        <li>En Próx. 14 días el <em>eje X</em> muestra la <em>fecha real</em> (dd Mes).</li>
+        <li>Usa <em>CSV</em>/<em>PNG</em> para descargar los datos o la gráfica.</li>
+      </ol>
+    </div>
+
+    <div class="grid mb3">
+      <label class="field">
+        <span>Departamento</span>
+        <select id="depto"></select>
+      </label>
+      <label class="field">
+        <span>Municipio / Ciudad (opcional)</span>
+        <select id="muni"></select>
+      </label>
+    </div>
+
+    <div class="row mb2 gap">
+      <button data-modo="tres"  class="btn">Últimos 3 meses</button>
+      <button data-modo="ultimo" class="btn active">Último año</button>
+      <button data-modo="cinco" class="btn">Últimos 5 años</button>
+      <button data-modo="prox"  class="btn">Próx. 14 días</button>
+
+      <span class="flex1"></span>
+      <button id="btnTrend" class="btn">Ocultar tendencia</button>
+      <div class="seg">
+        <button data-trend="MA" class="btn small active">MA</button>
+        <button data-trend="EMA" class="btn small">EMA</button>
+      </div>
+      <button id="btnHelp" class="btn small">Ocultar guía</button>
+      <button id="btnCSV" class="btn small">CSV</button>
+      <button id="btnPNG" class="btn small">PNG</button>
+    </div>
+
+    <div id="status" class="muted mb1"></div>
+
+    <section class="card">
+      <div id="chartWrap" class="chartWrap">
+        <div id="busy" class="busy" aria-live="polite"><div class="busy-pill"><span class="spin"></span><span>Cargando datos…</span></div></div>
+        <svg id="chart" viewBox="0 0 900 280"></svg>
+      </div>
+    </section>
+
+    <section class="card mt2">
+      <div id="insights"></div>
+    </section>
+
+    <footer class="mt3 tiny muted">Fuente: Open‑Meteo (ERA5 + forecast) · API‑Colombia (depto/municipio) · Zona horaria: America/Bogota. · El Cauce S.A.S.</footer>
+  </div>
+
+<script>
+(() => {
+  const $ = sel => document.querySelector(sel);
+  const deptoSel = $('#depto');
+  const muniSel  = $('#muni');
+  const statusEl = $('#status');
+  const chartEl  = $('#chart');
+  const insightsEl = $('#insights');
+  const helpEl = $('#help');
+  const splash = document.querySelector('#splash');
+  const busy = document.querySelector('#busy');
+  // Sincroniza el texto del botón con el estado inicial (la guía arranca visible)
+  document.querySelector('#btnHelp').textContent = helpEl.hidden ? '¿Cómo usar?' : 'Ocultar guía';
+
+  const meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  let modo = 'ultimo';
+  let verTrend = true;
+  let trendType = 'MA';
+  let serie = [];
+  let serieDept = [];
+  const RISK = { low: 5, high: 20 }; // mm/día: <5 bajo, 5–20 medio, >20 alto
+  const Z_THRES = 2; // umbral z-score para anomalías
+  let baseline = null; // [{mu,sd} por mes]
+  let baselineKey = ''; // cache simple por selección
+
+  // ---- Carga por GAS (server-side) ----
+  function loadDepts(){
+    status('Cargando departamentos…');
+    google.script.run
+      .withSuccessHandler(({offline, items})=>{
+        // Poblar select de departamentos
+        deptoSel.innerHTML = items.map(d=>`<option value="${d.id}">${d.name}</option>`).join('');
+        deptoSel.dataset.offline = offline ? '1' : '0';
+        if (items.length){
+          // Preferir Cundinamarca o Bogotá si están presentes
+          const def = items.find(x=>x.name==='Cundinamarca') || items.find(x=>/Bogotá/i.test(x.name)) || items[0];
+          deptoSel.value = def.id;
+          if (offline) {
+            // Sin API de ciudades, usamos capital como proxy y cargamos serie directo
+            loadSerie();
+          } else {
+            // Cargar ciudades y disparar serie (seleccionando Bogotá si existe)
+            loadCities(def.id, /*andLoad*/true);
+          }
+        }
+        status('');
+      })
+      .withFailureHandler(err=>{ console.error(err); status('No fue posible cargar departamentos'); hideSplash(); })
+      .getDepts();
+  }
+
+  // Cargar ciudades del depto. Si andLoad=true, dispara loadSerie() al final.
+  function loadCities(deptId, andLoad){
+    muniSel.innerHTML = `<option value="">(Todo el departamento)</option>`;
+    if (deptoSel.dataset.offline==='1') { if (andLoad) loadSerie(); return; }
+    google.script.run
+      .withSuccessHandler(arr=>{
+        muniSel.innerHTML = `<option value="">(Todo el departamento)</option>` + arr.map(m=>`<option value="${m.id}">${m.name}</option>`).join('');
+        const bog = arr.find(m=>/bogotá/i.test(m.name));
+        if (bog) muniSel.value = bog.id;
+        if (andLoad) loadSerie();
+      })
+      .withFailureHandler(err=>{ console.warn('Fallo ciudades', err); if (andLoad) loadSerie(); })
+      .getCities(deptId);
+  }
+
+  function loadSerie(){
+    status('Cargando datos…'); showBusy();
+    const deptName = deptoSel.options[deptoSel.selectedIndex]?.text || '';
+    const muniName = muniSel.value ? (muniSel.options[muniSel.selectedIndex]?.text || '') : '';
+
+    const argsDept = { deptName, muniName: '', modo };
+    const argsMuni = { deptName, muniName,  modo };
+
+    const pDept = new Promise((res,rej)=>google.script.run.withSuccessHandler(res).withFailureHandler(rej).getSerie(argsDept));
+    const pMuni = new Promise((res,rej)=>google.script.run.withSuccessHandler(res).withFailureHandler(rej).getSerie(argsMuni));
+
+    Promise.all([pDept, pMuni])
+      .then(([sd, sm])=>{
+        serieDept = sd || [];
+        serie     = (muniName ? sm : sd) || [];
+        const needBaseline = (modo==='tres' || modo==='ultimo');
+        const key = (muniName?('muni:'+muniName):('dept:'+deptName));
+        if (needBaseline && baselineKey !== key){
+          return getCincoForBaseline(deptName, muniName).then(arr=>{ baseline = buildMonthlyBaseline(arr||[]); baselineKey = key; });
+        }
+      })
+      .then(()=>{ draw(); makeInsights(); status(''); hideSplash(); hideBusy(); })
+      .catch(err=>{ console.error(err); status('No se pudo cargar la serie.'); hideSplash(); hideBusy(); });
+  }
+
+  // ---- Dibujo (SVG) ----
+  function draw(){
+    const w=900,h=280,pL=44,pR=20,pT=28,pB=56;
+    chartEl.setAttribute('viewBox',`0 0 ${w} ${h}`);
+    chartEl.innerHTML='';
+    if (!serie.length){ chartEl.innerHTML='<text x="20" y="40" fill="#9aa">Sin datos.</text>'; return; }
+
+    const maxY = Math.max(1, ...serie.map(d=>d.mm||0));
+    const xs = i => pL + (i*(w-pL-pR))/Math.max(serie.length-1,1);
+    const ys = v => h-pB-((v||0)*(h-pT-pB)/maxY);
+    const path = serie.map((d,i)=>`${i?'L':'M'}${xs(i)},${ys(d.mm)}`).join(' ');
+
+    const defs = node('defs');
+    defs.appendChild(grad('fill','#22d3ee',0.35));
+    defs.appendChild(gradX('strokeGrad','#22d3ee','#60a5fa'));
+    chartEl.appendChild(defs);
+
+    for (let i=0;i<=4;i++){ const v=i*maxY/4; chartEl.appendChild(line(pL,ys(v),w-pR,ys(v),0.08)); }
+
+    /* Heatmap de riesgo por día (bajo/medio/alto) */
+    if (modo!=='cinco'){
+      for(let i=0;i<serie.length;i++){
+        const v=serie[i].mm||0; const x0=xs(i-0.5), x1=xs(i+0.5);
+        const fill = v>RISK.high ? 'rgba(255,99,99,.10)' : (v>RISK.low ? 'rgba(255,196,54,.08)' : 'rgba(34,211,238,.05)');
+        chartEl.appendChild(node('rect',{x:Math.max(x0,pL), y:pT, width:Math.max(0,x1-x0), height:h-pT-pB, fill}));
+      }
+    }
+    chartEl.appendChild(pathEl(`${path} L ${w-pR},${h-pB} L ${pL},${h-pB} Z`, 'url(#fill)', null, null));
+    chartEl.appendChild(pathEl(path, null, 'url(#strokeGrad)', 2.2, (modo!=='prox' && verTrend)?0.35:0.95));
+
+    /* Línea de referencia del Departamento (si hay municipio) */
+    if (serieDept && serieDept.length && muniSel.value){
+      const pathDept = serieDept.map((d,i)=>`${i?'L':'M'}${xs(i)},${ys(d.mm)}`).join(' ');
+      const ref = pathEl(pathDept, null, '#8aa4', 1.5);
+      ref.setAttribute('stroke-dasharray','6 6');
+      chartEl.appendChild(ref);
+      chartEl.appendChild(text(w-20,18,'Depto (ref)','end',11,0.75));
+    }
+
+    chartEl.appendChild(line(pL,h-pB,w-pR,h-pB,0.2));
+    chartEl.appendChild(line(pL,pT,pL,h-pB,0.2));
+
+    const dates = serie.map(d=>d.date);
+    const rawI=[], rawL=[];
+    if (modo==='cinco'){
+      const seen=new Set();
+      for(let i=0;i<dates.length;i++){ const y=dates[i].slice(0,4); if(!seen.has(y)){ seen.add(y); rawI.push(i); rawL.push(y);} }
+    } else if (modo==='ultimo' || modo==='tres'){
+      const seen=new Set();
+      for(let i=0;i<dates.length;i++){ const ym=dates[i].slice(0,7); if(!seen.has(ym)){ seen.add(ym); rawI.push(i); const m=parseInt(dates[i].slice(5,7),10)-1; rawL.push(meses[m]); } }
+    } else if (modo==='prox'){
+      for(let i=0;i<dates.length;i++){ const dd=dates[i]; const m=parseInt(dd.slice(5,7),10)-1; const d=dd.slice(8,10); rawI.push(i); rawL.push(`${d} ${meses[m]}`);} }
+    const tickI=[], tickL=[]; let last=-1e9; const minStep=42;
+    for(let k=0;k<rawI.length;k++){ const x=xs(rawI[k]); if(x-last>=minStep){ tickI.push(rawI[k]); tickL.push(rawL[k]); last=x; } }
+    tickI.forEach((i,k)=>{ chartEl.appendChild(line(xs(i),pT,xs(i),h-pB,0.06)); chartEl.appendChild(text(xs(i),h-18,tickL[k])); });
+
+    for(let i=0;i<=4;i++){ const v=i*maxY/4; chartEl.appendChild(text(8,ys(v)+4,`${v.toFixed(0)} mm`,'left')); }
+
+    if (modo!=='prox' && verTrend){
+      const win = (modo==='cinco')?60:(modo==='tres'?7:30);
+      const tpts = (trendType==='EMA')? ema(serie) : ma(serie,win);
+      const tpath = tpts.map((p,k)=>`${k?'L':'M'}${xs(p.i)},${ys(p.v)}`).join(' ');
+      chartEl.appendChild(pathEl(tpath, null, 'url(#strokeGrad)', 3));
+    }
+
+    const ttl = (modo==='prox')?'Proyección – Próx. 14 días':(modo==='cinco')?'Tendencia – Últimos 5 años':(modo==='tres')?'Tendencia – Últimos 3 meses':'Tendencia – Últimos 12 meses';
+    chartEl.appendChild(text(pL,18, ttl + (modo!=='prox'&&verTrend?` · línea de tendencia (${trendType})`:''), 'left', 12, 0.9));
+
+    function node(n,attrs={}){ const el=document.createElementNS('http://www.w3.org/2000/svg',n); for(const k in attrs) el.setAttribute(k,attrs[k]); return el; }
+    function line(x1,y1,x2,y2,op){ return node('line',{x1,y1,x2,y2,stroke:'currentColor',opacity:op}); }
+    function pathEl(d,fill,stroke,w,op){ const el=node('path',{d}); if(fill) el.setAttribute('fill',fill); else el.setAttribute('fill','none'); if(stroke) el.setAttribute('stroke',stroke); if(w) el.setAttribute('stroke-width',w); if(op!=null) el.setAttribute('stroke-opacity',op); return el; }
+    function text(x,y,t,anchor='middle',fs=12,op=0.85){ const el=node('text',{x,y,'font-size':fs,fill:'currentColor',opacity:op}); el.setAttribute('text-anchor',anchor==='left'?'start':anchor); el.textContent=t; return el; }
+    function grad(id,color,topOp){ const el=node('linearGradient',{id,x1:0,x2:0,y1:0,y2:1}); const s1=node('stop',{offset:'0%','stop-color':color,'stop-opacity':topOp}); const s2=node('stop',{offset:'100%','stop-color':color,'stop-opacity':0}); el.appendChild(s1); el.appendChild(s2); return el; }
+    function gradX(id,a,b){ const el=node('linearGradient',{id,x1:0,x2:1,y1:0,y2:0}); el.appendChild(node('stop',{offset:'0%','stop-color':a})); el.appendChild(node('stop',{offset:'100%','stop-color':b})); return el; }
+  }
+
+  // ---- Tendencias ----
+  function ma(s,w){ let sum=0; const out=[]; for(let i=0;i<s.length;i++){ sum+=(s[i].mm||0); if(i>=w) sum-=(s[i-w].mm||0); out.push({i, v: sum/Math.min(i+1,w)});} return out; }
+  function ema(s){ const a=(modo==='cinco')?0.05:((modo==='tres')?0.3:0.1); const out=[]; let e=(s[0]?.mm)||0; out.push({i:0,v:e}); for(let i=1;i<s.length;i++){ e=a*(s[i].mm||0)+(1-a)*e; out.push({i,v:e}); } return out; }
+
+  /* --- Baseline (5 años) para anomalías por mes --- */
+  async function getCincoForBaseline(deptName, muniName){
+    return new Promise((res,rej)=>google.script.run
+      .withSuccessHandler(res)
+      .withFailureHandler(rej)
+      .getSerie({deptName, muniName, modo:'cinco'}));
+  }
+  function buildMonthlyBaseline(arr){
+    const acc = Array.from({length:12},()=>[]);
+    (arr||[]).forEach(d=>{ const m = (+d.date.slice(5,7)||1)-1; acc[m].push(d.mm||0); });
+    return acc.map(a=>{ const n=a.length||1; const mu=a.reduce((s,x)=>s+x,0)/n; const sd=Math.sqrt(a.reduce((s,x)=>s+(x-mu)*(x-mu),0)/n)||0; return {mu,sd}; });
+  }
+
+  // ---- Insights ----
+  function makeInsights(){
+    if (!serie.length){ insightsEl.innerHTML=''; return; }
+    const n=serie.length, sum=serie.reduce((s,d)=>s+(d.mm||0),0), avg=sum/n;
+    const dry=serie.filter(d=>(d.mm||0)===0).length;
+    const wet=serie.reduce((b,d)=> (d.mm||0)>(b.mm||0)?d:b, {mm:-1,date:'—'});
+    const k=Math.max(1,Math.floor(n*0.3));
+    const meanEarly = serie.slice(0,k).reduce((s,d)=>s+(d.mm||0),0)/k;
+    const meanRecent= serie.slice(n-k).reduce((s,d)=>s+(d.mm||0),0)/k;
+    const chg = meanEarly? ((meanRecent-meanEarly)/meanEarly)*100 : (meanRecent>0?100:0);
+    const trendTxt = chg>10?'al alza':(chg<-10?'a la baja':'estable');
+    const group=new Map();
+    if (modo==='cinco') serie.forEach(d=>{ const y=d.date.slice(0,4); group.set(y,(group.get(y)||0)+(d.mm||0)); });
+    if (modo==='tres'||modo==='ultimo') serie.forEach(d=>{ const ym=d.date.slice(0,7); group.set(ym,(group.get(ym)||0)+(d.mm||0)); });
+    let topK='—', topV=-1; for(const [k2,v] of group.entries()){ if(v>topV){topV=v; topK=k2;} }
+    const fmt = x => (x===0||x)? Number(x).toLocaleString('es-CO',{maximumFractionDigits:1}) : '-';
+    const fmtMonth = ym =>{ if(!ym) return '—'; const [y,m]=ym.split('-'); return `${meses[+m-1]} ${y}`; };
+    const top3 = [...serie].sort((a,b)=>(b.mm||0)-(a.mm||0)).slice(0,3);
+    const firstWet = serie.find(d=>(d.mm||0)>=1);
+
+    let html = '';
+    html += '<h3>Insights</h3>';
+    html += '<div class="kpis">'
+          + '<div><div class="kcap">Total precipitación</div><div class="kval">'+fmt(sum)+' mm</div></div>'
+          + '<div><div class="kcap">Promedio diario</div><div class="kval">'+fmt(avg)+' mm</div></div>'
+          + '<div><div class="kcap">Días secos</div><div class="kval">'+dry+'</div></div>'
+          + '<div><div class="kcap">Día más lluvioso</div><div class="kval">'+fmt(wet.mm)+' mm</div><div class="ksub">'+wet.date+'</div></div>'
+          + '</div>';
+
+    if (modo!=='prox') {
+      html += '<ul class="li">';
+      html += '  <li>Tendencia general: <b>'+trendTxt+'</b> (últ. '+k+' días '+fmt(meanRecent)+' mm/d vs. '+fmt(meanEarly)+' mm/d al inicio; '+fmt(chg)+'%).</li>';
+      if (modo==='tres' || modo==='ultimo') html += '  <li>Mes más lluvioso: <b>'+fmtMonth(topK)+'</b> con '+fmt(topV)+' mm.</li>';
+      if (modo==='cinco') html += '  <li>Año más lluvioso: <b>'+topK+'</b> con '+fmt(topV)+' mm.</li>';
+      html += '</ul>';
+    } else {
+      html += '<ul class="li">';
+      html += '  <li>Se esperan <b>'+fmt(sum)+' mm</b> en los próximos 14 días (promedio '+fmt(avg)+' mm/d).</li>';
+      html += '  <li>Días más lluviosos esperados: '+ top3.map(d=> (d.date+' ('+fmt(d.mm)+' mm)') ).join(', ') + '.</li>';
+      html += '  <li>' + (firstWet ? ('Primer día con &ge;1 mm: '+firstWet.date) : 'No hay lluvias significativas previstas (&ge;1 mm).') + '</li>';
+      html += '</ul>';
+    }
+    insightsEl.innerHTML = html;
+  }
+
+  // ---- Exportar ----
+  function downloadCSV(){
+    if (!serie.length) return;
+    const head = 'date,mm\n';
+    const rows = serie.map(d => `${d.date},${(d.mm ?? '')}`).join('\n');
+    const blob = new Blob([head + rows], { type: 'text/csv' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'lluvia.csv';
+    a.click();
+  }
+  console.assert('date,mm\n'.includes('\n'), 'CSV header debe usar \n');
+  async function downloadPNG(){
+    const svg=chartEl; const vb=(svg.getAttribute('viewBox')||'0 0 900 280').split(' ').map(Number); const w = vb[2]; const h = vb[3];
+    const xml=new XMLSerializer().serializeToString(svg); const img=new Image(); const url=URL.createObjectURL(new Blob([xml],{type:'image/svg+xml'})); await new Promise(r=>{img.onload=r; img.src=url;}); const c=document.createElement('canvas'); c.width=w; c.height=h; const ctx=c.getContext('2d'); ctx.drawImage(img,0,0); URL.revokeObjectURL(url); c.toBlob(b=>{ const dl=URL.createObjectURL(b); const a=document.createElement('a'); a.href=dl; a.download='lluvia.png'; a.click(); URL.revokeObjectURL(dl); });
+  }
+
+  // ---- Eventos ----
+  const debounce=(fn,ms)=>{let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn.apply(null,a),ms);}};
+  document.querySelectorAll('[data-modo]').forEach(b=>b.addEventListener('click', e=>{
+    document.querySelectorAll('[data-modo]').forEach(x=>x.classList.remove('active'));
+    e.currentTarget.classList.add('active');
+    modo = e.currentTarget.getAttribute('data-modo');
+
+    // Deshabilitar controles de tendencia en Próx. 14 días
+    const isProx = (modo==='prox');
+    const btnTrend = $('#btnTrend');
+    btnTrend.disabled = isProx;
+    btnTrend.title = isProx ? 'La tendencia no aplica en Próx. 14 días' : '';
+    document.querySelectorAll('[data-trend]').forEach(x=>{ x.disabled = isProx; if(isProx) x.classList.remove('active'); });
+
+    loadSerie();
+  }));
+  document.querySelectorAll('[data-trend]').forEach(b=>b.addEventListener('click', e=>{
+    document.querySelectorAll('[data-trend]').forEach(x=>x.classList.remove('active'));
+    e.currentTarget.classList.add('active');
+    trendType = e.currentTarget.getAttribute('data-trend');
+    draw();
+  }));
+  $('#btnTrend').addEventListener('click', ()=>{ verTrend=!verTrend; $('#btnTrend').textContent = verTrend?'Ocultar tendencia':'Ver tendencia'; draw(); });
+  $('#btnHelp').addEventListener('click', ()=>{ helpEl.hidden = !helpEl.hidden; $('#btnHelp').textContent = helpEl.hidden ? '¿Cómo usar?' : 'Ocultar guía'; });
+  $('#btnCSV').addEventListener('click', downloadCSV);
+  $('#btnPNG').addEventListener('click', downloadPNG);
+  deptoSel.addEventListener('change', debounce(()=>{ loadCities(deptoSel.value); loadSerie(); },150));
+  muniSel.addEventListener('change', debounce(loadSerie,120));
+
+  function status(t){ statusEl.textContent = t||''; }
+  function hideSplash(){ if (splash && !splash.classList.contains('hide')) { splash.classList.add('hide'); setTimeout(()=>{ try{ splash.remove(); }catch(e){} }, 450); } }
+
+  function showBusy(){ if(busy) busy.classList.add('on'); }
+  function hideBusy(){ if(busy) busy.classList.remove('on'); }
+  // Init
+  loadDepts();
+})();
+</script>
+</body>
+</html>

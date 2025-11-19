@@ -1,0 +1,1700 @@
+﻿(() => {
+  'use strict';
+
+  const STORAGE_KEY = 'lluvia:v2';
+  const MONTHS = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+  const MONTHS_LONG = [
+    'enero',
+    'febrero',
+    'marzo',
+    'abril',
+    'mayo',
+    'junio',
+    'julio',
+    'agosto',
+    'septiembre',
+    'octubre',
+    'noviembre',
+    'diciembre',
+  ];
+  const HOURS = Array.from({ length: 24 }, (_, h) => String(h).padStart(2, '0') + 'h');
+
+  const defaultState = {
+    modo: 'ultimo',
+    metric: 'intensidad',
+    trendType: 'MA',
+    showTrend: true,
+    helpHidden: false,
+    lastDept: null,
+    lastDeptName: '',
+    lastMuni: '',
+    lastMuniName: '',
+    demoMode: false,
+  };
+
+  const TZ = 'America/Bogota';
+  const CAPITALS = {
+    Amazonas: 'Leticia',
+    Antioquia: 'Medellín',
+    Arauca: 'Arauca',
+    Atlántico: 'Barranquilla',
+    Bolívar: 'Cartagena de Indias',
+    Boyacá: 'Tunja',
+    Caldas: 'Manizales',
+    Caquetá: 'Florencia',
+    Casanare: 'Yopal',
+    Cauca: 'Popayán',
+    Cesar: 'Valledupar',
+    Chocó: 'Quibdó',
+    Córdoba: 'Montería',
+    Cundinamarca: 'Bogotá',
+    Guainía: 'Inírida',
+    Guaviare: 'San José del Guaviare',
+    Huila: 'Neiva',
+    'La Guajira': 'Riohacha',
+    Magdalena: 'Santa Marta',
+    Meta: 'Villavicencio',
+    Nariño: 'Pasto',
+    'Norte de Santander': 'Cúcuta',
+    Putumayo: 'Mocoa',
+    Quindío: 'Armenia',
+    Risaralda: 'Pereira',
+    'San Andrés y Providencia': 'San Andrés',
+    'Archipiélago de San Andrés, Providencia y Santa Catalina': 'San Andrés',
+    Santander: 'Bucaramanga',
+    Sucre: 'Sincelejo',
+    Tolima: 'Ibagué',
+    'Valle del Cauca': 'Santiago de Cali',
+    Vaupés: 'Mitú',
+    Vichada: 'Puerto Carreño',
+    'Bogotá D.C.': 'Bogotá',
+    'Bogotá, D.C.': 'Bogotá',
+  };
+  const fallbackCache = new Map();
+const serieCache = new Map();
+const baselineCache = new Map();
+const SERIES_CACHE_LIMIT = 30;
+const BASELINE_CACHE_LIMIT = 30;
+let loadToken = 0;
+
+function rememberCache(map, limit, key, value) {
+  if (!map.has(key) && map.size >= limit) {
+    const oldestKey = map.keys().next().value;
+    if (oldestKey !== undefined) map.delete(oldestKey);
+  }
+  map.set(key, value);
+}
+
+  const DIACRITICS_RE = /[̀-ͯ]/g;
+  const FALLBACK_COORDS = {
+    default: { lat: 4.711, lon: -74.072 },
+    amazonas: { lat: -4.2153, lon: -69.9406 },
+    leticia: { lat: -4.2153, lon: -69.9406 },
+    antioquia: { lat: 6.2442, lon: -75.5812 },
+    medellin: { lat: 6.2442, lon: -75.5812 },
+    medellín: { lat: 6.2442, lon: -75.5812 },
+    arauca: { lat: 7.0847, lon: -70.7591 },
+    atlántico: { lat: 10.9685, lon: -74.7813 },
+    barranquilla: { lat: 10.9685, lon: -74.7813 },
+    bolívar: { lat: 10.391, lon: -75.4794 },
+    cartagena: { lat: 10.391, lon: -75.4794 },
+    boyaca: { lat: 5.5333, lon: -73.3678 },
+    boyacá: { lat: 5.5333, lon: -73.3678 },
+    tunja: { lat: 5.5333, lon: -73.3678 },
+    casanare: { lat: 5.3378, lon: -72.3959 },
+    yopal: { lat: 5.3378, lon: -72.3959 },
+    cauca: { lat: 2.4448, lon: -76.6147 },
+    popayan: { lat: 2.4448, lon: -76.6147 },
+    popayán: { lat: 2.4448, lon: -76.6147 },
+    cesar: { lat: 10.4631, lon: -73.2532 },
+    valledupar: { lat: 10.4631, lon: -73.2532 },
+    choco: { lat: 5.696, lon: -76.6423 },
+    chocó: { lat: 5.696, lon: -76.6423 },
+    quibdo: { lat: 5.696, lon: -76.6423 },
+    quibdó: { lat: 5.696, lon: -76.6423 },
+    cordoba: { lat: 8.748, lon: -75.8814 },
+    córdoba: { lat: 8.748, lon: -75.8814 },
+    monteria: { lat: 8.748, lon: -75.8814 },
+    montería: { lat: 8.748, lon: -75.8814 },
+    cundinamarca: { lat: 4.711, lon: -74.0721 },
+    bogota: { lat: 4.711, lon: -74.0721 },
+    bogotá: { lat: 4.711, lon: -74.0721 },
+    guainía: { lat: 3.8667, lon: -67.9167 },
+    inírida: { lat: 3.8667, lon: -67.9167 },
+    guaviare: { lat: 2.5729, lon: -72.6459 },
+    neiva: { lat: 2.9273, lon: -75.2819 },
+    huila: { lat: 2.9273, lon: -75.2819 },
+    'la guajira': { lat: 11.544, lon: -72.907 },
+    riohacha: { lat: 11.544, lon: -72.907 },
+    magdalena: { lat: 11.2408, lon: -74.199 },
+    'santa marta': { lat: 11.2408, lon: -74.199 },
+    meta: { lat: 4.142, lon: -73.6266 },
+    villavicencio: { lat: 4.142, lon: -73.6266 },
+    narino: { lat: 1.2136, lon: -77.2811 },
+    nariño: { lat: 1.2136, lon: -77.2811 },
+    pasto: { lat: 1.2136, lon: -77.2811 },
+    'norte de santander': { lat: 7.8833, lon: -72.5051 },
+    cucuta: { lat: 7.8833, lon: -72.5051 },
+    cúcuta: { lat: 7.8833, lon: -72.5051 },
+    putumayo: { lat: 1.152, lon: -76.6532 },
+    mocoa: { lat: 1.152, lon: -76.6532 },
+    quindio: { lat: 4.5339, lon: -75.6811 },
+    quindío: { lat: 4.5339, lon: -75.6811 },
+    armenia: { lat: 4.5339, lon: -75.6811 },
+    risaralda: { lat: 4.8133, lon: -75.6961 },
+    pereira: { lat: 4.8133, lon: -75.6961 },
+    'san andrés y providencia': { lat: 12.5833, lon: -81.7006 },
+    'san andres y providencia': { lat: 12.5833, lon: -81.7006 },
+    'san andrés': { lat: 12.5833, lon: -81.7006 },
+    sucre: { lat: 9.3047, lon: -75.3977 },
+    sincelejo: { lat: 9.3047, lon: -75.3977 },
+    santander: { lat: 7.1193, lon: -73.1227 },
+    bucaramanga: { lat: 7.1193, lon: -73.1227 },
+    tolima: { lat: 4.4389, lon: -75.2322 },
+    ibague: { lat: 4.4389, lon: -75.2322 },
+    ibagué: { lat: 4.4389, lon: -75.2322 },
+    'valle del cauca': { lat: 3.4516, lon: -76.5319 },
+    cali: { lat: 3.4516, lon: -76.5319 },
+    vaupes: { lat: 1.2519, lon: -70.2347 },
+    vaupés: { lat: 1.2519, lon: -70.2347 },
+    mitú: { lat: 1.2519, lon: -70.2347 },
+    mitu: { lat: 1.2519, lon: -70.2347 },
+    vichada: { lat: 6.1846, lon: -67.493 },
+    'puerto carreño': { lat: 6.1846, lon: -67.493 },
+  };
+  function normalizeKey(value) {
+    return String(value || '')
+      .normalize('NFD')
+      .replace(DIACRITICS_RE, '')
+      .toLowerCase()
+      .trim();
+  }
+  function isOffline() {
+    return typeof navigator !== 'undefined' && navigator.onLine === false;
+  }
+  function getFallbackCoords(name, admin1) {
+    const primary = lookupFallbackCoords(name);
+    if (primary) return primary;
+    const secondary = lookupFallbackCoords(admin1);
+    if (secondary) return secondary;
+    return FALLBACK_COORDS.default;
+  }
+  function lookupFallbackCoords(value) {
+    if (!value) return null;
+    const normalized = normalizeKey(value);
+    for (const key in FALLBACK_COORDS) {
+      if (Object.prototype.hasOwnProperty.call(FALLBACK_COORDS, key)) {
+        if (normalizeKey(key) === normalized) {
+          return FALLBACK_COORDS[key];
+        }
+      }
+    }
+    return null;
+  }
+
+  const $ = (sel) => document.querySelector(sel);
+  const els = {
+    depto: $('#depto'),
+    muni: $('#muni'),
+    status: $('#status'),
+    chart: $('#chart'),
+    insights: $('#insights'),
+    help: $('#help'),
+    splash: $('#splash'),
+    busy: $('#busy'),
+    btnHelp: $('#btnHelp'),
+    btnTrend: $('#btnTrend'),
+    btnCSV: $('#btnCSV'),
+    btnPNG: $('#btnPNG'),
+    hourlyWrap: $('#hourlyWrap'),
+    hourlyInfo: $('#hourlyInfo'),
+    hourlyHours: $('#hourlyHours'),
+    hourlyDays: $('#hourlyDays'),
+    hourlyMatrix: $('#hourlyMatrix'),
+    hourlyLegend: $('#hourlyLegend'),
+  };
+  const metricBtns = Array.from(document.querySelectorAll('[data-metric]'));
+  const modoBtns = Array.from(document.querySelectorAll('[data-modo]'));
+  const trendBtns = Array.from(document.querySelectorAll('[data-trend]'));
+
+  let state = { ...defaultState };
+  readState();
+  let modo = state.modo;
+  let metric = state.metric;
+  let trendType = state.trendType;
+  let verTrend = state.showTrend;
+
+  applyInitialUI();
+
+  let serie = [];
+  let serieDept = [];
+  let intensityHourly = [];
+  let intensityHourlyDept = [];
+  let baseline = null;
+  let baselineKey = '';
+  let offlineMode = false;
+  let loadingCitiesFor = null;
+
+  function readState() {
+    try {
+      const raw = window.localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      state = { ...state, ...parsed };
+      if (!state.metric) state.metric = defaultState.metric;
+      if (!state.modo) state.modo = defaultState.modo;
+      if (state.showTrend === undefined) state.showTrend = defaultState.showTrend;
+      if (state.trendType !== 'MA' && state.trendType !== 'EMA') state.trendType = defaultState.trendType;
+    } catch (err) {
+      console.warn('Estado local ilegible', err);
+      state = { ...defaultState };
+    }
+  }
+
+  function persistState() {
+    try {
+      const payload = {
+        modo,
+        metric,
+        trendType,
+        showTrend: verTrend,
+        helpHidden: els.help.hidden,
+        lastDept: state.lastDept,
+        lastDeptName: state.lastDeptName,
+        lastMuni: state.lastMuni,
+        lastMuniName: state.lastMuniName,
+      };
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    } catch (err) {
+      // best effort
+    }
+  }
+
+  function applyInitialUI() {
+    metricBtns.forEach((btn) => btn.classList.toggle('active', btn.dataset.metric === metric));
+    modoBtns.forEach((btn) => btn.classList.toggle('active', btn.dataset.modo === modo));
+    trendBtns.forEach((btn) => btn.classList.toggle('active', btn.dataset.trend === trendType));
+    const isProx = modo === 'prox';
+    els.btnTrend.textContent = verTrend ? 'Ocultar tendencia' : 'Ver tendencia';
+    els.btnTrend.disabled = isProx;
+    els.btnTrend.title = isProx ? 'La tendencia no aplica en Próx. 14 días' : '';
+    trendBtns.forEach((btn) => {
+      btn.disabled = isProx;
+      if (isProx) btn.classList.remove('active');
+    });
+    if (state.helpHidden) {
+      els.help.hidden = true;
+      els.btnHelp.textContent = 'Cmo usar?';
+    } else {
+      els.help.hidden = false;
+      els.btnHelp.textContent = 'Ocultar gua';
+    }
+    document.body.classList.toggle('metric-intensity', metric === 'intensidad');
+  }
+
+  function status(text) {
+    els.status.textContent = text || '';
+  }
+
+  function showBusy() {
+    if (els.busy) els.busy.classList.add('on');
+  }
+
+  function hideBusy() {
+    if (els.busy) els.busy.classList.remove('on');
+  }
+
+  function hideSplash() {
+    if (els.splash && !els.splash.classList.contains('hide')) {
+      els.splash.classList.add('hide');
+      setTimeout(() => {
+        try {
+          els.splash.remove();
+        } catch (err) {
+          // ignore
+        }
+      }, 450);
+    }
+  }
+
+  function gasCall(method, ...args) {
+    if (typeof google === 'undefined' || !google.script || !google.script.run) {
+      return fallbackCall(method, ...args);
+    }
+    return new Promise((resolve, reject) => {
+      google.script.run.withSuccessHandler(resolve).withFailureHandler(reject)[method](...args);
+    });
+  }
+
+  function fallbackCall(method, ...args) {
+    switch (method) {
+      case 'getDepts':
+        return fallbackGetDepts();
+      case 'getCities':
+        return fallbackGetCities(args[0]);
+      case 'getSerie':
+        return fallbackGetSerie(args[0]);
+      default:
+        return Promise.reject(new Error('Mtodo no soportado en vista local'));
+    }
+  }
+
+  function cacheGet(key) {
+    const entry = fallbackCache.get(key);
+    if (!entry) return null;
+    if (entry.expires > Date.now()) return entry.value;
+    fallbackCache.delete(key);
+    return null;
+  }
+
+  function cachePut(key, value, ttlSeconds) {
+    fallbackCache.set(key, {
+      value,
+      expires: Date.now() + ttlSeconds * 1000,
+    });
+  }
+
+  async function fetchJSON(url, timeoutMs = 5000) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const res = await fetch(url, {
+        headers: { Accept: 'application/json' },
+        signal: controller.signal,
+      });
+      if (!res.ok) {
+        throw new Error('HTTP ' + res.status + ' ' + url);
+      }
+      return await res.json();
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+
+  async function fallbackGetDepts() {
+    const key = 'depts_v1';
+    const hit = cacheGet(key);
+    if (hit) return hit;
+    if (isOffline()) {
+      const fallbackItems = Object.keys(CAPITALS).map((name, idx) => ({
+        id: String(idx),
+        name,
+      }));
+      const payload = { offline: true, items: fallbackItems };
+      cachePut(key, payload, 3600);
+      return payload;
+    }
+    try {
+      const departments = await fetchJSON('https://api-colombia.com/api/v1/Department');
+      departments.sort((a, b) => a.name.localeCompare(b.name, 'es'));
+      const payload = {
+        offline: false,
+        items: departments.map((d) => ({ id: String(d.id), name: d.name })),
+      };
+      cachePut(key, payload, 43200);
+      return payload;
+    } catch (err) {
+      const fallbackItems = Object.keys(CAPITALS).map((name, idx) => ({
+        id: String(idx),
+        name,
+      }));
+      const payload = { offline: true, items: fallbackItems };
+      cachePut(key, payload, 3600);
+      return payload;
+    }
+  }
+
+  async function fallbackGetCities(deptId) {
+    const key = 'cities_' + deptId;
+    const hit = cacheGet(key);
+    if (hit) return hit;
+    if (isOffline()) {
+      return [];
+    }
+    try {
+      const cities = await fetchJSON(
+        'https://api-colombia.com/api/v1/Department/' + encodeURIComponent(deptId) + '/cities'
+      );
+      cities.sort((a, b) => a.name.localeCompare(b.name, 'es'));
+      const payload = cities.map((city) => ({
+        id: String(city.id),
+        name: city.name,
+      }));
+      cachePut(key, payload, 43200);
+      return payload;
+    } catch (err) {
+      return [];
+    }
+  }
+
+  async function fallbackGetSerie(payload) {
+    const deptName = payload?.deptName || '';
+    const muniName = payload?.muniName || '';
+    const modo = payload?.modo || 'ultimo';
+    const tipo = payload?.tipo || 'acum';
+
+    const candidates = [];
+    if (muniName) candidates.push([muniName, deptName]);
+    if (CAPITALS[deptName]) candidates.push([CAPITALS[deptName], deptName]);
+    candidates.push([deptName, '']);
+
+    let coords = null;
+    for (let i = 0; i < candidates.length; i++) {
+      try {
+        coords = await fallbackGeocode(candidates[i][0], candidates[i][1]);
+        if (coords) break;
+      } catch (err) {
+        // try next
+      }
+    }
+    if (!coords) {
+      throw new Error('No fue posible geocodificar');
+    }
+    if (tipo === 'intensidad') {
+      return fallbackBuildIntensitySerie(coords.lat, coords.lon, modo);
+    }
+    return fallbackBuildDailySerie(coords.lat, coords.lon, modo);
+  }
+
+  async function fallbackGeocode(name, admin1) {
+    const key = 'geo|' + name + '|' + (admin1 || '');
+    const hit = cacheGet(key);
+    if (hit) return hit;
+    const url =
+      'https://geocoding-api.open-meteo.com/v1/search?name=' +
+      encodeURIComponent(name) +
+      '&country=CO&count=10&language=es';
+    const offline = isOffline();
+    const fallback = getFallbackCoords(name, admin1);
+    if (offline) {
+      cachePut(key, fallback, 3600);
+      return fallback;
+    }
+    try {
+      const data = await fetchJSON(url, 5000);
+      const results = (data && data.results) || [];
+      let best = results[0];
+      if (!best) {
+        cachePut(key, fallback, 3600);
+        return fallback;
+      }
+      if (admin1) {
+        const match = results.find(
+          (item) => normalizeKey(item.admin1) === normalizeKey(admin1)
+        );
+        if (match) best = match;
+      }
+      const coords = { lat: best.latitude, lon: best.longitude };
+      cachePut(key, coords, 604800);
+      return coords;
+    } catch (err) {
+      if (err.name === 'AbortError') {
+        console.info('Geocoding abortado, usando coordenadas de respaldo');
+      } else {
+        console.warn('Geocoding fall, usando coordenadas de respaldo', err);
+      }
+      cachePut(key, fallback, 3600);
+      return fallback;
+    }
+  }
+
+  function formatDateTZ(date) {
+    return new Intl.DateTimeFormat('sv-SE', {
+      timeZone: TZ,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    })
+      .format(date)
+      .replace('.', '-');
+  }
+
+  function addDays(date, n) {
+    return new Date(date.getTime() + n * 24 * 3600 * 1000);
+  }
+
+  async function fallbackBuildDailySerie(lat, lon, modo) {
+    const key = 'daily|' + modo + '|' + lat.toFixed(2) + ',' + lon.toFixed(2);
+    const hit = cacheGet(key);
+    if (hit) return hit;
+    try {
+      const today = new Date();
+      const todayISO = formatDateTZ(today);
+      const base =
+        'latitude=' +
+        lat +
+        '&longitude=' +
+        lon +
+        '&daily=precipitation_sum&timezone=' +
+        encodeURIComponent(TZ);
+      let result = [];
+      if (modo === 'prox') {
+        const forecast = await fetchJSON(
+          'https://api.open-meteo.com/v1/forecast?' + base + '&forecast_days=16'
+        );
+        const times = (forecast.daily && forecast.daily.time) || [];
+        const precip = (forecast.daily && forecast.daily.precipitation_sum) || [];
+        result = times
+          .map((d, i) => ({ date: d, mm: Number(precip[i]) || 0 }))
+          .filter((row) => row.date > todayISO)
+          .slice(0, 14);
+      } else {
+        const spanDays = modo === 'cinco' ? 365 * 5 : modo === 'tres' ? 92 : 365;
+        const start = addDays(today, -spanDays);
+        const startISO = formatDateTZ(start);
+        const archiveCut = addDays(today, -5);
+        const archive = await fetchJSON(
+          'https://archive-api.open-meteo.com/v1/era5?' +
+            base +
+            '&start_date=' +
+            startISO +
+            '&end_date=' +
+            formatDateTZ(archiveCut)
+        );
+        const forecast = await fetchJSON(
+          'https://api.open-meteo.com/v1/forecast?' + base + '&past_days=5'
+        );
+        const map = new Map();
+        const mergeDaily = (obj) => {
+          if (!obj || !obj.daily) return;
+          const times = obj.daily.time || [];
+          const values = obj.daily.precipitation_sum || [];
+          for (let i = 0; i < times.length; i++) {
+            const date = times[i];
+            if (!date) continue;
+            map.set(date, { date, mm: Number(values[i]) || 0 });
+          }
+        };
+        mergeDaily(archive);
+        mergeDaily(forecast);
+        result = Array.from(map.values())
+          .filter((row) => row.date >= startISO && row.date <= todayISO)
+          .sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
+      }
+      const ttl = modo === 'prox' ? 1800 : modo === 'cinco' ? 43200 : 3600;
+      cachePut(key, result, ttl);
+      return result;
+    } catch (err) {
+      if (err.name === 'AbortError') {
+        console.info('Serie diaria abortada, usando datos de ejemplo');
+      } else {
+        console.warn('Serie diaria: usando datos de ejemplo', err);
+      }
+      status('Mostrando datos de ejemplo (sin conexión).');
+      state.demoMode = true;
+      const sample = sampleDailySeries(modo, lat, lon);
+      cachePut(key, sample, 900);
+      return sample;
+    }
+  }
+
+  async function fallbackBuildIntensitySerie(lat, lon, modo) {
+    const key = 'intensity|' + modo + '|' + lat.toFixed(2) + ',' + lon.toFixed(2);
+    const hit = cacheGet(key);
+    if (hit) return hit;
+    try {
+      const base =
+        'latitude=' +
+        lat +
+        '&longitude=' +
+        lon +
+        '&hourly=precipitation&timezone=' +
+        encodeURIComponent(TZ);
+      const today = new Date();
+      const todayISO = formatDateTZ(today);
+      const map = {};
+
+      const addHourly = (times, values) => {
+        if (!times || !values) return;
+        for (let i = 0; i < times.length; i++) {
+          const timestamp = times[i];
+          if (!timestamp) continue;
+          const day = String(timestamp).slice(0, 10);
+          const hourStr = String(timestamp).slice(11, 13);
+          const hour = Number(hourStr);
+          if (Number.isNaN(hour)) continue;
+          const val = Number(values[i]) || 0;
+          let entry = map[day];
+          if (!entry) {
+            entry = { date: day, mm: 0, hours: new Array(24).fill(0) };
+            map[day] = entry;
+          }
+          if (val > entry.mm) entry.mm = val;
+          entry.hours[hour] = (entry.hours[hour] || 0) + val;
+        }
+      };
+
+      if (modo === 'prox') {
+        const forecast = await fetchJSON(
+          'https://api.open-meteo.com/v1/forecast?' + base + '&forecast_days=16'
+        );
+        addHourly(
+          (forecast.hourly && forecast.hourly.time) || [],
+          (forecast.hourly && forecast.hourly.precipitation) || []
+        );
+        const days = Object.keys(map)
+          .sort()
+          .filter((day) => day > todayISO)
+          .slice(0, 14);
+        const result = buildIntensityResult(map, days);
+        cachePut(key, result, 1800);
+        return result;
+      }
+
+      const spanDays = modo === 'cinco' ? 365 * 5 : modo === 'tres' ? 92 : 365;
+      const start = addDays(today, -spanDays);
+      const startISO = formatDateTZ(start);
+      const archiveCut = addDays(today, -5);
+
+      const archive = await fetchJSON(
+        'https://archive-api.open-meteo.com/v1/era5?' +
+          base +
+          '&start_date=' +
+          startISO +
+          '&end_date=' +
+          formatDateTZ(archiveCut)
+      );
+      const forecast = await fetchJSON(
+        'https://api.open-meteo.com/v1/forecast?' + base + '&past_days=5'
+      );
+
+      addHourly(
+        (archive.hourly && archive.hourly.time) || [],
+        (archive.hourly && archive.hourly.precipitation) || []
+      );
+      addHourly(
+        (forecast.hourly && forecast.hourly.time) || [],
+        (forecast.hourly && forecast.hourly.precipitation) || []
+      );
+
+      const days = Object.keys(map)
+        .sort()
+        .filter((day) => day >= startISO && day <= todayISO);
+      const result = buildIntensityResult(map, days);
+      cachePut(key, result, modo === 'cinco' ? 43200 : 3600);
+      return result;
+    } catch (err) {
+      if (err.name === 'AbortError') {
+        console.info('Serie de intensidad abortada, usando datos de ejemplo');
+      } else {
+        console.warn('Serie de intensidad: usando datos de ejemplo', err);
+      }
+      status('Mostrando datos de ejemplo (sin conexión).');
+      state.demoMode = true;
+      const sample = sampleIntensitySeries(modo, lat, lon);
+      cachePut(key, sample, 900);
+      return sample;
+    }
+  }
+
+  function sampleDailySeries(modo, lat, lon) {
+    const forward = modo === 'prox';
+    const spanDays =
+      modo === 'prox' ? 14 : modo === 'cinco' ? 365 : modo === 'tres' ? 92 : 365;
+    const today = new Date();
+    const seed = Math.abs(Math.sin(lat) + Math.cos(lon));
+    const out = [];
+    for (let i = 0; i < spanDays; i++) {
+      const idx = i + 1;
+      const angle = idx / (forward ? 3.5 : 18) + seed * 2.7;
+      const base = forward ? 12 : 18;
+      const swing = forward ? 6 : 12;
+      const noise = forward ? 3 : 5;
+      const mmRaw = base + swing * Math.sin(angle) + noise * Math.cos(idx / 4 + seed * 5);
+      const mm = Math.max(0, mmRaw);
+      const date = forward
+        ? formatDateTZ(addDays(today, idx))
+        : formatDateTZ(addDays(today, -(spanDays - 1 - i)));
+      out.push({ date, mm: Number(mm.toFixed(2)) });
+    }
+    return out;
+  }
+
+  function sampleIntensitySeries(modo, lat, lon) {
+    const daily = sampleDailySeries(modo, lat, lon);
+    const seed = Math.abs(Math.sin(lat * 0.7) + Math.cos(lon * 0.4));
+    const hourly = daily.map((day, idx) => {
+      const peakHour = 14 + Math.round(Math.sin(seed * 6 + idx * 0.3) * 3);
+      const hours = new Array(24).fill(0).map((_, hour) => {
+        const distance = hour - peakHour;
+        const bell = Math.exp(-(distance * distance) / 8);
+        const modulation = 0.6 + 0.4 * Math.sin(seed * 10 + hour * 0.9 + idx * 0.2);
+        const val = Math.max(0, (day.mm || 0) * 0.9 * bell * modulation);
+        return Number(val.toFixed(2));
+      });
+      const max = hours.reduce((m, v) => (v > m ? v : m), 0);
+      day.mm = Number(max.toFixed(2));
+      return { date: day.date, hours };
+    });
+    return { daily, hourly };
+  }
+
+  function buildIntensityResult(map, days) {
+    const daily = [];
+    const hourly = [];
+    days.forEach((day) => {
+      const entry = map[day];
+      if (!entry) return;
+      const mm = Number((entry.mm || 0).toFixed(2));
+      const hours = (entry.hours || new Array(24).fill(0)).map((val) =>
+        Number((val || 0).toFixed(2))
+      );
+      daily.push({ date: day, mm });
+      hourly.push({ date: day, hours });
+    });
+    return { daily, hourly };
+  }
+
+
+  function loadDepts() {
+    status('Cargando departamentos...');
+    gasCall('getDepts')
+      .then(({ offline, items }) => {
+        offlineMode = !!offline;
+        els.depto.dataset.offline = offlineMode ? '1' : '0';
+        els.depto.innerHTML = items.map((d) => `<option value="${d.id}">${d.name}</option>`).join('');
+        let selected = null;
+        if (state.lastDept) {
+          selected = items.find((item) => String(item.id) === String(state.lastDept));
+        }
+        if (!selected) {
+          selected =
+            items.find((item) => item.name === 'Cundinamarca') ||
+            items.find((item) => /Bogot/i.test(item.name)) ||
+            items[0];
+        }
+        if (selected) {
+          els.depto.value = selected.id;
+          state.lastDept = String(selected.id);
+          state.lastDeptName = selected.name;
+        }
+        persistState();
+        if (offlineMode) {
+          els.muni.innerHTML = '<option value="">(Todo el departamento)</option>';
+          state.lastMuni = '';
+          state.lastMuniName = '';
+          loadSerie();
+        } else if (selected) {
+          loadCities(selected.id, true, { preferStored: true, defaultCity: true });
+        }
+        status('');
+      })
+      .catch((err) => {
+        console.error(err);
+        status('No fue posible cargar departamentos');
+        hideSplash();
+      });
+  }
+
+  function loadCities(deptId, andLoad, opts = {}) {
+    loadingCitiesFor = String(deptId);
+    els.muni.innerHTML = '<option value="">(Todo el departamento)</option>';
+    if (offlineMode) {
+      if (andLoad) loadSerie();
+      return;
+    }
+    const preferStored = !!opts.preferStored;
+    const defaultCity = opts.defaultCity !== undefined ? opts.defaultCity : preferStored;
+    gasCall('getCities', deptId)
+      .then((items) => {
+        if (loadingCitiesFor !== String(deptId)) return;
+        const options = ['<option value="">(Todo el departamento)</option>'];
+        let selected = null;
+        const storedMatches = preferStored && state.lastDept === String(deptId) && state.lastMuni;
+        if (storedMatches) {
+          selected = items.find((item) => String(item.id) === String(state.lastMuni));
+        }
+        items.forEach((item) => {
+          options.push(`<option value="${item.id}">${item.name}</option>`);
+        });
+        if (!selected && defaultCity) {
+          selected = items.find((item) => /Bogot/i.test(item.name)) || items[0] || null;
+        }
+        els.muni.innerHTML = options.join('');
+        if (selected) {
+          els.muni.value = selected.id;
+          state.lastMuni = String(selected.id);
+          state.lastMuniName = selected.name;
+        } else {
+          els.muni.value = '';
+          state.lastMuni = '';
+          state.lastMuniName = '';
+        }
+        persistState();
+        if (andLoad) loadSerie();
+      })
+      .catch((err) => {
+        console.warn('Fallo ciudades', err);
+        if (andLoad) loadSerie();
+      });
+  }
+
+  function loadSerie() {
+    status('Cargando datos...');
+    showBusy();
+    state.demoMode = false;
+
+    const deptOpt = els.depto.options[els.depto.selectedIndex];
+    const muniOpt = els.muni.options[els.muni.selectedIndex];
+    const deptName = deptOpt ? deptOpt.text : '';
+    const muniName = els.muni.value ? (muniOpt ? muniOpt.text : '') : '';
+
+    state.lastDept = els.depto.value || null;
+    state.lastDeptName = deptName;
+    state.lastMuni = els.muni.value || '';
+    state.lastMuniName = muniName;
+    persistState();
+
+    const baseKey = [metric, modo, state.lastDept || '', state.lastMuni || ''].join('|');
+    const liveKey = baseKey + '|live';
+    const demoKey = baseKey + '|demo';
+    const preferDemo = offlineMode || isOffline();
+    const cached = serieCache.get(liveKey) || (preferDemo ? serieCache.get(demoKey) : null);
+    if (cached) {
+      applyLoadedSeries(cached);
+      hideSplash();
+      hideBusy();
+      return;
+    }
+
+    const currentToken = ++loadToken;
+
+    const tipo = metric === 'intensidad' ? 'intensidad' : 'acum';
+    const deptArgs = { deptName, muniName: '', modo, tipo };
+    const muniArgs = { deptName, muniName, modo, tipo };
+
+    const deptPromise = gasCall('getSerie', deptArgs);
+    const muniPromise = muniName ? gasCall('getSerie', muniArgs) : Promise.resolve(null);
+
+    Promise.all([deptPromise, muniPromise])
+      .then(([deptData, muniData]) => {
+        const payload = {
+          serie: [],
+          serieDept: [],
+          intensityHourly: [],
+          intensityHourlyDept: [],
+          baseline: null,
+          baselineKey: '',
+          demo: state.demoMode,
+          statusMessage: '',
+        };
+        let baselinePromise = Promise.resolve();
+        if (metric === 'intensidad') {
+          const source = muniData || deptData || { daily: [], hourly: [] };
+          const ref = muniData ? deptData : null;
+          payload.serie = Array.isArray(source.daily) ? source.daily : [];
+          payload.serieDept = ref && Array.isArray(ref.daily) ? ref.daily : [];
+          payload.intensityHourly = Array.isArray(source.hourly) ? source.hourly : [];
+          payload.intensityHourlyDept = ref && Array.isArray(ref.hourly) ? ref.hourly : [];
+        } else {
+          const source = muniData || deptData || [];
+          payload.serie = Array.isArray(source) ? source : [];
+          payload.serieDept = muniData && Array.isArray(deptData) ? deptData : muniName ? deptData || [] : [];
+          payload.intensityHourly = [];
+          payload.intensityHourlyDept = [];
+          const needBaseline = modo === 'tres' || modo === 'ultimo';
+          const key = `${tipo}|${modo}|${muniName ? 'muni:' + muniName : 'dept:' + deptName}`;
+          if (needBaseline) {
+            if (baselineKey === key && baseline) {
+              payload.baseline = baseline;
+              payload.baselineKey = key;
+            } else {
+              const baselineCacheKey = `${deptName}|${muniName || ''}`;
+              const cachedBaseline = baselineCache.get(baselineCacheKey);
+              if (cachedBaseline) {
+                payload.baseline = buildMonthlyBaseline(cachedBaseline || []);
+                payload.baselineKey = key;
+              } else {
+                baselinePromise = getCincoForBaseline(deptName, muniName).then((arr) => {
+                  rememberCache(baselineCache, BASELINE_CACHE_LIMIT, baselineCacheKey, arr || []);
+                  payload.baseline = buildMonthlyBaseline(arr || []);
+                  payload.baselineKey = key;
+                });
+              }
+            }
+          } else {
+            payload.baseline = null;
+            payload.baselineKey = '';
+          }
+        }
+        return baselinePromise.then(() => payload);
+      })
+      .then((payload) => {
+        if (currentToken !== loadToken || !payload) return;
+        payload.demo = state.demoMode;
+        payload.statusMessage = payload.demo ? 'Mostrando datos de ejemplo (sin conexión).' : '';
+        const cacheKey = baseKey + '|' + (payload.demo ? 'demo' : 'live');
+        rememberCache(serieCache, SERIES_CACHE_LIMIT, cacheKey, payload);
+        if (!payload.demo) serieCache.delete(demoKey);
+        applyLoadedSeries(payload);
+      })
+      .catch((err) => {
+        if (currentToken !== loadToken) return;
+        console.error(err);
+        status('No se pudo cargar la serie.');
+      })
+      .finally(() => {
+        if (currentToken === loadToken) {
+          hideSplash();
+          hideBusy();
+        }
+      });
+  }
+  function applyLoadedSeries(payload) {
+    serie = Array.isArray(payload.serie) ? payload.serie : [];
+    serieDept = Array.isArray(payload.serieDept) ? payload.serieDept : [];
+    intensityHourly = Array.isArray(payload.intensityHourly) ? payload.intensityHourly : [];
+    intensityHourlyDept = Array.isArray(payload.intensityHourlyDept) ? payload.intensityHourlyDept : [];
+    baseline = payload.baseline || null;
+    baselineKey = payload.baselineKey || '';
+    state.demoMode = !!payload.demo;
+    if (payload.statusMessage != null) {
+      status(payload.statusMessage);
+    } else if (state.demoMode) {
+      status('Mostrando datos de ejemplo (sin conexión).');
+    } else {
+      status('');
+    }
+    draw();
+    makeInsights();
+    if (metric === 'intensidad') {
+      renderHourlyHeatmap(intensityHourly);
+    } else {
+      hideHourlyPanel();
+      return;
+    }
+  }
+
+    function hideHourlyPanel() {
+    els.hourlyWrap.hidden = true;
+    els.hourlyWrap.style.display = 'none';
+  }
+
+  function showHourlyPanel() {
+    els.hourlyWrap.hidden = false;
+    els.hourlyWrap.style.display = '';
+  }
+
+function renderHourlyHeatmap(hourlyData) {
+    if (metric !== 'intensidad' || !Array.isArray(hourlyData) || !hourlyData.length) {
+      els.hourlyWrap.hidden = true;
+      els.hourlyDays.innerHTML = '';
+      els.hourlyMatrix.innerHTML = '';
+      els.hourlyInfo.textContent = '';
+      els.hourlyLegend.innerHTML = '';
+      return;
+    }
+    els.hourlyWrap.hidden = false;
+    els.hourlyHours.innerHTML = HOURS.map((h) => `<div class="hourlyHour">${h}</div>`).join('');
+
+    const maxVal = hourlyData.reduce(
+      (m, day) => Math.max(m, Number(day.mm) || 0, ...((day.hours || []).map((v) => Number(v) || 0))),
+      0
+    );
+    const midVal = maxVal / 2;
+    const medVal = maxVal / 4;
+    const maxHour = { val: 0, date: '', hour: 0 };
+
+    const daysHtml = [];
+    const matrixHtml = [];
+
+    hourlyData.forEach((day) => {
+      const date = day.date;
+      const monthIdx = parseInt(date.slice(5, 7), 10) - 1;
+      const dd = date.slice(8, 10);
+      daysHtml.push(`<div class="hourlyDay">${dd}\n${MONTHS[monthIdx]}</div>`);
+
+      const hours = Array.isArray(day.hours) ? day.hours : new Array(24).fill(0);
+      hours.forEach((raw, hour) => {
+        const val = Number(raw) || 0;
+        if (val > maxHour.val) {
+          maxHour.val = val;
+          maxHour.date = date;
+          maxHour.hour = hour;
+        }
+        const strong = val >= maxVal * 0.7 ? ' strong' : '';
+        const placeholder = val <= 0 ? ' placeholder' : '';
+        const color = cellColor(val, maxVal, midVal, medVal);
+        const title = `${date} ${String(hour).padStart(2, '0')}:00 → ${val.toFixed(2)} mm/h`;
+        const display = val > 0 ? val.toFixed(val >= 10 ? 0 : 1) : '';
+        matrixHtml.push(
+          `<div class="hourlyCell${placeholder}${strong}" style="background:${color}" title="${title}" data-val="${val.toFixed(2)}">${display}</div>`
+        );
+      });
+    });
+
+    els.hourlyDays.innerHTML = daysHtml.join('');
+    els.hourlyMatrix.innerHTML = matrixHtml.join('');
+
+    const maxText = maxVal > 0 ? `${maxVal.toFixed(maxVal >= 10 ? 1 : 2)} mm/h` : 'sin lluvias';
+    const peakHour =
+      maxHour.val > 0
+        ? `${formatDateLabel(maxHour.date)}  ${String(maxHour.hour).padStart(2, '0')}h (${maxHour.val.toFixed(2)} mm/h)`
+        : 'No se registran picos destacables';
+    els.hourlyInfo.textContent = `Máximo diario: ${maxText}  Pico horario: ${peakHour}`;
+
+    const step = maxVal / 4;
+    const legendStops = [0, medVal, midVal, maxVal];
+    const gradient = legendStops
+      .map((val, idx) => `${cellColor(val, maxVal, midVal, medVal)} ${(idx * 100) / (legendStops.length - 1)}%`)
+      .join(', ');
+    els.hourlyLegend.innerHTML = `
+      <div class="hourlyLegendBar" style="background:linear-gradient(90deg,${gradient})"></div>
+      <div class="hourlyLegendScale">
+        <span>0</span>
+        <span>${(step * 2).toFixed(step * 2 >= 10 ? 1 : 2)} mm/h</span>
+        <span>${maxVal.toFixed(maxVal >= 10 ? 1 : 2)} mm/h</span>
+      </div>
+    `;
+  }
+
+  function cellColor(val, max, mid = max / 2, med = max / 4) {
+    if (!max || val <= 0) return 'rgba(34,211,238,0.08)';
+    if (val <= med) {
+      const t = val / Math.max(med, 0.0001);
+      const hue = 210;
+      const sat = 70 * t;
+      const light = 20 + 40 * (1 - t);
+      return `hsl(${hue} ${sat}% ${light}%)`;
+    }
+    if (val <= mid) {
+      const t = (val - med) / Math.max(mid - med, 0.0001);
+      const hue = 210 - 60 * t;
+      const sat = 70 + 10 * t;
+      const light = 35 - 10 * t;
+      return `hsl(${hue} ${sat}% ${light}%)`;
+    }
+    const t = (val - mid) / Math.max(max - mid, 0.0001);
+    const hue = 150 - 120 * t;
+    const sat = 60 + 30 * t;
+    const light = 35 - 20 * t;
+    return `hsl(${hue} ${sat}% ${light}%)`;
+  }
+
+  function formatDateLabel(dateStr) {
+    if (!dateStr) return '';
+    const year = dateStr.slice(0, 4);
+    const month = parseInt(dateStr.slice(5, 7), 10) - 1;
+    const day = dateStr.slice(8, 10);
+    return `${day} ${MONTHS[month]} ${year}`;
+  }
+
+  function draw() {
+    const w = 900;
+    const h = 280;
+    const pL = 64;
+    const pR = 20;
+    const pT = 28;
+    const pB = 56;
+    els.chart.setAttribute('viewBox', `0 0 ${w} ${h}`);
+    els.chart.innerHTML = '';
+    if (!serie.length) {
+      els.chart.innerHTML = '<text x="20" y="40" fill="#9aa">Sin datos.</text>';
+      return;
+    }
+    const maxY = Math.max(1, ...serie.map((d) => d.mm || 0));
+    const xs = (i) => pL + (i * (w - pL - pR)) / Math.max(serie.length - 1, 1);
+    const ys = (v) => h - pB - ((v || 0) * (h - pT - pB)) / maxY;
+    const path = serie.map((d, i) => `${i ? 'L' : 'M'}${xs(i)},${ys(d.mm)}`).join(' ');
+
+    const defs = node('defs');
+    defs.appendChild(grad('fill', '#22d3ee', 0.35));
+    defs.appendChild(gradX('strokeGrad', '#22d3ee', '#60a5fa'));
+    els.chart.appendChild(defs);
+
+    for (let i = 0; i <= 4; i++) {
+      const v = (i * maxY) / 4;
+      els.chart.appendChild(line(pL, ys(v), w - pR, ys(v), 0.08));
+    }
+
+    if (modo !== 'cinco') {
+      for (let i = 0; i < serie.length; i++) {
+        const v = serie[i].mm || 0;
+        const x0 = xs(i - 0.5);
+        const x1 = xs(i + 0.5);
+        const fill =
+          metric === 'intensidad'
+            ? `rgba(255,153,51,${Math.min(0.65, 0.15 + (v / maxY) * 0.55)})`
+            : v > 20
+            ? 'rgba(255,99,99,0.10)'
+            : v > 5
+            ? 'rgba(255,196,54,0.08)'
+            : 'rgba(34,211,238,0.05)';
+        els.chart.appendChild(
+          node('rect', {
+            x: Math.max(x0, pL),
+            y: pT,
+            width: Math.max(0, x1 - x0),
+            height: h - pT - pB,
+            fill,
+          })
+        );
+      }
+    }
+
+    els.chart.appendChild(pathEl(`${path} L ${w - pR},${h - pB} L ${pL},${h - pB} Z`, 'url(#fill)', null, null));
+    els.chart.appendChild(pathEl(path, null, 'url(#strokeGrad)', 2.2, modo !== 'prox' && verTrend ? 0.35 : 0.95));
+
+    if (serieDept && serieDept.length && els.muni.value) {
+      const pathDept = serieDept.map((d, i) => `${i ? 'L' : 'M'}${xs(i)},${ys(d.mm)}`).join(' ');
+      const ref = pathEl(pathDept, null, '#8aa4', 1.5);
+      ref.setAttribute('stroke-dasharray', '6 6');
+      els.chart.appendChild(ref);
+      els.chart.appendChild(text(w - 20, 18, 'Depto (ref)', 'end', 11, 0.75));
+    }
+
+    els.chart.appendChild(line(pL, h - pB, w - pR, h - pB, 0.2));
+    els.chart.appendChild(line(pL, pT, pL, h - pB, 0.2));
+
+    const dates = serie.map((d) => d.date);
+    const rawI = [];
+    const rawL = [];
+    if (modo === 'cinco') {
+      const seen = new Set();
+      for (let i = 0; i < dates.length; i++) {
+        const y = dates[i].slice(0, 4);
+        if (!seen.has(y)) {
+          seen.add(y);
+          rawI.push(i);
+          rawL.push(y);
+        }
+      }
+    } else if (modo === 'ultimo' || modo === 'tres') {
+      const seen = new Set();
+      for (let i = 0; i < dates.length; i++) {
+        const ym = dates[i].slice(0, 7);
+        if (!seen.has(ym)) {
+          seen.add(ym);
+          const month = parseInt(dates[i].slice(5, 7), 10) - 1;
+          rawI.push(i);
+          rawL.push(MONTHS[month]);
+        }
+      }
+    } else if (modo === 'prox') {
+      for (let i = 0; i < dates.length; i++) {
+        const dd = dates[i];
+        const m = parseInt(dd.slice(5, 7), 10) - 1;
+        const d = dd.slice(8, 10);
+        rawI.push(i);
+        rawL.push(`${d} ${MONTHS[m]}`);
+      }
+    }
+
+    const tickI = [];
+    const tickL = [];
+    let last = -1e9;
+    const minStep = 42;
+    for (let k = 0; k < rawI.length; k++) {
+      const x = xs(rawI[k]);
+      if (x - last >= minStep) {
+        tickI.push(rawI[k]);
+        tickL.push(rawL[k]);
+        last = x;
+      }
+    }
+    tickI.forEach((i, k) => {
+      els.chart.appendChild(line(xs(i), pT, xs(i), h - pB, 0.06));
+      els.chart.appendChild(text(xs(i), h - 18, tickL[k]));
+    });
+
+    for (let i = 0; i <= 4; i++) {
+      const v = (i * maxY) / 4;
+      const label = metric === 'intensidad' ? `${v.toFixed(0)} mm/h` : `${v.toFixed(0)} mm`;
+      els.chart.appendChild(text(32, ys(v) + 4, label, 'left'));
+    }
+
+    if (modo !== 'prox' && verTrend) {
+      const win = modo === 'cinco' ? 60 : modo === 'tres' ? 7 : 30;
+      const tpts = trendType === 'EMA' ? ema(serie) : ma(serie, win);
+      const tpath = tpts.map((p) => `${p.i ? 'L' : 'M'}${xs(p.i)},${ys(p.v)}`).join(' ');
+      els.chart.appendChild(pathEl(tpath, null, 'url(#strokeGrad)', 3));
+    }
+
+    const ttl =
+      metric === 'intensidad'
+        ? 'Intensidad máxima por día'
+        : modo === 'prox'
+        ? 'Proyección - Próx. 14 días'
+        : modo === 'cinco'
+        ? 'Tendencia - Últimos 5 años'
+        : modo === 'tres'
+        ? 'Tendencia - Últimos 3 meses'
+        : 'Tendencia - Últimos 12 meses';
+    const suffix =
+      metric !== 'intensidad' && modo !== 'prox' && verTrend
+        ? ` · línea de tendencia (${trendType})`
+        : metric === 'intensidad' && verTrend && modo !== 'prox'
+        ? ` · suavizado ${trendType}`
+        : '';
+    els.chart.appendChild(text(pL, 18, ttl + suffix, 'left', 12, 0.9));
+
+    function node(n, attrs = {}) {
+      const el = document.createElementNS('http://www.w3.org/2000/svg', n);
+      for (const k in attrs) el.setAttribute(k, attrs[k]);
+      return el;
+    }
+    function line(x1, y1, x2, y2, op) {
+      return node('line', { x1, y1, x2, y2, stroke: 'currentColor', opacity: op });
+    }
+    function pathEl(d, fill, stroke, w, op) {
+      const el = node('path', { d });
+      el.setAttribute('fill', fill ? fill : 'none');
+      if (stroke) el.setAttribute('stroke', stroke);
+      if (w) el.setAttribute('stroke-width', w);
+      if (op != null) el.setAttribute('stroke-opacity', op);
+      return el;
+    }
+    function text(x, y, t, anchor = 'middle', fs = 12, op = 0.85) {
+      const el = node('text', { x, y, 'font-size': fs, fill: 'currentColor', opacity: op });
+      el.setAttribute('text-anchor', anchor === 'left' ? 'start' : anchor);
+      el.textContent = t;
+      return el;
+    }
+    function grad(id, color, topOp) {
+      const g = node('linearGradient', { id, x1: '0%', x2: '0%', y1: '0%', y2: '100%' });
+      g.appendChild(node('stop', { offset: '0%', 'stop-color': color, 'stop-opacity': topOp }));
+      g.appendChild(node('stop', { offset: '100%', 'stop-color': color, 'stop-opacity': 0 }));
+      return g;
+    }
+    function gradX(id, c1, c2) {
+      const g = node('linearGradient', { id, x1: '0%', x2: '100%', y1: '0%', y2: '0%' });
+      g.appendChild(node('stop', { offset: '0%', 'stop-color': c1 }));
+      g.appendChild(node('stop', { offset: '100%', 'stop-color': c2 }));
+      return g;
+    }
+  }
+  function makeInsights() {
+    if (!serie.length) {
+      els.insights.innerHTML = '';
+      return;
+    }
+    const htmlParts = [];
+    if (metric === 'intensidad') {
+      const values = serie.map((d) => Number(d.mm) || 0);
+      const avg = values.reduce((acc, v) => acc + v, 0) / (values.length || 1);
+      const maxEntry = serie.reduce((best, item) => (item.mm > best.mm ? item : best), { mm: -Infinity, date: '' });
+      const trend = calcTrend(serie);
+
+      const hourlyBest = [];
+      intensityHourly.forEach((day) => {
+        const hours = day.hours || [];
+        hours.forEach((val, hour) => {
+          hourlyBest.push({ date: day.date, hour, val: Number(val) || 0 });
+        });
+      });
+      hourlyBest.sort((a, b) => b.val - a.val);
+      const top3 = hourlyBest.slice(0, 3).filter((x) => x.val > 0);
+      const top3Txt = top3.length
+        ? top3
+            .map((c) => `${formatDateLabel(c.date)}  ${String(c.hour).padStart(2, '0')}h (${c.val.toFixed(2)} mm/h)`)
+            .join(', ')
+        : 'Sin registros con lluvia';
+
+      htmlParts.push('<div class="kpis">');
+      htmlParts.push(
+        `<div><div class="kcap">Máximo registrado</div><div class="kval">${
+          maxEntry.mm > 0 ? maxEntry.mm.toFixed(maxEntry.mm >= 10 ? 1 : 2) : '0'
+        } mm/h</div><div class="ksub">${maxEntry.date ? formatDateLabel(maxEntry.date) : ''}</div></div>`
+      );
+      htmlParts.push(
+        `<div><div class="kcap">Promedio diario</div><div class="kval">${avg.toFixed(avg >= 10 ? 1 : 2)} mm/h</div><div class="ksub">${serie.length} días analizados</div></div>`
+      );
+      htmlParts.push(
+        `<div><div class="kcap">Tendencia</div><div class="kval">${trend.label}</div><div class="ksub">${
+          trend.delta > 0 ? '+' : ''
+        }${trend.delta.toFixed(1)}% respecto al inicio</div></div>`
+      );
+      htmlParts.push(
+        `<div><div class="kcap">Serie usada</div><div class="kval">${metricLabel()}</div><div class="ksub">${modoLabel()}</div></div>`
+      );
+      htmlParts.push('</div>');
+
+      htmlParts.push('<div class="insight-summary">');
+      htmlParts.push(`<p>Los picos de intensidad horaria ms altos se registran en: <b>${top3Txt}</b>.</p>`);
+      htmlParts.push(
+        `<p>Comparando con el arranque del periodo, la intensidad est <b>${trendSummary(trend)}</b> (${trend.delta > 0 ? '+' : ''}${trend.delta.toFixed(1)}%).</p>`
+      );
+      htmlParts.push('</div>');
+    } else {
+      const sum = serie.reduce((acc, d) => acc + (d.mm || 0), 0);
+      const avg = sum / (serie.length || 1);
+      const trend = calcTrend(serie);
+      const risk = calcRisk(serie);
+      const z = baseline ? calcZScore(serie, baseline) : null;
+      const top = calcPeaks(serie, modo === 'cinco');
+      htmlParts.push('<div class="kpis">');
+      htmlParts.push(
+        `<div><div class="kcap">Precipitacin acumulada</div><div class="kval">${sum.toFixed(
+          sum >= 100 ? 0 : 1
+        )} mm</div><div class="ksub">${modoLabel()}</div></div>`
+      );
+      htmlParts.push(
+        `<div><div class="kcap">Promedio diario</div><div class="kval">${avg.toFixed(avg >= 10 ? 1 : 2)} mm/d</div><div class="ksub">${serie.length} días</div></div>`
+      );
+      htmlParts.push(
+        `<div><div class="kcap">Tendencia</div><div class="kval">${trend.label}</div><div class="ksub">${
+          trend.delta > 0 ? '+' : ''
+        }${trend.delta.toFixed(1)}% vs. inicio</div></div>`
+      );
+      htmlParts.push(
+        `<div><div class="kcap">Riesgo</div><div class="kval">${risk.label}</div><div class="ksub">${risk.note}</div></div>`
+      );
+      htmlParts.push('</div>');
+
+      htmlParts.push('<div class="insight-summary">');
+      if (modo === 'prox') {
+        const top3 = serie.slice().sort((a, b) => (b.mm || 0) - (a.mm || 0)).slice(0, 3);
+        const firstWet = serie.find((d) => (d.mm || 0) >= 1);
+        htmlParts.push(
+          `<p>Se esperan <b>${sum.toFixed(sum >= 100 ? 0 : 1)} mm</b> en los próximos 14 días (promedio ${avg.toFixed(
+            avg >= 10 ? 1 : 2
+          )} mm/d).</p>`
+        );
+        htmlParts.push(
+          `<p>Días más lluviosos previstos: ${top3
+            .map((d) => `${formatDateLabel(d.date)} (${(d.mm || 0).toFixed(1)} mm)`)
+            .join(', ')}.</p>`
+        );
+        htmlParts.push(
+          `<p>${
+            firstWet
+              ? `Primer día con ≥ 1 mm: ${formatDateLabel(firstWet.date)}`
+              : 'No hay lluvias significativas previstas (≥ 1 mm).'
+          }</p>`
+        );
+      } else {
+        htmlParts.push(
+          `<p>Tendencia general: <b>${trendSummary(trend)}</b> (${trend.delta > 0 ? '+' : ''}${trend.delta.toFixed(1)}%).</p>`
+        );
+        if (modo === 'cinco') {
+          htmlParts.push(
+            `<p>Ao ms lluvioso: <b>${top.key}</b> con ${top.val.toFixed(top.val >= 100 ? 0 : 1)} mm.</p>`
+          );
+        } else {
+          htmlParts.push(
+            `<p>Mes ms lluvioso: <b>${fmtMonth(top.key)}</b> con ${top.val.toFixed(top.val >= 100 ? 0 : 1)} mm.</p>`
+          );
+        }
+        if (z) {
+          htmlParts.push('<p>Anomalas destacables:</p><ul class="li">');
+          if (z.highs.length) {
+            htmlParts.push(`<li>Días muy lluviosos: ${z.highs.map(formatDateLabel).join(', ')}.</li>`);
+          }
+          if (z.lows.length) {
+            htmlParts.push(`<li>Días secos: ${z.lows.map(formatDateLabel).join(', ')}.</li>`);
+          }
+          if (!z.highs.length && !z.lows.length) {
+            htmlParts.push('<li>Sin anomalías marcadas frente al promedio a 5 aos.</li>');
+          }
+          htmlParts.push('</ul>');
+        }
+      }
+      htmlParts.push('</div>');
+    }
+    els.insights.innerHTML = htmlParts.join('');
+  }
+
+  function trendSummary(trend) {
+    if (!trend) return 'sin cambios claros';
+    if (trend.slope > 0) return 'al alza';
+    if (trend.slope < 0) return 'a la baja';
+    return 'estable';
+  }
+
+  function metricLabel() {
+    return metric === 'intensidad' ? 'Intensidad (mm/h)' : 'Precipitación (mm)';
+  }
+
+  function modoLabel() {
+    return modo === 'prox'
+      ? 'Proyección 14 días'
+      : modo === 'cinco'
+      ? 'Últimos 5 años'
+      : modo === 'tres'
+      ? 'Últimos 3 meses'
+      : 'Último año';
+  }
+
+  function calcTrend(data) {
+    if (!data || data.length < 2) return { label: 'Estable', delta: 0, slope: 0 };
+    const first = data[0].mm || 0;
+    const last = data[data.length - 1].mm || 0;
+    const delta = first ? ((last - first) / first) * 100 : last ? 100 : 0;
+    const slope = trendSlope(data);
+    const label = slope > 0 ? 'Al alza' : slope < 0 ? 'A la baja' : 'Estable';
+    return { label, delta, slope };
+  }
+
+  function trendSlope(data) {
+    const n = data.length;
+    let sumXY = 0;
+    let sumX = 0;
+    let sumY = 0;
+    let sumX2 = 0;
+    for (let i = 0; i < n; i++) {
+      const x = i;
+      const y = data[i].mm || 0;
+      sumXY += x * y;
+      sumX += x;
+      sumY += y;
+      sumX2 += x * x;
+    }
+    const denom = n * sumX2 - sumX * sumX;
+    if (!denom) return 0;
+    return (n * sumXY - sumX * sumY) / denom;
+  }
+
+  function calcRisk(data) {
+    const avg = data.reduce((acc, d) => acc + (d.mm || 0), 0) / (data.length || 1);
+    if (avg < 5) return { label: 'Bajo', note: 'Promedios por debajo de 5 mm/día.' };
+    if (avg < 20) return { label: 'Medio', note: 'Lluvias moderadas (5-20 mm/día).' };
+    return { label: 'Alto', note: 'Intensidad elevada (>20 mm/día).' };
+  }
+
+  function calcZScore(data, baselineData) {
+    if (!baselineData) return null;
+    const highs = [];
+    const lows = [];
+    data.forEach((item) => {
+      const date = item.date;
+      const mm = item.mm || 0;
+      const month = parseInt(date.slice(5, 7), 10) - 1;
+      const stats = baselineData[month];
+      if (!stats || !stats.sd) return;
+      const z = (mm - stats.mu) / stats.sd;
+      if (z >= 2) highs.push(date);
+      if (z <= -2) lows.push(date);
+    });
+    return { highs, lows };
+  }
+
+  function calcPeaks(data, isFiveYears) {
+    const map = {};
+    data.forEach((item) => {
+      const key = isFiveYears ? item.date.slice(0, 4) : item.date.slice(0, 7);
+      map[key] = (map[key] || 0) + (item.mm || 0);
+    });
+    let bestKey = '';
+    let bestVal = -Infinity;
+    Object.keys(map).forEach((k) => {
+      if (map[k] > bestVal) {
+        bestVal = map[k];
+        bestKey = k;
+      }
+    });
+    return { key: bestKey, val: bestVal };
+  }
+
+  function fmtMonth(key) {
+    if (!key) return '';
+    const parts = key.split('-');
+    if (parts.length < 2) return key;
+    const year = parts[0];
+    const month = parseInt(parts[1], 10) - 1;
+    return `${MONTHS_LONG[month]} ${year}`;
+  }
+
+  function buildMonthlyBaseline(arr) {
+    const out = new Array(12).fill(null).map(() => ({ values: [] }));
+    arr.forEach((item) => {
+      const month = parseInt(item.date.slice(5, 7), 10) - 1;
+      if (month >= 0 && month < 12) out[month].values.push(item.mm || 0);
+    });
+    return out.map((entry) => {
+      if (!entry.values.length) return { mu: 0, sd: 0 };
+      const mu = entry.values.reduce((acc, v) => acc + v, 0) / entry.values.length;
+      const variance = entry.values.reduce((acc, v) => acc + Math.pow(v - mu, 2), 0) / entry.values.length;
+      return { mu, sd: Math.sqrt(variance) };
+    });
+  }
+
+  function getCincoForBaseline(deptName, muniName) {
+    const key = `${deptName || ''}|${muniName || ''}`;
+    const hit = baselineCache.get(key);
+    if (hit) return Promise.resolve(hit);
+    return gasCall('getSerie', { deptName, muniName, modo: 'cinco', tipo: 'acum' }).then((res) => {
+      rememberCache(baselineCache, BASELINE_CACHE_LIMIT, key, res || []);
+      return res;
+    });
+  }
+
+  function ma(series, win) {
+    let sum = 0;
+    const out = [];
+    for (let i = 0; i < series.length; i++) {
+      const curr = series[i].mm || 0;
+      sum += curr;
+      if (i >= win) {
+        const prev = series[i - win].mm || 0;
+        sum -= prev;
+      }
+      out.push({ i, v: sum / Math.min(i + 1, win) });
+    }
+    return out;
+  }
+
+  function ema(series) {
+    const alpha = 2 / (Math.min(series.length, 12) + 1);
+    let prev = series[0] ? series[0].mm || 0 : 0;
+    return series.map((item, idx) => {
+      const mm = item.mm || 0;
+      const value = mm * alpha + prev * (1 - alpha);
+      prev = value;
+      return { i: idx, v: value };
+    });
+  }
+
+  function downloadCSV() {
+    if (!serie.length) return;
+    if (metric === 'intensidad') {
+      const header = ['date', 'max_mm_per_hour'].concat(HOURS.map((h) => `mm_${h}`)).join(',');
+      const rows = intensityHourly.map((day) => {
+        const hours = (day.hours || new Array(24).fill(0)).map((v) => (Number(v) || 0).toFixed(2));
+        const max = (Number(day.mm) || 0).toFixed(2);
+        return [day.date, max, ...hours].join(',');
+      });
+      downloadBlob([header, ...rows].join('\n'), 'intensidad.csv');
+    } else {
+      const head = 'date,mm\n';
+      const rows = serie.map((d) => `${d.date},${(d.mm ?? '').toString()}`).join('\n');
+      downloadBlob(head + rows, 'precipitacion.csv');
+    }
+  }
+
+  function downloadBlob(text, filename) {
+    const blob = new Blob([text], { type: 'text/csv' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  }
+
+  async function downloadPNG() {
+    const svg = els.chart;
+    const vb = (svg.getAttribute('viewBox') || '0 0 900 280').split(' ').map(Number);
+    const w = vb[2];
+    const h = vb[3];
+    const xml = new XMLSerializer().serializeToString(svg);
+    const img = new Image();
+    const url = URL.createObjectURL(new Blob([xml], { type: 'image/svg+xml' }));
+    await new Promise((res) => {
+      img.onload = res;
+      img.src = url;
+    });
+    const canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
+    canvas.getContext('2d').drawImage(img, 0, 0);
+    URL.revokeObjectURL(url);
+    canvas.toBlob((blob) => {
+      const dl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = dl;
+      a.download = metric === 'intensidad' ? 'intensidad.png' : 'lluvia.png';
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(dl), 2000);
+    });
+  }
+
+  const debounce = (fn, ms) => {
+    let t;
+    return (...args) => {
+      clearTimeout(t);
+      t = setTimeout(() => fn.apply(null, args), ms);
+    };
+  };
+
+  metricBtns.forEach((btn) =>
+    btn.addEventListener('click', (e) => {
+      const val = e.currentTarget.getAttribute('data-metric');
+      if (val === metric) return;
+      metricBtns.forEach((x) => x.classList.remove('active'));
+      e.currentTarget.classList.add('active');
+      metric = val;
+      state.metric = val;
+      document.body.classList.toggle('metric-intensity', metric === 'intensidad');
+      persistState();
+      loadSerie();
+    })
+  );
+
+  modoBtns.forEach((btn) =>
+    btn.addEventListener('click', (e) => {
+      modoBtns.forEach((x) => x.classList.remove('active'));
+      e.currentTarget.classList.add('active');
+      modo = e.currentTarget.getAttribute('data-modo');
+      state.modo = modo;
+      const isProx = modo === 'prox';
+      els.btnTrend.disabled = isProx;
+    els.btnTrend.title = isProx ? 'La tendencia no aplica en Próx. 14 días' : '';
+      trendBtns.forEach((x) => {
+        x.disabled = isProx;
+        if (isProx) x.classList.remove('active');
+        else if (x.dataset.trend === trendType) x.classList.add('active');
+      });
+      persistState();
+      loadSerie();
+    })
+  );
+
+  trendBtns.forEach((btn) =>
+    btn.addEventListener('click', (e) => {
+      trendBtns.forEach((x) => x.classList.remove('active'));
+      e.currentTarget.classList.add('active');
+      trendType = e.currentTarget.getAttribute('data-trend');
+      state.trendType = trendType;
+      persistState();
+      draw();
+    })
+  );
+
+  els.btnTrend.addEventListener('click', () => {
+    verTrend = !verTrend;
+    state.showTrend = verTrend;
+    els.btnTrend.textContent = verTrend ? 'Ocultar tendencia' : 'Ver tendencia';
+    persistState();
+    draw();
+  });
+
+  els.btnHelp.addEventListener('click', () => {
+    els.help.hidden = !els.help.hidden;
+    els.btnHelp.textContent = els.help.hidden ? 'Cmo usar?' : 'Ocultar gua';
+    state.helpHidden = els.help.hidden;
+    persistState();
+  });
+
+  els.btnCSV.addEventListener('click', downloadCSV);
+  els.btnPNG.addEventListener('click', downloadPNG);
+
+  els.depto.addEventListener(
+    'change',
+    debounce(() => {
+      const opt = els.depto.options[els.depto.selectedIndex];
+      state.lastDept = els.depto.value || null;
+      state.lastDeptName = opt ? opt.text : '';
+      state.lastMuni = '';
+      state.lastMuniName = '';
+      persistState();
+      loadCities(els.depto.value, true, { preferStored: false, defaultCity: false });
+    }, 150)
+  );
+
+  els.muni.addEventListener(
+    'change',
+    debounce(() => {
+      const opt = els.muni.options[els.muni.selectedIndex];
+      state.lastMuni = els.muni.value || '';
+      state.lastMuniName = opt ? opt.text : '';
+      persistState();
+      loadSerie();
+    }, 120)
+  );
+
+  loadDepts();
+})();
+
+
+
+
+

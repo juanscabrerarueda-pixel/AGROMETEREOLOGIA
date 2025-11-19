@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "composite": true,
+    "baseUrl": ".",
+    "paths": {
+      "@pkg/core": ["../core/dist/index.d.ts"],
+      "@pkg/core/*": ["../core/dist/*"],
+      "@pkg/meteo-calcs": ["../meteo-calcs/dist/index.d.ts"],
+      "@pkg/meteo-calcs/*": ["../meteo-calcs/dist/*"]
+    }
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["dist"]
+}

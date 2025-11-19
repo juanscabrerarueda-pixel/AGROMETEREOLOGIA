@@ -1,0 +1,116 @@
+const TZ = 'America/Bogota';
+const CAPITALS = {
+  "Amazonas": "Leticia","Antioquia": "Medellín","Arauca": "Arauca","Atlántico": "Barranquilla","Bolívar": "Cartagena de Indias","Boyacá": "Tunja","Caldas": "Manizales","Caquetá": "Florencia","Casanare": "Yopal","Cauca": "Popayán","Cesar": "Valledupar","Chocó": "Quibdó","Córdoba": "Montería","Cundinamarca": "Bogotá","Guainía": "Inírida","Guaviare": "San José del Guaviare","Huila": "Neiva","La Guajira": "Riohacha","Magdalena": "Santa Marta","Meta": "Villavicencio","Nariño": "Pasto","Norte de Santander": "Cúcuta","Putumayo": "Mocoa","Quindío": "Armenia","Risaralda": "Pereira","San Andrés y Providencia": "San Andrés","Archipiélago de San Andrés, Providencia y Santa Catalina": "San Andrés","Santander": "Bucaramanga","Sucre": "Sincelejo","Tolima": "Ibagué","Valle del Cauca": "Santiago de Cali","Vaupés": "Mitú","Vichada": "Puerto Carreño","Bogotá D.C.": "Bogotá","Bogotá, D.C.": "Bogotá"
+};
+
+function doGet() {
+  return HtmlService
+    .createTemplateFromFile('index')
+    .evaluate()
+    .setTitle('Tendencias de Lluvia – CO')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
+function include(name) {
+  return HtmlService.createHtmlOutputFromFile(name).getContent();
+}
+
+// ---------- Utils & Cache ----------
+function getJSON(url){
+  const res = UrlFetchApp.fetch(url, {muteHttpExceptions:true, followRedirects:true, headers:{'Accept-Encoding':'gzip','User-Agent':'GAS-lluvia/1.0'}});
+  const code = res.getResponseCode();
+  if (code < 200 || code >= 300) throw new Error('HTTP '+code+' '+url);
+  return JSON.parse(res.getContentText('UTF-8'));
+}
+const CACHE = CacheService.getScriptCache();
+function cget(key){ try{ const v=CACHE.get(key); return v?JSON.parse(v):null; }catch(e){ return null; } }
+function cput(key, obj, ttl){ try{ CACHE.put(key, JSON.stringify(obj), ttl); }catch(e){} }
+
+// ---------- API Colombia ----------
+function getDepts(){
+  const CK='depts_v1'; const hit=cget(CK); if(hit) return hit;
+  try {
+    const j = getJSON('https://api-colombia.com/api/v1/Department');
+    j.sort((a,b)=> a.name.localeCompare(b.name,'es'));
+    const out = { offline:false, items: j.map(d=>({id:String(d.id), name:d.name})) };
+    cput(CK, out, 43200); // 12 h
+    return out;
+  } catch(e){
+    const items = Object.keys(CAPITALS).map((name,i)=>({id:String(i), name}));
+    const out = { offline:true, items };
+    cput(CK, out, 3600); // 1 h
+    return out;
+  }
+}
+function getCities(deptId){
+  const CK='cities_'+deptId; const hit=cget(CK); if(hit) return hit;
+  try{
+    const j = getJSON('https://api-colombia.com/api/v1/Department/'+deptId+'/cities');
+    j.sort((a,b)=> a.name.localeCompare(b.name,'es'));
+    const out = j.map(m=>({id:String(m.id), name:m.name}));
+    cput(CK, out, 43200); // 12 h
+    return out;
+  }catch(e){
+    return [];
+  }
+}
+
+// ---------- Geocoding + Series ----------
+function geocodeOM(name, admin1){
+  const CK = 'geo_'+name+'|'+(admin1||''); const hit=cget(CK); if(hit) return hit;
+  const u = 'https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(name)+'&country=CO&count=10&language=es';
+  const j = getJSON(u);
+  const arr = (j && j.results) || [];
+  if (!arr.length) throw new Error('Sin coordenadas: '+name);
+  const best = arr.find(x=> x.admin1 && admin1 && x.admin1.toLowerCase()===String(admin1).toLowerCase()) || arr[0];
+  const out = { lat: best.latitude, lon: best.longitude };
+  cput(CK, out, 604800); // 7 días
+  return out;
+}
+
+function buildSerie(lat, lon, modo){
+  // cache por coord redondeada (evita explosión de claves y mejora hit rate)
+  const key = 'serie_'+modo+'_'+lat.toFixed(2)+','+lon.toFixed(2);
+  const ttl = (modo==='prox')? 1800 : (modo==='cinco'? 43200 : 3600); // 30min / 12h / 1h
+  const hit=cget(key); if(hit) return hit;
+
+  const today = new Date();
+  const base = 'latitude='+lat+'&longitude='+lon+'&daily=precipitation_sum&timezone='+encodeURIComponent(TZ);
+  let out;
+  if (modo==='prox'){
+    const j = getJSON('https://api.open-meteo.com/v1/forecast?'+base+'&forecast_days=16');
+    const t = (j.daily.time||[]);
+    const p = (j.daily.precipitation_sum||[]);
+    const todayISO = Utilities.formatDate(new Date(), TZ, 'yyyy-MM-dd');
+    out = t.map((d,i)=>({date:d, mm:p[i]})).filter(x=> x.date>todayISO).slice(0,14);
+  } else {
+    const dias = (modo==='cinco')?365*5:(modo==='tres'?92:365);
+    const inicio = new Date(today.getTime()-dias*24*3600*1000);
+    const corteArch = new Date(today.getTime()-5*24*3600*1000);
+    const A = getJSON('https://archive-api.open-meteo.com/v1/era5?'+base+'&start_date='+Utilities.formatDate(inicio,TZ,'yyyy-MM-dd')+'&end_date='+Utilities.formatDate(corteArch,TZ,'yyyy-MM-dd'));
+    const F = getJSON('https://api.open-meteo.com/v1/forecast?'+base+'&past_days=5');
+    const arrA = (A.daily.time||[]).map((d,i)=>({date:d, mm:A.daily.precipitation_sum[i]})).filter(x=> x.date>=Utilities.formatDate(inicio,TZ,'yyyy-MM-dd'));
+    const arrF = (F.daily.time||[]).map((d,i)=>({date:d, mm:F.daily.precipitation_sum[i]}));
+    const map = {};
+    arrA.concat(arrF).forEach(o=>{ map[o.date]=o; });
+    out = Object.keys(map).sort().map(k=>map[k]).filter(x=> x.date<=Utilities.formatDate(today,TZ,'yyyy-MM-dd'));
+  }
+  cput(key, out, ttl);
+  return out;
+}
+
+function getSerie(payload){
+  const deptName = payload.deptName;
+  const muniName = payload.muniName || '';
+  const modo = payload.modo;
+  const cands = [];
+  if (muniName) cands.push([muniName, deptName]);
+  if (CAPITALS[deptName]) cands.push([CAPITALS[deptName], deptName]);
+  cands.push([deptName, '']);
+  let coords=null;
+  for (var i=0;i<cands.length;i++){
+    try{ coords = geocodeOM(cands[i][0], cands[i][1]); break; }catch(e){}
+  }
+  if (!coords) throw new Error('No fue posible geocodificar');
+  return buildSerie(coords.lat, coords.lon, modo);
+}

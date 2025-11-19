@@ -1,0 +1,7 @@
+﻿node_modules/
+dist/
+.vscode/
+.pnpm-store/
+pnpm-lock.yaml
+"*.zip"
+"*.log"

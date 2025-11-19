@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Tendencias de Lluvia &#x2013; Colombia</title>
+  <style data-inline="theme">
+<?!= include('theme'); ?>
+  </style>
+  <script>
+    (function bootstrapIncludes() {
+      if (window.google && google.script && google.script.run) return;
+      const loadInline = async () => {
+        const nodes = Array.from(document.querySelectorAll('[data-inline]'));
+        for (const node of nodes) {
+          if (!node.textContent || !node.textContent.includes('<?')) continue;
+          const name = node.dataset.inline;
+          if (!name) continue;
+          try {
+            const res = await fetch(name + '.html');
+            if (!res.ok) continue;
+            const text = await res.text();
+            if (node.tagName === 'STYLE') {
+              node.textContent = text;
+              node.removeAttribute('data-inline');
+            } else if (node.tagName === 'SCRIPT') {
+              const script = document.createElement('script');
+              script.type = 'text/javascript';
+              script.textContent = text;
+              document.body.appendChild(script);
+              node.remove();
+            }
+          } catch (err) {
+            console.warn('No se pudo cargar el recurso local', name, err);
+          }
+        }
+      };
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadInline);
+      } else {
+        loadInline();
+      }
+    })();
+  </script>
+</head>
+<body>
+  <div id="splash" class="splash">
+    <div class="splash-inner">
+      <div class="splash-brand">Tendencias de lluvia en Colombia</div>
+      <div class="spinner" aria-label="Cargando"></div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <header class="mb4">
+      <h1>Tendencias de Lluvia en Colombia</h1>
+      <p class="muted">Filtra por departamento y municipio. Alterna entre &#x00fa;ltimos 3 meses, 1 a&#x00f1;o, 5 a&#x00f1;os o la proyecci&#x00f3;n de 14 d&#x00ed;as. Datos: <em>precipitaci&#x00f3;n diaria (mm)</em>.</p>
+    </header>
+
+    <div id="help" class="help help--accent mb2">
+      <strong>C&#x00f3;mo usar (gu&#x00ed;a r&#x00e1;pida)</strong>
+      <ol>
+        <li>Elige un <em>Departamento</em>. Opcional: selecciona un <em>Municipio</em> para ver esa ciudad.</li>
+        <li>Elige el <em>rango de tiempo</em>: 3 meses, 1 a&#x00f1;o, 5 a&#x00f1;os o Pr&#x00f3;x. 14 d&#x00ed;as.</li>
+        <li>Activa la <em>l&#x00ed;nea de tendencia</em> y elige <em>MA</em> o <em>EMA</em> (no aplica a Pr&#x00f3;x. 14 d&#x00ed;as). <br>
+            <b>MA</b>: media m&#x00f3;vil (promedio de los &#x00fa;ltimos N d&#x00ed;as: 7 en 3m, 30 en 1a, 60 en 5a). <b>EMA</b>: media m&#x00f3;vil exponencial (pondera m&#x00e1;s lo reciente).</li>
+        <li>En Pr&#x00f3;x. 14 d&#x00ed;as el <em>eje X</em> muestra la <em>fecha real</em> (dd Mes).</li>
+        <li>Usa <em>CSV</em>/<em>PNG</em> para descargar los datos o la gr&#x00e1;fica.</li>
+      </ol>
+    </div>
+
+    <div class="grid mb3">
+      <label class="field">
+        <span>Departamento</span>
+        <select id="depto"></select>
+      </label>
+      <label class="field">
+        <span>Municipio / Ciudad (opcional)</span>
+        <select id="muni"></select>
+      </label>
+    </div>
+
+    <div class="row mb2 gap">
+      <button data-metric="acum" class="btn metric">Acumulado diario</button>
+      <button data-metric="intensidad" class="btn metric active">Intensidad (max mm/h)</button>
+    </div>
+
+    <div class="row mb2 gap">
+      <button data-modo="tres"  class="btn">&#x00da;ltimos 3 meses</button>
+      <button data-modo="ultimo" class="btn active">&#x00da;ltimo a&#x00f1;o</button>
+      <button data-modo="cinco" class="btn">&#x00da;ltimos 5 a&#x00f1;os</button>
+      <button data-modo="prox"  class="btn">Pr&#x00f3;x. 14 d&#x00ed;as</button>
+
+      <span class="flex1"></span>
+      <button id="btnTrend" class="btn">Ocultar tendencia</button>
+      <div class="seg">
+        <button data-trend="MA" class="btn small active">MA</button>
+        <button data-trend="EMA" class="btn small">EMA</button>
+      </div>
+      <button id="btnHelp" class="btn small">Ocultar gu&#x00ed;a</button>
+      <button id="btnCSV" class="btn small">CSV</button>
+      <button id="btnPNG" class="btn small">PNG</button>
+    </div>
+
+    <div id="status" class="muted mb1"></div>
+
+    <section class="card">
+      <div id="chartWrap" class="chartWrap">
+        <div id="busy" class="busy" aria-live="polite">
+          <div class="busy-pill">
+            <span class="spin"></span>
+            <span>Cargando datos...</span>
+          </div>
+        </div>
+        <svg id="chart" viewBox="0 0 900 280"></svg>
+      </div>
+      <div id="hourlyWrap" class="hourlyWrap" hidden>
+        <div class="hourlyHeader">
+          <h3>Distribución horaria</h3>
+          <span id="hourlyInfo" class="muted tiny"></span>
+        </div>
+        <div class="hourlyGrid">
+          <div id="hourlyHours" class="hourlyHours"></div>
+          <div class="hourlyMatrixWrap">
+            <div id="hourlyDays" class="hourlyDays"></div>
+            <div id="hourlyMatrix" class="hourlyMatrix" role="grid"></div>
+          </div>
+        </div>
+        <div id="hourlyLegend" class="hourlyLegend"></div>
+      </div>
+    </section>
+
+    <section class="card mt2">
+      <div id="insights"></div>
+    </section>
+
+    <footer class="mt3 tiny muted">Fuente: Open-Meteo (ERA5 + forecast) - API-Colombia (depto/municipio) - Zona horaria: America/Bogota. - El Cauce S.A.S.</footer>
+  </div>
+
+  <script data-inline="app" type="text/plain">
+<?!= include('app'); ?>
+  </script>
+</body>
+</html>
