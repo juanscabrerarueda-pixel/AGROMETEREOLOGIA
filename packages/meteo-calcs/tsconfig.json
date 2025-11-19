@@ -3,7 +3,12 @@
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": "src",
-    "composite": true
+    "composite": true,
+    "baseUrl": ".",
+    "paths": {
+      "@pkg/core": ["../core/dist/index.d.ts"],
+      "@pkg/core/*": ["../core/dist/*"]
+    }
   },
   "include": ["src/**/*.ts"],
   "exclude": ["dist"]
