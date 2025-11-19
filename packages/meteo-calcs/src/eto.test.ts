@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { etoDailyFAO56 } from './eto';
+import { etoDailyFAO56 } from './eto.js';
 
 describe('etoDailyFAO56', () => {
   it('matches FAO-56 reference magnitude for temperate day', () => {

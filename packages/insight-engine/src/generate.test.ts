@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
-import { insightsFromSeries } from './generate';
-import { defaultThresholds } from './defaults';
+import { insightsFromSeries } from './generate.js';
+import { defaultThresholds } from './defaults.js';
 import type { Series } from '@pkg/core';
 
 describe('insightsFromSeries', () => {

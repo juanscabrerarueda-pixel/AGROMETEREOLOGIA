@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { thiC, thiBand } from './thi';
+import { thiC, thiBand } from './thi.js';
 
 describe('thiC', () => {
   it('computes the temperature humidity index for typical conditions', () => {

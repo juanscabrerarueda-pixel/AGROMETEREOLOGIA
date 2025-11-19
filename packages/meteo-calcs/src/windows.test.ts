@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { findApplicationWindows } from './windows';
+import { findApplicationWindows } from './windows.js';
 
 const RULES = {
   windMin: 1,

@@ -1,6 +1,6 @@
-Ôªøimport { Series, Thresholds } from '@pkg/core';
+import { Series, Thresholds } from '@pkg/core';
 import { peaksIntensity, thiBand, thiC } from '@pkg/meteo-calcs';
-import { Insight } from './types';
+import { Insight } from './types.js';
 
 function resolveTomorrowIso(series: Series): string {
   const now = new Date();
@@ -33,15 +33,15 @@ export function insightsFromSeries(series: Series, thresholds: Thresholds): Insi
   if (daily.totalDays > 0) {
     const rainSentence =
       daily.totalRain > 0
-        ? `Entre ${rangeText} se acumularon ${formatNumber(daily.totalRain)} mm repartidos en ${daily.totalDays} d√≠as con registro.`
-        : `Entre ${rangeText} no se registr√≥ lluvia medible.`;
+        ? `Entre ${rangeText} se acumularon ${formatNumber(daily.totalRain)} mm repartidos en ${daily.totalDays} dÌas con registro.`
+        : `Entre ${rangeText} no se registrÛ lluvia medible.`;
     const maxSentence =
       daily.maxRainDate && daily.maxRain > 0
-        ? `El d√≠a m√°s lluvioso fue ${formatDate(daily.maxRainDate)} con ${formatNumber(daily.maxRain)} mm.`
+        ? `El dÌa m·s lluvioso fue ${formatDate(daily.maxRainDate)} con ${formatNumber(daily.maxRain)} mm.`
         : '';
     const lastSentence =
       daily.lastRainDate && daily.lastRainValue != null
-        ? `El √∫ltimo d√≠a con lluvia fue ${formatDate(daily.lastRainDate)}, cuando cayeron ${formatNumber(daily.lastRainValue)} mm.`
+        ? `El ˙ltimo dÌa con lluvia fue ${formatDate(daily.lastRainDate)}, cuando cayeron ${formatNumber(daily.lastRainValue)} mm.`
         : '';
 
     insights.push({
@@ -57,7 +57,7 @@ export function insightsFromSeries(series: Series, thresholds: Thresholds): Insi
     insights.push({
       id: 'dry-spell',
       kind: 'advice',
-      text: `Se present√≥ una sequ√≠a de ${dry.length} d√≠as entre ${formatDate(dry.from)} y ${formatDate(dry.to)}. Considera riego suplementario o proteger los cultivos sensibles.`,
+      text: `Se presentÛ una sequÌa de ${dry.length} dÌas entre ${formatDate(dry.from)} y ${formatDate(dry.to)}. Considera riego suplementario o proteger los cultivos sensibles.`,
       data: dry,
     });
   }
@@ -68,7 +68,7 @@ export function insightsFromSeries(series: Series, thresholds: Thresholds): Insi
     insights.push({
       id: 'intensity-peaks',
       kind: 'event',
-      text: `Detectamos ${peaks.length} episodios con intensidades superiores a ${(thresholds?.intensityMmHr ?? 6).toFixed(1)} mm/h. El m√°s intenso alcanz√≥ ${formatNumber(highest.value)} mm/h el ${formatDate(highest.from)}.`,
+      text: `Detectamos ${peaks.length} episodios con intensidades superiores a ${(thresholds?.intensityMmHr ?? 6).toFixed(1)} mm/h. El m·s intenso alcanzÛ ${formatNumber(highest.value)} mm/h el ${formatDate(highest.from)}.`,
       data: { peaks },
     });
   }
@@ -85,7 +85,7 @@ export function insightsFromSeries(series: Series, thresholds: Thresholds): Insi
     insights.push({
       id: 'thi-tomorrow',
       kind: 'advice',
-      text: `Para ma√±ana se proyecta un THI m√°ximo de ${maxThi.toFixed(1)} (${band}). Ajusta ventilaci√≥n, sombra o hidrataci√≥n si observas estr√©s t√©rmico.`,
+      text: `Para maÒana se proyecta un THI m·ximo de ${maxThi.toFixed(1)} (${band}). Ajusta ventilaciÛn, sombra o hidrataciÛn si observas estrÈs tÈrmico.`,
       data: { maxThi, band, points: thiCandidates },
     });
   }

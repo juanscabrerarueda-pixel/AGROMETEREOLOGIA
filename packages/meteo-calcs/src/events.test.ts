@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { drySpell, peaksIntensity } from './events';
+import { drySpell, peaksIntensity } from './events.js';
 
 describe('drySpell', () => {
   it('detects dry spells with minimum length', () => {

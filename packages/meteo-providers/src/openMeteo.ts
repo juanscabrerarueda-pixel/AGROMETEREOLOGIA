@@ -1,8 +1,8 @@
 import nodeFetch from 'node-fetch';
 import { Series, MuniKey, TimeRange } from '@pkg/core';
 import { SeriesSchema } from '@pkg/core/schemas';
-import { WeatherProvider } from './provider';
-import { resolveCoordinates, ResolvedCoords } from './utils';
+import { WeatherProvider } from './provider.js';
+import { resolveCoordinates, ResolvedCoords } from './utils.js';
 
 type SupportedField = 'prcp' | 'prcpRate' | 'temp' | 'rh' | 'wind' | 'rs' | 'pressure';
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { dailyWaterBalance, rollingSum } from './waterBalance';
+import { dailyWaterBalance, rollingSum } from './waterBalance.js';
 
 describe('dailyWaterBalance', () => {
   it('computes precipitation minus evapotranspiration', () => {

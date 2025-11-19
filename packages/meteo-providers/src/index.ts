@@ -1,2 +1,2 @@
-﻿export * from './provider';
-export * from './openMeteo';
+export * from './provider.js';
+export * from './openMeteo.js';
