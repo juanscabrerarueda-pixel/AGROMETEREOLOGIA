@@ -13,6 +13,16 @@
     "./schemas": {
       "import": "./dist/schemas.js",
       "types": "./dist/schemas.d.ts"
+    },
+    "./schemas.js": {
+      "import": "./dist/schemas.js",
+      "types": "./dist/schemas.d.ts"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "schemas": ["dist/schemas.d.ts"],
+      "schemas.js": ["dist/schemas.d.ts"]
     }
   },
   "scripts": {
