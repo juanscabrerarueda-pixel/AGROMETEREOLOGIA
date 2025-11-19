@@ -1,3 +1,5 @@
+import type { SeriesSchema as SeriesSchemaType } from '@pkg/core/dist/schemas.js';
+
 declare module '@pkg/core/schemas' {
-  export * from '@pkg/core/dist/schemas.js';
+  export const SeriesSchema: SeriesSchemaType;
 }
