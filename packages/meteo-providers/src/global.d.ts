@@ -3,5 +3,5 @@ declare module '@pkg/core/schemas' {
 }
 
 declare module '@pkg/core/schemas.js' {
-  export * from '@pkg/core/dist/schemas.d.ts';
+  export * from '@pkg/core/dist/schemas.js';
 }
