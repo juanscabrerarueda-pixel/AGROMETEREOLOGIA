@@ -108,60 +108,60 @@ export function PrecipitationChart({ points, trend, metric }: PrecipitationChart
   }
 
   return (
-    <Line
-      data={{ labels, datasets }}
-      options={{
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: false,
-          },
-          tooltip: {
-            backgroundColor: 'rgba(17, 18, 22, 0.92)',
-            borderColor: 'rgba(96, 165, 250, 0.45)',
-            borderWidth: 1,
-            titleFont: { size: 12, family: 'Inter, system-ui, sans-serif' },
-            bodyFont: { size: 12, family: 'Inter, system-ui, sans-serif' },
-            callbacks: {
-              label: (ctx) => {
-                const value = typeof ctx.parsed.y === 'number' ? ctx.parsed.y.toFixed(2) : '-';
-                return metric === 'intensity' ? `${value} mm/h` : `${value} mm`;
+    <div className="chart-shell" style={{ minHeight: FALLBACK_HEIGHT }}>
+      <Line
+        data={{ labels, datasets }}
+        options={{
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false,
+            },
+            tooltip: {
+              backgroundColor: 'rgba(17, 18, 22, 0.92)',
+              borderColor: 'rgba(96, 165, 250, 0.45)',
+              borderWidth: 1,
+              titleFont: { size: 12, family: 'Inter, system-ui, sans-serif' },
+              bodyFont: { size: 12, family: 'Inter, system-ui, sans-serif' },
+              callbacks: {
+                label: (ctx) => {
+                  const value = typeof ctx.parsed.y === 'number' ? ctx.parsed.y.toFixed(2) : '-';
+                  return metric === 'intensity' ? `${value} mm/h` : `${value} mm`;
+                },
+                title: (ctx) => {
+                  const index = ctx[0]?.dataIndex;
+                  return index != null ? labels[index] : '';
+                },
               },
-              title: (ctx) => {
-                const index = ctx[0]?.dataIndex;
-                return index != null ? labels[index] : '';
+            },
+          },
+          scales: {
+            x: {
+              grid: {
+                color: 'rgba(255, 255, 255, 0.05)',
+              },
+              ticks: {
+                color: 'rgba(226, 232, 240, 0.75)',
+                maxRotation: 0,
+                autoSkip: true,
+                maxTicksLimit: 12,
+              },
+            },
+            y: {
+              beginAtZero: true,
+              grid: {
+                color: 'rgba(255, 255, 255, 0.06)',
+              },
+              ticks: {
+                color: 'rgba(226, 232, 240, 0.75)',
+                callback: (value) =>
+                  metric === 'intensity' ? `${value} mm/h` : `${value} mm`,
               },
             },
           },
-        },
-        scales: {
-          x: {
-            grid: {
-              color: 'rgba(255, 255, 255, 0.05)',
-            },
-            ticks: {
-              color: 'rgba(226, 232, 240, 0.75)',
-              maxRotation: 0,
-              autoSkip: true,
-              maxTicksLimit: 12,
-            },
-          },
-          y: {
-            beginAtZero: true,
-            grid: {
-              color: 'rgba(255, 255, 255, 0.06)',
-            },
-            ticks: {
-              color: 'rgba(226, 232, 240, 0.75)',
-              callback: (value) =>
-                metric === 'intensity' ? `${value} mm/h` : `${value} mm`,
-            },
-          },
-        },
-      }}
-      height={FALLBACK_HEIGHT}
-    />
+        }}
+      />
+    </div>
   );
 }
-

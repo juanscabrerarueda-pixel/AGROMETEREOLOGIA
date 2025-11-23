@@ -472,6 +472,15 @@ body {
   background: linear-gradient(90deg, rgba(34, 211, 238, 0.2), rgba(34, 211, 238, 0.8));
 }
 
+.chart-shell {
+  position: relative;
+  height: 360px;
+}
+
+.chart-shell canvas {
+  max-height: 100% !important;
+}
+
 .heatmap-meta {
   display: flex;
   align-items: center;
@@ -636,6 +645,10 @@ body {
   .heatmap-hours,
   .heatmap-row {
     grid-template-columns: 56px repeat(24, minmax(22px, 1fr));
+  }
+
+  .chart-shell {
+    height: 280px;
   }
 
   .kpis {
