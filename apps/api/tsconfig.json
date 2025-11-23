@@ -10,8 +10,8 @@
     "paths": {
       "@pkg/core": ["../../packages/core/types/index.d.ts"],
       "@pkg/core/*": ["../../packages/core/types/*.d.ts"],
-      "@pkg/cache": ["../../packages/cache/src/index.ts"],
-      "@pkg/cache/*": ["../../packages/cache/src/*"],
+      "@pkg/cache": ["../../packages/cache/types/index.d.ts"],
+      "@pkg/cache/*": ["../../packages/cache/types/index.d.ts"],
       "@pkg/meteo-providers": ["../../packages/meteo-providers/types/index.d.ts"],
       "@pkg/meteo-providers/*": ["../../packages/meteo-providers/types/*.d.ts"],
       "@pkg/insight-engine": ["../../packages/insight-engine/types/index.d.ts"],
