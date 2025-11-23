@@ -1,6 +1,5 @@
 import nodeFetch from 'node-fetch';
 import { Series, MuniKey, TimeRange } from '@pkg/core';
-import { SeriesSchema } from '@pkg/core/schemas.js';
 import { WeatherProvider } from './provider.js';
 import { resolveCoordinates, ResolvedCoords } from './utils.js';
 
@@ -98,7 +97,7 @@ export class OpenMeteoProvider implements WeatherProvider {
       },
     };
 
-    return SeriesSchema.parse(series);
+    return series;
   }
 }
 

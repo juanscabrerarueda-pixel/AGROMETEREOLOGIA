@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { insightsFromSeries, defaultThresholds } from '@pkg/insight-engine';
+import type { Thresholds } from '@pkg/core';
 import { getSeries } from '../services/fetchSeries.js';
 import { cache, provider } from '../lib/context.js';
 
@@ -80,7 +81,22 @@ const FIELDS: (keyof import('@pkg/core').HourlyPoint)[] = [
 router.get('/', async (req, res, next) => {
   try {
     const parsed = querySchema.parse(req.query);
-    const thresholds = { ...defaultThresholds, ...(parsed.thresholds ?? {}) };
+    const thresholds: Thresholds = {
+      ...defaultThresholds,
+      ...(parsed.thresholds ?? {}),
+      thiBands: {
+        ...defaultThresholds.thiBands,
+        ...(parsed.thresholds?.thiBands ?? {}),
+      },
+      waterBalanceBands: {
+        ...defaultThresholds.waterBalanceBands,
+        ...(parsed.thresholds?.waterBalanceBands ?? {}),
+      },
+      appWindows: {
+        ...defaultThresholds.appWindows,
+        ...(parsed.thresholds?.appWindows ?? {}),
+      },
+    };
     const series = await getSeries(provider, cache, {
       key: { depto: parsed.depto, muni: parsed.muni },
       range: { from: parsed.from, to: parsed.to },

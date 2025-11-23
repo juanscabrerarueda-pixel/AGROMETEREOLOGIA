@@ -13,5 +13,6 @@
     }
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["dist"]
+  "exclude": ["dist"],
+  "references": [{ "path": "../core" }, { "path": "../meteo-calcs" }]
 }
