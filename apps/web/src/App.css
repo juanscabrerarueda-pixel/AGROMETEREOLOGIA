@@ -414,7 +414,7 @@ body {
 .heatmap-hours,
 .heatmap-row {
   display: grid;
-  grid-template-columns: 72px repeat(24, minmax(24px, 1fr));
+  grid-template-columns: 72px 1fr;
   gap: 4px;
   font-size: 11px;
   color: var(--muted);
@@ -423,10 +423,20 @@ body {
 .heatmap-hours-label {
   text-transform: uppercase;
   letter-spacing: 0.08em;
+  justify-self: center;
+  align-self: center;
+}
+
+.heatmap-hours-cells {
+  display: grid;
+  grid-template-columns: repeat(24, minmax(24px, 1fr));
+  gap: 4px;
 }
 
 .heatmap-hour {
   text-align: center;
+  font-size: 10px;
+  color: rgba(226, 232, 240, 0.65);
 }
 
 .heatmap-day {
@@ -644,7 +654,11 @@ body {
 
   .heatmap-hours,
   .heatmap-row {
-    grid-template-columns: 56px repeat(24, minmax(22px, 1fr));
+    grid-template-columns: 56px 1fr;
+  }
+
+  .heatmap-hours-cells {
+    grid-template-columns: repeat(24, minmax(22px, 1fr));
   }
 
   .chart-shell {

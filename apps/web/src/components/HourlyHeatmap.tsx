@@ -101,11 +101,13 @@ export function HourlyHeatmap({ series, variable = 'prcp', maxRows = 35 }: Hourl
       <div className="heatmap-grid">
         <div className="heatmap-hours">
           <span className="heatmap-hours-label">Hora</span>
-          {HOURS.map((hour) => (
-            <span key={hour} className="heatmap-hour">
-              {hour.toString().padStart(2, '0')}
-            </span>
-          ))}
+          <div className="heatmap-hours-cells">
+            {HOURS.map((hour) => (
+              <span key={hour} className="heatmap-hour">
+                {hour.toString().padStart(2, '0')}
+              </span>
+            ))}
+          </div>
         </div>
 
         {visibleRows.map((row) => (
