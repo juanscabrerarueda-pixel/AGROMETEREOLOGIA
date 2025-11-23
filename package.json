@@ -4,7 +4,10 @@
   "version": "0.0.0",
   "scripts": {
     "build": "pnpm -r run build",
-  "test": "pnpm -r run test --filter './packages/**'",
+    "build:packages": "pnpm -r --filter \"@pkg/*\" --workspace-concurrency=1 --sort run build",
+    "build:server": "pnpm run build:packages && pnpm --filter api run build",
+    "build:render": "pnpm run build:server",
+    "test": "pnpm -r run test --filter './packages/**'",
     "codex:cli": "node ./scripts/codex-cli.js",
     "codex:preview": "node ./scripts/codex-cli.js preview",
     "codex:apply": "node ./scripts/codex-cli.js apply"
