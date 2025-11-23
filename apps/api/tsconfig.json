@@ -8,16 +8,16 @@
     "moduleResolution": "NodeNext",
     "baseUrl": ".",
     "paths": {
-      "@pkg/core": ["../../packages/core/dist/index.d.ts"],
-      "@pkg/core/*": ["../../packages/core/dist/*"],
-      "@pkg/meteo-providers": ["../../packages/meteo-providers/dist/index.d.ts"],
-      "@pkg/meteo-providers/*": ["../../packages/meteo-providers/dist/*"],
-      "@pkg/cache": ["../../packages/cache/dist/index.d.ts"],
-      "@pkg/cache/*": ["../../packages/cache/dist/*"],
-      "@pkg/insight-engine": ["../../packages/insight-engine/dist/index.d.ts"],
-      "@pkg/insight-engine/*": ["../../packages/insight-engine/dist/*"],
-      "@pkg/meteo-calcs": ["../../packages/meteo-calcs/dist/index.d.ts"],
-      "@pkg/meteo-calcs/*": ["../../packages/meteo-calcs/dist/*"]
+      "@pkg/core": ["../../packages/core/types/index.d.ts"],
+      "@pkg/core/*": ["../../packages/core/types/*.d.ts"],
+      "@pkg/cache": ["../../packages/cache/src/index.ts"],
+      "@pkg/cache/*": ["../../packages/cache/src/*"],
+      "@pkg/meteo-providers": ["../../packages/meteo-providers/types/index.d.ts"],
+      "@pkg/meteo-providers/*": ["../../packages/meteo-providers/types/*.d.ts"],
+      "@pkg/insight-engine": ["../../packages/insight-engine/types/index.d.ts"],
+      "@pkg/insight-engine/*": ["../../packages/insight-engine/types/*.d.ts"],
+      "@pkg/meteo-calcs": ["../../packages/meteo-calcs/types/index.d.ts"],
+      "@pkg/meteo-calcs/*": ["../../packages/meteo-calcs/types/*.d.ts"]
     }
   },
   "include": [

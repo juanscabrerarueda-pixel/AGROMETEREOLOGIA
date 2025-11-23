@@ -4,25 +4,25 @@
   "license": "MIT",
   "type": "module",
   "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "types": "types/index.d.ts",
   "exports": {
     ".": {
       "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "types": "./types/index.d.ts"
     },
     "./schemas": {
       "import": "./dist/schemas.js",
-      "types": "./dist/schemas.d.ts"
+      "types": "./types/schemas.d.ts"
     },
     "./schemas.js": {
       "import": "./dist/schemas.js",
-      "types": "./dist/schemas.d.ts"
+      "types": "./types/schemas.d.ts"
     }
   },
   "typesVersions": {
     "*": {
-      "schemas": ["dist/schemas.d.ts"],
-      "schemas.js": ["dist/schemas.d.ts"]
+      "schemas": ["types/schemas.d.ts"],
+      "schemas.js": ["types/schemas.d.ts"]
     }
   },
   "scripts": {

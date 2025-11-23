@@ -6,11 +6,10 @@
     "composite": true,
     "baseUrl": ".",
     "paths": {
-      "@pkg/core": ["../core/dist/index.d.ts"],
-      "@pkg/core/*": ["../core/dist/*"],
-      "@pkg/core/schemas": ["../core/dist/schemas.d.ts"],
-      "@pkg/core/schemas.js": ["../core/dist/schemas.js"],
-      "@pkg/core/schemas/*": ["../core/dist/*"]
+      "@pkg/core": ["../core/types/index.d.ts"],
+      "@pkg/core/*": ["../core/types/*.d.ts"],
+      "@pkg/core/schemas": ["../core/types/schemas.d.ts"],
+      "@pkg/core/schemas.js": ["../core/types/schemas.d.ts"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts"],

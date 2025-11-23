@@ -6,10 +6,10 @@
     "composite": true,
     "baseUrl": ".",
     "paths": {
-      "@pkg/core": ["../core/dist/index.d.ts"],
-      "@pkg/core/*": ["../core/dist/*"],
-      "@pkg/meteo-calcs": ["../meteo-calcs/dist/index.d.ts"],
-      "@pkg/meteo-calcs/*": ["../meteo-calcs/dist/*"]
+      "@pkg/core": ["../core/types/index.d.ts"],
+      "@pkg/core/*": ["../core/types/*.d.ts"],
+      "@pkg/meteo-calcs": ["../meteo-calcs/types/index.d.ts"],
+      "@pkg/meteo-calcs/*": ["../meteo-calcs/types/index.d.ts"]
     }
   },
   "include": ["src/**/*.ts"],

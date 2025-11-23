@@ -4,21 +4,17 @@
   "license": "MIT",
   "type": "module",
   "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "types": "types/index.d.ts",
   "exports": {
     ".": {
       "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    },
-    "./*": {
-      "import": "./dist/*.js",
-      "types": "./dist/*.d.ts"
+      "types": "./types/index.d.ts"
     }
   },
   "typesVersions": {
     "*": {
       "*": [
-        "dist/*"
+        "types/index.d.ts"
       ]
     }
   },

@@ -6,8 +6,8 @@
     "composite": true,
     "baseUrl": ".",
     "paths": {
-      "@pkg/core": ["../core/dist/index.d.ts"],
-      "@pkg/core/*": ["../core/dist/*"]
+      "@pkg/core": ["../core/types/index.d.ts"],
+      "@pkg/core/*": ["../core/types/*.d.ts"]
     }
   },
   "include": ["src/**/*.ts"],
