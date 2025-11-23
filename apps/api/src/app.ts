@@ -6,6 +6,17 @@ import insightsRouter from './routes/insights.js';
 export function createApp() {
   const app = express();
 
+  app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    if (req.method === 'OPTIONS') {
+      res.sendStatus(204);
+      return;
+    }
+    next();
+  });
+
   app.use(express.json());
   app.use('/api/series', seriesRouter);
   app.use('/api/insights', insightsRouter);
