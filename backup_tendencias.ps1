@@ -1,4 +1,4 @@
-﻿param(
+param(
   [string]$Target = 'backups'
 )
 
@@ -9,7 +9,7 @@ $dest = Join-Path $destRoot $timestamp
 
 New-Item -ItemType Directory -Path $dest -Force | Out-Null
 
-$files = @('Index.html', 'app.html', 'theme.html', 'Code.gs', 'preview_tendencias.cmd')
+$files = @('index.html', 'app.html', 'theme.html', 'Code.gs', 'preview_tendencias.cmd')
 foreach ($name in $files) {
   $src = Join-Path $root $name
   if (Test-Path $src) {

@@ -12,8 +12,8 @@ Files included:
 Usage examples (PowerShell):
 
 ```powershell
-node .\scripts\codex-cli.js preview Index.html --prompt "fix grammar"
-node .\scripts\codex-cli.js apply Index.html --prompt "fix grammar"
+node .\scripts\codex-cli.js preview index.html --prompt "fix grammar"
+node .\scripts\codex-cli.js apply index.html --prompt "fix grammar"
 node .\scripts\codex-cli.js run build
 ```
 
