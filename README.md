@@ -1,8 +1,9 @@
 # Tendencia de Lluvias
 
 La versión principal de la app vive en `apps/web` y se ejecuta igual que el script `start-demo.cmd`
-(inicia la API y levanta la build de Vite). Los archivos `index.html`, `app.html` y `theme.html` del
-directorio raíz corresponden a una iteración antigua y se mantienen solo como referencia histórica.
+(inicia la API y levanta la build de Vite). La iteración antigua basada en `preview_tendencias.cmd`
+y los archivos `index.html`, `app.html` y `theme.html` del directorio raíz fueron removidos para
+evitar confusiones: todo el desarrollo y despliegue debe hacerse desde `apps/web`.
 
 ## Cómo trabajar en local
 
