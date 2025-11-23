@@ -11,6 +11,7 @@ import {
   type TrendPoint,
 } from './components/PrecipitationChart';
 import { HourlyHeatmap } from './components/HourlyHeatmap';
+import { DailyHeatmap } from './components/DailyHeatmap';
 import { RealtimePanel } from './components/RealtimePanel';
 import { DEPARTMENT_OPTIONS } from './data/locations';
 
@@ -440,6 +441,10 @@ export default function App() {
         )}
 
         <PrecipitationChart points={aggregated.points} trend={trendPoints} metric={metric} />
+
+        <div className="mt3">
+          <DailyHeatmap points={aggregated.points} metric={metric} />
+        </div>
 
         <div className="kpis mt3">
           {kpis.map((item) => (

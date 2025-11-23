@@ -472,6 +472,72 @@ body {
   background: linear-gradient(90deg, rgba(34, 211, 238, 0.2), rgba(34, 211, 238, 0.8));
 }
 
+.heatmap-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--muted);
+  margin: 10px 0 2px;
+}
+
+.heatmap-toggle {
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.heatmap-toggle:hover {
+  border-color: rgba(96, 165, 250, 0.65);
+  color: #c3ddff;
+}
+
+.daily-heatmap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.daily-heatmap-headline h3 {
+  margin: 0;
+}
+
+.daily-heatmap-headline p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.daily-heatmap-gridWrapper {
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+
+.daily-heatmap-grid {
+  display: grid;
+  gap: 6px;
+  align-items: center;
+}
+
+.daily-heatmap-day {
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: capitalize;
+}
+
+.daily-heatmap-cell {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  display: block;
+}
+
 .skeleton {
   display: grid;
   gap: 10px;

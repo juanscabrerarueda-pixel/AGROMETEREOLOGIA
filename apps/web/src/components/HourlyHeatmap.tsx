@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import type { CSSProperties } from 'react';
 import type { Series } from '@pkg/core';
 
@@ -7,6 +7,7 @@ const HOURS = Array.from({ length: 24 }, (_, index) => index);
 type HourlyHeatmapProps = {
   series: Series | null | undefined;
   variable?: 'prcp' | 'prcpRate';
+  maxRows?: number;
 };
 
 type HeatmapRow = {
@@ -73,12 +74,19 @@ function buildMatrix(series: Series | null | undefined, variable: 'prcp' | 'prcp
   return { rows, max };
 }
 
-export function HourlyHeatmap({ series, variable = 'prcp' }: HourlyHeatmapProps) {
+export function HourlyHeatmap({ series, variable = 'prcp', maxRows = 35 }: HourlyHeatmapProps) {
   const { rows, max } = useMemo(() => buildMatrix(series, variable), [series, variable]);
+  const [expanded, setExpanded] = useState(false);
 
   if (!rows.length) {
     return <div className="empty-state">Sin datos suficientes para generar el mapa de calor.</div>;
   }
+
+  const visibleRows =
+    expanded || !maxRows || rows.length <= maxRows
+      ? rows
+      : rows.slice(Math.max(rows.length - maxRows, 0));
+  const canToggle = maxRows && rows.length > maxRows;
 
   return (
     <div className="heatmap">
@@ -100,7 +108,7 @@ export function HourlyHeatmap({ series, variable = 'prcp' }: HourlyHeatmapProps)
           ))}
         </div>
 
-        {rows.map((row) => (
+        {visibleRows.map((row) => (
           <div key={row.date} className="heatmap-row">
             <span className="heatmap-day">{row.display}</span>
             <div className="heatmap-cells">
@@ -125,6 +133,17 @@ export function HourlyHeatmap({ series, variable = 'prcp' }: HourlyHeatmapProps)
             </div>
           </div>
         ))}
+      </div>
+
+      <div className="heatmap-meta">
+        <span>
+          Mostrando {visibleRows.length} de {rows.length} d&iacute;as
+        </span>
+        {canToggle && (
+          <button className="heatmap-toggle" onClick={() => setExpanded((value) => !value)}>
+            {expanded ? 'Mostrar menos' : 'Ver todos'}
+          </button>
+        )}
       </div>
 
       <div className="heatmap-scale">
