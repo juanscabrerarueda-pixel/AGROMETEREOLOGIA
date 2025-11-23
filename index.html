@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tendencia de Lluvias – Guía del Proyecto</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+        background: #05070d;
+        color: #e9eefc;
+      }
+      body {
+        margin: 0;
+        padding: 32px 16px 64px;
+        min-height: 100vh;
+        background: radial-gradient(circle at 15% 20%, rgba(34, 211, 238, 0.15), transparent 45%),
+          radial-gradient(circle at 85% 10%, rgba(96, 165, 250, 0.15), transparent 50%),
+          linear-gradient(180deg, #05070d, #070a14);
+      }
+      .wrap {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 32px;
+        border-radius: 24px;
+        background: rgba(8, 10, 20, 0.85);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 25px 60px rgba(5, 8, 20, 0.45);
+      }
+      h1 {
+        margin-top: 0;
+        font-size: 2.4rem;
+        line-height: 1.1;
+        background: linear-gradient(90deg, #22d3ee, #60a5fa);
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+      h2 {
+        color: #a5c8ff;
+        margin-top: 32px;
+      }
+      p {
+        line-height: 1.6;
+      }
+      code {
+        background: rgba(255, 255, 255, 0.08);
+        padding: 2px 6px;
+        border-radius: 6px;
+        font-size: 0.9rem;
+      }
+      ul {
+        line-height: 1.6;
+      }
+      a {
+        color: #5cd7ff;
+      }
+      .cta {
+        margin-top: 24px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .cta a {
+        text-decoration: none;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 18px;
+        border-radius: 12px;
+        background: linear-gradient(100deg, #22d3ee, #60a5fa);
+        color: #05070d;
+        font-weight: 600;
+        transition: transform 0.15s ease, opacity 0.15s ease;
+      }
+      .btn.secondary {
+        background: rgba(255, 255, 255, 0.08);
+        color: #d7e5ff;
+      }
+      .btn:hover {
+        transform: translateY(-2px);
+        opacity: 0.9;
+      }
+      footer {
+        margin-top: 40px;
+        font-size: 0.85rem;
+        color: #94a3b8;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <header>
+        <h1>Tendencia de Lluvias</h1>
+        <p>
+          Panel agrometeorológico interactivo que resume precipitaciones diarias e intensidad,
+          pronósticos a 14 días y mapas horarios. Esta es la página índice del repositorio y contiene
+          toda la información necesaria para ejecutar y desplegar la app moderna
+          (<code>apps/web</code>).
+        </p>
+      </header>
+
+      <section>
+        <h2>Arquitectura del proyecto</h2>
+        <ul>
+          <li><strong>apps/web:</strong> Aplicación React + Vite (la interfaz oscura de las capturas).</li>
+          <li><strong>apps/api:</strong> API local usada durante el desarrollo (<code>pnpm --filter api dev</code>).</li>
+          <li><strong>packages/*:</strong> Paquetes internos (cálculos meteorológicos, caches, insights, etc.).</li>
+          <li><strong>docs/:</strong> Versión compilada para GitHub Pages (incluye <code>.nojekyll</code>).</li>
+          <li><strong>start-demo.cmd:</strong> Script que levanta API + web preview y abre <code>http://localhost:4173/</code>.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Cómo trabajar en local</h2>
+        <ol>
+          <li>Instala dependencias una vez: <code>pnpm install</code>.</li>
+          <li>
+            Ejecuta <code>start-demo.cmd</code> (o <code>pnpm --filter api dev</code> +
+            <code>pnpm --filter web preview</code>). Al terminar se abre
+            <code>http://localhost:4173/</code>.
+          </li>
+          <li>
+            Para generar la build: <code>pnpm --filter web build</code>. El resultado queda en
+            <code>apps/web/dist</code>.
+          </li>
+        </ol>
+      </section>
+
+      <section>
+        <h2>Deploy en GitHub Pages</h2>
+        <p>
+          La carpeta <code>docs/</code> contiene la última build lista para producción. Siempre que
+          quieras publicar una nueva versión:
+        </p>
+        <ol>
+          <li>Corre <code>pnpm --filter web build</code>.</li>
+          <li>Reemplaza <code>docs/</code> con el contenido de <code>apps/web/dist</code>.</li>
+          <li>
+            Asegúrate de que <code>docs/.nojekyll</code> exista (evita que GitHub procese el sitio con
+            Jekyll).
+          </li>
+          <li>Haz <code>git add docs</code>, <code>git commit</code> y <code>git push origin main</code>.</li>
+          <li>
+            En <em>Settings → Pages</em> usa <em>Branch: main /docs</em>. El build se actualizará en
+            cuanto GitHub procese el nuevo commit.
+          </li>
+        </ol>
+      </section>
+
+      <section>
+        <h2>Enlaces útiles</h2>
+        <div class="cta">
+          <a class="btn" href="./docs/index.html">Ver build actual (docs/index)</a>
+          <a
+            class="btn secondary"
+            href="https://juanscabrerarueda-pixel.github.io/AGROMETEREOLOGIA/"
+            target="_blank"
+            rel="noreferrer"
+            >Sitio publicado (GitHub Pages)</a
+          >
+          <a
+            class="btn secondary"
+            href="https://github.com/juanscabrerarueda-pixel/AGROMETEREOLOGIA"
+            target="_blank"
+            rel="noreferrer"
+            >Repositorio en GitHub</a
+          >
+        </div>
+      </section>
+
+      <footer>
+        Última actualización:
+        <script>
+          document.write(new Date().toLocaleString('es-CO'));
+        </script>
+      </footer>
+    </main>
+  </body>
+</html>
