@@ -333,20 +333,23 @@ export default function App() {
         {!helpHidden && (
           <ol className="help-steps">
             <li>
+              Comienza en <strong>Monitoreo en vivo</strong>: valida el sello “Hace X min” y usa la
+              actualización automática (1, 5 o 15 min) para seguir tormentas en tiempo real.
+            </li>
+            <li>
               Elige un departamento y opcionalmente un municipio para la serie local (por defecto usa
-              la capital).
+              la capital) y confirma la fuente mostrada en la tarjeta en vivo.
             </li>
             <li>
               Ajusta el rango rápido (3 meses, 1 año, 5 años o 14 días de pronóstico). También puedes
-              fijar fechas manualmente.
+              fijar fechas manualmente cuando necesites comparar ventanas específicas.
             </li>
             <li>
-              Alterna entre acumulado diario o intensidad máxima, y activa MA/EMA para suavizar la
-              serie histórica.
+              Alterna entre acumulado diario o intensidad máxima, activa MA/EMA para suavizar la serie
+              histórica y combina los insights automáticos para traducir la señal en acciones.
             </li>
             <li>
-              Usa la distribución horaria para detectar ventanas secas y revisa los insights
-              automáticos para recomendaciones puntuales.
+              Usa la distribución diaria y horaria para detectar ventanas secas o picos concentrados antes de programar labores a campo.
             </li>
           </ol>
         )}
@@ -470,6 +473,33 @@ export default function App() {
       </section>
 
       <RealtimePanel series={series.data} busy={series.isFetching} />
+
+      <section className="card help slim mb4">
+        <div className="help-header">
+          <strong>Cómo leer el monitoreo en vivo</strong>
+        </div>
+        <ul className="help-steps">
+          <li>
+            <strong>Último dato + Hace X min:</strong> indica la latencia real del sensor. Si supera
+            los 30 minutos, valida la conectividad antes de tomar decisiones críticas.
+          </li>
+          <li>
+            <strong>Lluvia horaria vs. Intensidad:</strong> el primer valor muestra cuánto se acumuló
+            en la última hora y el segundo el pico puntual (mm/h). Un pico alto con poco acumulado
+            sugiere ráfagas cortas; ambos altos implican suelos saturados.
+          </li>
+          <li>
+            <strong>Pronóstico 24 h:</strong> resume el máximo esperado para la siguiente jornada. Si
+            la intensidad proyectada supera tu umbral operativo, reprograma labores o incrementa el
+            monitoreo.
+          </li>
+          <li>
+            <strong>Variables ambientales:</strong> temperatura, humedad, viento y presión sirven para
+            anticipar estrés térmico, ventanas de asperjado o cambios de frente. Contrasta estos
+            valores con los promedios históricos en las tarjetas inferiores.
+          </li>
+        </ul>
+      </section>
 
       <section className="card chart-card mb4">
         <div className={`busy ${busy ? 'on' : ''}`}>
