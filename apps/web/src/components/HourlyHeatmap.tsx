@@ -4,6 +4,30 @@ import type { Series } from '@pkg/core';
 
 const HOURS = Array.from({ length: 24 }, (_, index) => index);
 
+const HEAT_COLORS = [
+  { stop: 0, color: [37, 99, 235] }, // azul
+  { stop: 0.5, color: [250, 204, 21] }, // amarillo
+  { stop: 1, color: [239, 68, 68] }, // rojo
+];
+
+function getHeatColor(value: number): string {
+  const clamped = Math.min(Math.max(value, 0), 1);
+  const upperIndex = HEAT_COLORS.findIndex((entry) => entry.stop >= clamped);
+  if (upperIndex <= 0) {
+    const [r, g, b] = HEAT_COLORS[Math.max(upperIndex, 0)].color;
+    return `rgba(${r}, ${g}, ${b}, ${0.85})`;
+  }
+  const lowerIndex = upperIndex - 1;
+  const lower = HEAT_COLORS[lowerIndex];
+  const upper = HEAT_COLORS[upperIndex];
+  const range = upper.stop - lower.stop || 1;
+  const t = (clamped - lower.stop) / range;
+  const r = Math.round(lower.color[0] + (upper.color[0] - lower.color[0]) * t);
+  const g = Math.round(lower.color[1] + (upper.color[1] - lower.color[1]) * t);
+  const b = Math.round(lower.color[2] + (upper.color[2] - lower.color[2]) * t);
+  return `rgba(${r}, ${g}, ${b}, ${0.92})`;
+}
+
 type HourlyHeatmapProps = {
   series: Series | null | undefined;
   variable?: 'prcp' | 'prcpRate';
@@ -118,7 +142,7 @@ export function HourlyHeatmap({ series, variable = 'prcp', maxRows = 35 }: Hourl
                 const background =
                   item.value === null
                     ? 'rgba(148, 163, 184, 0.12)'
-                    : `rgba(56, 189, 248, ${(0.15 + item.normalized * 0.75).toFixed(3)})`;
+                    : getHeatColor(item.normalized);
                 return (
                   <span
                     key={item.hour}

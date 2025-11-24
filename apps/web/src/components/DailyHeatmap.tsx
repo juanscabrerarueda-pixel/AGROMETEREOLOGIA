@@ -44,6 +44,31 @@ function formatDisplayDate(date: string): string {
   return parsed.toLocaleDateString('es-CO', { day: 'numeric', month: 'short' });
 }
 
+const DAILY_HEAT_COLORS = [
+  { stop: 0, color: [37, 99, 235] },
+  { stop: 0.4, color: [59, 130, 246] },
+  { stop: 0.7, color: [250, 204, 21] },
+  { stop: 1, color: [239, 68, 68] },
+];
+
+function getDailyColor(normalized: number): string {
+  const clamped = Math.min(Math.max(normalized, 0), 1);
+  const upperIndex = DAILY_HEAT_COLORS.findIndex((entry) => entry.stop >= clamped);
+  if (upperIndex <= 0) {
+    const [r, g, b] = DAILY_HEAT_COLORS[Math.max(upperIndex, 0)].color;
+    return `rgba(${r}, ${g}, ${b}, ${0.9})`;
+  }
+  const lowerIndex = upperIndex - 1;
+  const lower = DAILY_HEAT_COLORS[lowerIndex];
+  const upper = DAILY_HEAT_COLORS[upperIndex];
+  const range = upper.stop - lower.stop || 1;
+  const t = (clamped - lower.stop) / range;
+  const r = Math.round(lower.color[0] + (upper.color[0] - lower.color[0]) * t);
+  const g = Math.round(lower.color[1] + (upper.color[1] - lower.color[1]) * t);
+  const b = Math.round(lower.color[2] + (upper.color[2] - lower.color[2]) * t);
+  return `rgba(${r}, ${g}, ${b}, ${0.95})`;
+}
+
 function buildMatrix(points: AggregatedPoint[]): { weeks: HeatmapCell[][]; max: number } {
   if (!points.length) {
     return { weeks: [], max: 0 };
@@ -105,7 +130,8 @@ export function DailyHeatmap({ points, metric }: DailyHeatmapProps) {
       <div className="daily-heatmap-headline">
         <h3>Distribuci&oacute;n diaria</h3>
         <p>
-          Mapa de calor de lluvia diaria. Pico observado:{' '}
+          Concentra los d&iacute;as m&aacute;s h&uacute;medos para planear riego, cosecha,
+          disponibilidad de pasturas y generaci&oacute;n solar. Pico observado:{' '}
           <strong>{max.toFixed(2)}</strong> {unit}.
         </p>
       </div>
@@ -123,9 +149,7 @@ export function DailyHeatmap({ points, metric }: DailyHeatmapProps) {
                 const value = cell?.value ?? 0;
                 const normalized = cell?.normalized ?? 0;
                 const background =
-                  value > 0
-                    ? `rgba(34, 211, 238, ${(0.18 + normalized * 0.7).toFixed(3)})`
-                    : 'rgba(148, 163, 184, 0.14)';
+                  value > 0 ? getDailyColor(normalized) : 'rgba(148, 163, 184, 0.14)';
                 return (
                   <span
                     key={`${weekIndex}-${dayIndex}`}
