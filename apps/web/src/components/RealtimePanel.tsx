@@ -580,7 +580,7 @@ function buildRealtimeAlerts(latest: SnapshotLatest | undefined, thresholds: Use
       id: 'intensity',
       label: 'Pico de intensidad',
       tone: 'alert',
-      message: `Ráfagas >${intensityThreshold.toFixed(1)} mm/h; evita labores de aspersión o riego superficial.`,
+      message: `Intensidad >${intensityThreshold.toFixed(1)} mm/h; evita labores de aspersión o riego superficial.`,
     });
   }
   if (latest.temp != null) {
