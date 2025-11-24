@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { Series } from '@pkg/core';
 import './App.css';
 import { FEATURE_AGROMETEO } from './config/flags';
@@ -147,16 +147,40 @@ export default function App() {
 
   const { thresholds } = useThresholds();
 
+  const desktopDefault = typeof window === 'undefined' ? true : window.innerWidth > 720;
   const [selectedDept, setSelectedDept] = useState<string>(DEFAULT_DEPARTMENT_VALUE);
   const [selectedMuni, setSelectedMuni] = useState<string>(DEFAULT_MUNICIPALITY_VALUE);
   const [metric, setMetric] = useState<Metric>('accumulated');
   const [trendType, setTrendType] = useState<TrendType>('EMA');
   const [showTrend, setShowTrend] = useState(true);
-  const [helpHidden, setHelpHidden] = useState(false);
+  const [helpHidden, setHelpHidden] = useState(() => !desktopDefault);
   const [rangeSelection, setRangeSelection] = useState<RangeSelection>('threeMonths');
   const [range, setRange] = useState<DateRange>(() => buildRange(RANGE_OPTIONS[0]));
   const [refreshRate, setRefreshRate] = useState<RefreshKey>('1m');
-  const [filtersOpen, setFiltersOpen] = useState(() => (typeof window === 'undefined' ? true : window.innerWidth > 720));
+  const [filtersOpen, setFiltersOpen] = useState(desktopDefault);
+  const [chartOpen, setChartOpen] = useState(desktopDefault);
+  const [agroOpen, setAgroOpen] = useState(desktopDefault);
+  const [hourlyOpen, setHourlyOpen] = useState(desktopDefault);
+  const [insightsOpen, setInsightsOpen] = useState(desktopDefault);
+  const isMobile = useIsMobile();
+
+  useEffect(() => {
+    if (isMobile) {
+      setHelpHidden(true);
+      setFiltersOpen(false);
+      setChartOpen(false);
+      setAgroOpen(false);
+      setHourlyOpen(false);
+      setInsightsOpen(false);
+    } else {
+      setHelpHidden(false);
+      setFiltersOpen(true);
+      setChartOpen(true);
+      setAgroOpen(true);
+      setHourlyOpen(true);
+      setInsightsOpen(true);
+    }
+  }, [isMobile]);
 
   const currentDepartment =
     DEPARTMENT_OPTIONS.find((option) => option.value === selectedDept) ?? DEPARTMENT_OPTIONS[0];
@@ -548,161 +572,188 @@ export default function App() {
 
       <RealtimePanel series={series.data} busy={series.isFetching} />
 
-      <section className="card chart-card mb4">
-        <div className={`busy ${busy ? 'on' : ''}`}>
-          <div className="busy-pill">
-            <span className="spin" />
-            <span>Actualizando datos...</span>
-          </div>
-        </div>
-
-        <div className="section-header">
+      <section className={`card chart-card mb4 mobile-fold ${chartOpen ? 'open' : 'collapsed'}`}>
+        <div className="fold-toggle-row">
           <div>
             <h2>Serie diaria</h2>
             <p className="muted tiny">
-              {rangeSummary} - {metric === 'intensity' ? 'Intensidad máxima por día' : 'Acumulado diario (mm)'}
+              {rangeSummary} - {metric === 'intensity' ? 'Intensidad m?xima por d?a' : 'Acumulado diario (mm)'}
             </p>
           </div>
-          <div className="series-meta tiny">
-            {series.data?.meta?.source && <span>Fuente: {series.data.meta.source}</span>}
-            {series.data?.meta?.tz && <span>TZ: {series.data.meta.tz}</span>}
-            <span>Registros: {aggregated.count.toLocaleString('es-CO')}</span>
-          </div>
+          <button type="button" className="btn small ghost" onClick={() => setChartOpen((prev) => !prev)}>
+            {chartOpen ? 'Ocultar' : 'Mostrar'}
+          </button>
         </div>
-
-        {series.error && (
-          <div className="error-banner mb3">
-            <strong>No fue posible actualizar la serie.</strong>
-            <p>
-              {series.error.message || 'No pudimos contactar la API. Revisa tu conexión o intenta nuevamente.'}
-            </p>
-          </div>
-        )}
-
-        {metaSummary && (
-          <div className="meta-panel">
-            <div className="meta-item">
-              <strong>Última actualización</strong>
-              <span>{metaSummary.updated}</span>
+        {(chartOpen || !isMobile) && (
+          <div className="fold-body">
+            <div className={`busy ${busy ? 'on' : ''}`}>
+              <div className="busy-pill">
+                <span className="spin" />
+                <span>Actualizando datos...</span>
+              </div>
             </div>
-            <div className="meta-item">
-              <strong>Ubicación</strong>
-              <span>{metaSummary.location}</span>
+            <div className="series-meta tiny">
+              {series.data?.meta?.source && <span>Fuente: {series.data.meta.source}</span>}
+              {series.data?.meta?.tz && <span>TZ: {series.data.meta.tz}</span>}
+              <span>Registros: {aggregated.count.toLocaleString('es-CO')}</span>
             </div>
-            <div className="meta-item">
-              <strong>Fuente</strong>
-              <span>{metaSummary.source}</span>
-            </div>
-            <div className="meta-item">
-              <strong>Unidad</strong>
-              <span>{metaSummary.unit}</span>
-            </div>
-          </div>
-        )}
-
-        <PrecipitationChart points={aggregated.points} trend={trendPoints} metric={metric} />
-
-        <div className="mt3">
-          <DailyHeatmap daily={dailyData} metric={metric} />
-          <details className="glossary">
-          <summary>Cómo leer la intensidad</summary>
-            <ul>
-              <li>0-5 mm: Llovizna ligera, humedece sin generar escorrentia.</li>
-              <li>5-20 mm: Lluvia moderada, posible pausa corta en labores.</li>
-              <li>20-60 mm: Temporal, suelos saturados y riesgo de charcos.</li>
-              <li>{'> 60'} mm: Evento fuerte, probables anegamientos y retrasos.</li>
-            </ul>
-          </details>
-        </div>
-
-        <div className="kpis mt3">
-          {kpis.map((item) => (
-            <div key={item.id} className="kpi">
-              <span className="kcap">{item.label}</span>
-              <span className="kval">
-                {item.value}
-                {item.badge && (
-                  <span className={`badge ${item.badge.tone ?? ''}`.trim()}>{item.badge.label}</span>
-                )}
-              </span>
-              {item.note && <span className="ksub">{item.note}</span>}
-            </div>
-          ))}
-        </div>
-        {(chartNarrative || quickImpact) && (
-          <div className="narrative-card">
-            {quickImpact && (
-              <p>
-                <strong>Lectura rápida:</strong> {quickImpact}
-              </p>
+            {series.error && (
+              <div className="error-banner mb3">
+                <strong>No fue posible actualizar la serie.</strong>
+                <p>{series.error.message || 'No pudimos contactar la API. Revisa tu conexi?n o intenta nuevamente.'}</p>
+              </div>
             )}
-            {chartNarrative && <p className="chart-narrative">{chartNarrative}</p>}
+
+            {metaSummary && (
+              <div className="meta-panel">
+                <div className="meta-item">
+                  <strong>?ltima actualizaci?n</strong>
+                  <span>{metaSummary.updated}</span>
+                </div>
+                <div className="meta-item">
+                  <strong>Ubicaci?n</strong>
+                  <span>{metaSummary.location}</span>
+                </div>
+                <div className="meta-item">
+                  <strong>Fuente</strong>
+                  <span>{metaSummary.source}</span>
+                </div>
+                <div className="meta-item">
+                  <strong>Unidad</strong>
+                  <span>{metaSummary.unit}</span>
+                </div>
+              </div>
+            )}
+
+            <PrecipitationChart points={aggregated.points} trend={trendPoints} metric={metric} />
+
+            <div className="mt3">
+              <DailyHeatmap daily={dailyData} metric={metric} />
+              <details className="glossary">
+                <summary>C?mo leer la intensidad</summary>
+                <ul>
+                  <li>0-5 mm: Llovizna ligera, humedece sin generar escorrentia.</li>
+                  <li>5-20 mm: Lluvia moderada, posible pausa corta en labores.</li>
+                  <li>20-60 mm: Temporal, suelos saturados y riesgo de charcos.</li>
+                  <li>{'> 60'} mm: Evento fuerte, probables anegamientos y retrasos.</li>
+                </ul>
+              </details>
+            </div>
+
+            <div className="kpis mt3">
+              {kpis.map((item) => (
+                <div key={item.id} className="kpi">
+                  <span className="kcap">{item.label}</span>
+                  <span className="kval">
+                    {item.value}
+                    {item.badge && (
+                      <span className={`badge ${item.badge.tone ?? ''}`.trim()}>{item.badge.label}</span>
+                    )}
+                  </span>
+                  {item.note && <span className="ksub">{item.note}</span>}
+                </div>
+              ))}
+            </div>
+            {(chartNarrative || quickImpact) && (
+              <div className="narrative-card">
+                {quickImpact && (
+                  <p>
+                    <strong>Lectura r?pida:</strong> {quickImpact}
+                  </p>
+                )}
+                {chartNarrative && <p className="chart-narrative">{chartNarrative}</p>}
+              </div>
+            )}
           </div>
         )}
       </section>
 
-      <section className="card mb4">
-        <div className="section-header">
+
+      <section className={`card mb4 mobile-fold ${agroOpen ? 'open' : 'collapsed'}`}>
+        <div className="fold-toggle-row">
           <div>
-            <h2>Condiciones agroenergéticas</h2>
+            <h2>Condiciones agroenerg?ticas</h2>
             <p className="muted tiny">
-              Temperatura y humedad del suelo, ET0, radiación y viento para apoyar ganaderos,
-              agricultores y generación renovable.
+              Temperatura y humedad del suelo, ET0, radiaci?n y viento para apoyar ganaderos,
+              agricultores y generaci?n renovable.
             </p>
           </div>
+          <button type="button" className="btn small ghost" onClick={() => setAgroOpen((prev) => !prev)}>
+            {agroOpen ? 'Ocultar' : 'Mostrar'}
+          </button>
         </div>
-        <AgroPanels series={series.data} />
-        {agroNarrative && (
-          <div className="narrative-card slim mt2">
-            <p>{agroNarrative}</p>
+        {(agroOpen || !isMobile) && (
+          <div className="fold-body">
+            <AgroPanels series={series.data} />
+            {agroNarrative && (
+              <div className="narrative-card slim mt2">
+                <p>{agroNarrative}</p>
+              </div>
+            )}
+            <details className="glossary mt2">
+              <summary>C?mo leer estas variables</summary>
+              <ul>
+                <li>Temp. ambiente 18-32 C: confortable. &lt;15 C implica amaneceres fr?os y &gt;32 C demanda sombra e hidrataci?n.</li>
+                <li>Sensaci?n t?rmica &gt;35 C: riesgo de estr?s para personal y ganado.</li>
+                <li>Humedad relativa &lt;40 %: ambiente seco, incrementa demanda h?drica; &gt;85 % favorece hongos.</li>
+                <li>Lluvia 24h: &lt;5 mm se absorbe rapido; &gt;30 mm provoca charcos y compactacion.</li>
+                <li>ET0 &gt;4 mm indica alta demanda de riego. Radiaci?n &gt;4 kWh/m2 favorece la generaci?n solar.</li>
+              </ul>
+            </details>
           </div>
         )}
-        <details className="glossary mt2">
-          <summary>Cómo leer estas variables</summary>
-          <ul>
-            <li>Temp. ambiente 18-32 C: confortable. &lt;15 C implica amaneceres fríos y &gt;32 C demanda sombra e hidratación.</li>
-            <li>Sensación térmica &gt;35 C: riesgo de estrés para personal y ganado.</li>
-            <li>Humedad relativa &lt;40 %: ambiente seco, incrementa demanda hídrica; &gt;85 % favorece hongos.</li>
-            <li>Lluvia 24h: &lt;5 mm se absorbe rapido; &gt;30 mm provoca charcos y compactacion.</li>
-            <li>ET0 &gt;4 mm indica alta demanda de riego. Radiación &gt;4 kWh/m2 favorece la generación solar.</li>
-          </ul>
-        </details>
       </section>
 
-      <section className="card mb4">
-        <div className="section-header">
+
+      <section className={`card mb4 mobile-fold ${hourlyOpen ? 'open' : 'collapsed'}`}>
+        <div className="fold-toggle-row">
           <div>
-            <h2>Distribución horaria</h2>
+            <h2>Distribuci?n horaria</h2>
             <p className="muted tiny">
               Identifica horarios con lluvia o ventanas secas (intensidad en mm/h).
             </p>
           </div>
+          <button type="button" className="btn small ghost" onClick={() => setHourlyOpen((prev) => !prev)}>
+            {hourlyOpen ? 'Ocultar' : 'Mostrar'}
+          </button>
         </div>
-        <div className="hourlyWrap">
-          <HourlyHeatmap series={series.data} variable="prcpRate" />
-        </div>
-        {hourlyNarrative && (
-          <div className="narrative-card slim mt2">
-            <p>{hourlyNarrative}</p>
+        {(hourlyOpen || !isMobile) && (
+          <div className="fold-body">
+            <div className="hourlyWrap">
+              <HourlyHeatmap series={series.data} variable="prcpRate" />
+            </div>
+            {hourlyNarrative && (
+              <div className="narrative-card slim mt2">
+                <p>{hourlyNarrative}</p>
+              </div>
+            )}
+            <details className="glossary mt2">
+              <summary>C?mo leer la distribuci?n</summary>
+              <ul>
+                <li>Bandas intensas al amanecer indican suelos saturados: retrasa la entrada de maquinaria.</li>
+                <li>Bloques continuos &gt;60 % se?alan varios d?as lluviosos. Busca ventanas p?lidas (&lt;30 %) para labores cr?ticas.</li>
+                <li>Celdas claras aisladas equivalen a horas de baja probabilidad, ideales para riego o mantenimiento.</li>
+              </ul>
+            </details>
           </div>
         )}
-        <details className="glossary mt2">
-          <summary>Cómo leer la distribución</summary>
-          <ul>
-            <li>Bandas intensas al amanecer indican suelos saturados: retrasa la entrada de maquinaria.</li>
-            <li>Bloques continuos &gt;60 % señalan varios días lluviosos. Busca ventanas pálidas (&lt;30 %) para labores críticas.</li>
-            <li>Celdas claras aisladas equivalen a horas de baja probabilidad, ideales para riego o mantenimiento.</li>
-          </ul>
-        </details>
       </section>
 
-      <section className="card insights">
-        <div className="section-header">
+
+      <section className={`card insights mobile-fold ${insightsOpen ? 'open' : 'collapsed'}`}>
+        <div className="fold-toggle-row">
           <div>
             <h2>Insights automatizados</h2>
             <p className="muted tiny">
-              Basados en umbrales de impacto y cálculos del paquete insight-engine.
+              Basados en umbrales de impacto y c?lculos del paquete insight-engine.
             </p>
+          </div>
+          <button type="button" className="btn small ghost" onClick={() => setInsightsOpen((prev) => !prev)}>
+            {insightsOpen ? 'Ocultar' : 'Mostrar'}
+          </button>
+        </div>
+        {(insightsOpen || !isMobile) && (
+          <div className="fold-body">
             {insightSummary.count > 0 && (
               <div className="insights-kpis tiny">
                 <span className="insights-chip">
@@ -710,71 +761,62 @@ export default function App() {
                   <strong>{formatNumber(insightSummary.totalRain)} mm</strong>
                 </span>
                 <span className="insights-chip">
-                  <span className="chip-label">Días con dato</span>
+                  <span className="chip-label">D?as con dato</span>
                   <strong>{insightSummary.count.toLocaleString('es-CO')}</strong>
                 </span>
               </div>
             )}
-          </div>
-        </div>
-        {sectorNarratives && (
-          <div className="sector-insights">
-            <div>
-              <strong>Agricultura</strong>
-              <p>{sectorNarratives.agriculture}</p>
-            </div>
-            <div>
-              <strong>Ganadería</strong>
-              <p>{sectorNarratives.livestock}</p>
-            </div>
-            <div>
-              <strong>Energías renovables</strong>
-              <p>{sectorNarratives.energy}</p>
-            </div>
-          </div>
-        )}
-        {insights.error ? (
-          <div className="error-banner">
-            <strong>No fue posible generar insights.</strong>
-            <p>
-              {insights.error.message ||
-                'No logramos conectar con la API de insights. Vuelve a intentarlo cuando tengas conexión estable.'}
-            </p>
-          </div>
-        ) : insights.data ? (
-          insights.data.insights.length ? (
-            <ul className="insights-list">
-              {insights.data.insights.map((insight) => (
-                <li key={insight.id} className="insight-item">
-                  {(() => {
-                    const meta = INSIGHT_KIND_META[insight.kind] ?? {
-                      label: insight.kind,
-                      tone: 'trend' as const,
-                      icon: 'ℹ️',
-                    };
-                    return (
-                      <span className={`insight-pill ${meta.tone}`}>
-                        <span className="insight-pill-icon" aria-hidden="true">
-                          {meta.icon}
-                        </span>
-                        {meta.label}
-                      </span>
-                    );
-                  })()}
-                  <p>{insight.text}</p>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <div className="empty-state">
-              Sin hallazgos relevantes con los umbrales actuales. Ajústalos para más sensibilidad.
-            </div>
-          )
-        ) : (
-          <div className="skeleton">
-            <div className="skeleton-bar" />
-            <div className="skeleton-bar" />
-            <div className="skeleton-bar" />
+            {sectorNarratives && (
+              <div className="sector-insights">
+                <div>
+                  <strong>Agricultura</strong>
+                  <p>{sectorNarratives.agriculture}</p>
+                </div>
+                <div>
+                  <strong>Ganader?a</strong>
+                  <p>{sectorNarratives.livestock}</p>
+                </div>
+                <div>
+                  <strong>Energ?as renovables</strong>
+                  <p>{sectorNarratives.energy}</p>
+                </div>
+              </div>
+            )}
+            {insights.error ? (
+              <div className="error-banner">
+                <strong>No fue posible generar insights.</strong>
+                <p>{insights.error.message || 'No logramos conectar con la API de insights. Vuelve a intentarlo cuando tengas conexi?n estable.'}</p>
+              </div>
+            ) : insights.data ? (
+              insights.data.insights.length ? (
+                <ul className="insights-list">
+                  {insights.data.insights.map((item) => (
+                    <li key={item.id} className="insight-item">
+                      {(() => {
+                        const meta = INSIGHT_KIND_META[item.kind] ?? { label: item.kind, tone: 'trend', icon: 'ℹ️' };
+                        return (
+                          <span className={`insight-pill ${meta.tone}`}>
+                            <span className="insight-pill-icon" aria-hidden="true">
+                              {meta.icon}
+                            </span>
+                            {meta.label}
+                          </span>
+                        );
+                      })()}
+                      <p>{item.text}</p>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="empty-state">Sin hallazgos relevantes con los umbrales actuales. Aj?stalos para m?s sensibilidad.</div>
+              )
+            ) : (
+              <div className="skeleton">
+                <div className="skeleton-bar" />
+                <div className="skeleton-bar" />
+                <div className="skeleton-bar" />
+              </div>
+            )}
           </div>
         )}
       </section>
@@ -793,6 +835,24 @@ function buildRange(option: RangeOption): DateRange {
   const to = formatISO(today);
   const from = formatISO(addDays(today, -(option.days - 1)));
   return { from, to };
+}
+
+function useIsMobile(breakpoint = 720) {
+  const [isMobile, setIsMobile] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    return window.innerWidth <= breakpoint;
+  });
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const media = window.matchMedia(`(max-width: ${breakpoint}px)`);
+    const handler = () => setIsMobile(media.matches);
+    handler();
+    media.addEventListener('change', handler);
+    return () => media.removeEventListener('change', handler);
+  }, [breakpoint]);
+
+  return isMobile;
 }
 
 function normalizeRange(value: DateRange): DateRange {

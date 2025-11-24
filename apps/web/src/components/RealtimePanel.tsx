@@ -116,7 +116,7 @@ export function RealtimePanel({ series, busy }: RealtimePanelProps) {
   const snapshot = useMemo(() => buildSnapshot(series), [series]);
   const sparkline = useMemo(() => buildSparkline(series), [series]);
   const [userThresholds, setUserThresholds] = useState<UserThresholds>(() => loadThresholds());
-  const [guideOpen, setGuideOpen] = useState(true);
+  const [guideOpen, setGuideOpen] = useState(() => (typeof window === 'undefined' ? true : window.innerWidth > 720));
   useEffect(() => {
     if (typeof window !== 'undefined') {
       window.localStorage.setItem('realtime-thresholds', JSON.stringify(userThresholds));

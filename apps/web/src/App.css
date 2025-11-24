@@ -631,6 +631,33 @@ body {
   margin-top: 12px;
 }
 
+.mobile-fold .fold-body {
+  position: relative;
+}
+
+.mobile-fold.collapsed .fold-body {
+  display: none;
+}
+
+.fold-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.fold-toggle-row h2 {
+  margin: 0;
+}
+
+.fold-toggle-row p {
+  margin: 4px 0 0;
+}
+
+.fold-toggle-row .btn {
+  min-width: auto;
+}
+
 .btn.ghost {
   background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.35);
@@ -1349,8 +1376,18 @@ body {
 }
 
 @media (max-width: 720px) {
+  body {
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
   .wrap {
     padding: 24px 16px 48px;
+  }
+
+  .card {
+    padding: 20px;
+    border-radius: 20px;
   }
 
   .btn {
@@ -1363,8 +1400,8 @@ body {
   }
 
   .field {
-    flex: 1 1 48%;
-    min-width: 0;
+    flex: 1 1 100%;
+    min-width: 100%;
   }
 
   .section-header {
@@ -1404,6 +1441,19 @@ body {
 
   .controls-header button {
     width: 100%;
+  }
+
+  .fold-toggle-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .fold-toggle-row .btn {
+    width: 100%;
+  }
+
+  .row {
+    flex-direction: column;
   }
 
   .seg {
@@ -1455,7 +1505,15 @@ body {
   }
 
   .realtime-meta {
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    grid-template-columns: 1fr;
+  }
+
+  .realtime-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .status-chips {
+    grid-template-columns: 1fr;
   }
 
   .realtime-metric .metric-value {
