@@ -493,8 +493,16 @@ body {
 }
 
 .heatmap-scroll {
-  overflow-x: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 520px;
   padding-bottom: 8px;
+  padding-right: 6px;
+}
+
+.heatmap-stacks {
+  display: grid;
+  gap: 18px;
 }
 
 .heatmap-matrix {
@@ -576,28 +584,11 @@ body {
 
 .heatmap-meta {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  flex-direction: column;
+  gap: 6px;
   font-size: 12px;
   color: var(--muted);
-  margin: 10px 0 2px;
-}
-
-.heatmap-toggle {
-  border: 1px solid var(--line);
-  background: transparent;
-  color: var(--ink);
-  border-radius: 999px;
-  padding: 6px 14px;
-  font-size: 12px;
-  cursor: pointer;
-  transition: border-color 0.2s ease, color 0.2s ease;
-}
-
-.heatmap-toggle:hover {
-  border-color: rgba(96, 165, 250, 0.65);
-  color: #c3ddff;
+  margin: 6px 0 2px;
 }
 
 .agro-panels {
