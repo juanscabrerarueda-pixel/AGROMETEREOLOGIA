@@ -48,6 +48,47 @@ body {
   background: linear-gradient(145deg, rgba(20, 22, 46, 0.9), rgba(27, 12, 36, 0.85));
 }
 
+.mobile-overview {
+  display: grid;
+  gap: 18px;
+}
+
+.overview-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+
+.overview-cell {
+  flex: 1 1 220px;
+  min-width: 180px;
+}
+
+.overview-cell strong {
+  display: block;
+  font-size: 20px;
+  margin: 4px 0;
+}
+
+.overview-pills {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+
+.overview-pill {
+  border-radius: 18px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(12, 15, 24, 0.78);
+}
+
+.overview-pill strong {
+  display: block;
+  font-size: 22px;
+  margin-top: 6px;
+}
+
 .realtime-card {
   display: grid;
   gap: 16px;
@@ -560,8 +601,48 @@ body {
   cursor: not-allowed;
 }
 
+.controls {
+  display: grid;
+  gap: 18px;
+}
+
+.controls-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.controls-header h2 {
+  margin: 0 0 4px;
+  font-size: 20px;
+}
+
+.controls-body {
+  display: grid;
+  gap: 18px;
+}
+
+.controls.collapsed .controls-body {
+  display: none;
+}
+
 .controls .muted {
   margin-top: 12px;
+}
+
+.btn.ghost {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: var(--ink);
+  box-shadow: none;
+  min-width: auto;
+}
+
+.btn.ghost:hover {
+  transform: none;
+  opacity: 0.9;
+  box-shadow: none;
 }
 
 .chart-card {
@@ -1257,6 +1338,16 @@ body {
   }
 }
 
+@media (min-width: 861px) {
+  .controls.collapsed .controls-body {
+    display: grid;
+  }
+
+  .controls-header button {
+    display: none;
+  }
+}
+
 @media (max-width: 720px) {
   .wrap {
     padding: 24px 16px 48px;
@@ -1292,6 +1383,39 @@ body {
 
   .chart-shell {
     height: 280px;
+  }
+
+  .mobile-overview {
+    padding: 20px;
+  }
+
+  .overview-top {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .overview-pill strong {
+    font-size: clamp(20px, 6vw, 28px);
+  }
+
+  .controls-header {
+    flex-direction: column;
+  }
+
+  .controls-header button {
+    width: 100%;
+  }
+
+  .seg {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 8px;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+
+  .seg::-webkit-scrollbar {
+    display: none;
   }
 
   .kpis {

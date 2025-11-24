@@ -156,6 +156,7 @@ export default function App() {
   const [rangeSelection, setRangeSelection] = useState<RangeSelection>('threeMonths');
   const [range, setRange] = useState<DateRange>(() => buildRange(RANGE_OPTIONS[0]));
   const [refreshRate, setRefreshRate] = useState<RefreshKey>('1m');
+  const [filtersOpen, setFiltersOpen] = useState(() => (typeof window === 'undefined' ? true : window.innerWidth > 720));
 
   const currentDepartment =
     DEPARTMENT_OPTIONS.find((option) => option.value === selectedDept) ?? DEPARTMENT_OPTIONS[0];
@@ -261,6 +262,42 @@ export default function App() {
     () => buildChartNarrative(aggregated, metric, rangeSummary, series.data, trendInfo, tense),
     [aggregated, metric, rangeSummary, series.data, trendInfo, tense]
   );
+  const overviewSummary = useMemo(
+    () => ({
+      location: metaSummary?.location ?? 'Selecciona una ubicación',
+      updated: metaSummary?.updated ?? 'Sin dato',
+      source: metaSummary?.source ?? 'Fuente no disponible',
+    }),
+    [metaSummary]
+  );
+  const summaryPills = useMemo(() => {
+    if (!aggregated.count) {
+      return [
+        { id: 'empty', label: 'Sin datos en el rango', value: '--', note: 'Ajusta ubicación o fechas.' },
+      ];
+    }
+    const unit = metric === 'intensity' ? 'mm/h' : 'mm';
+    return [
+      {
+        id: 'total',
+        label: tense === 'future' ? 'Total proyectado' : 'Acumulado analizado',
+        value: `${formatNumber(aggregated.totalRain)} mm`,
+        note: `${aggregated.count.toLocaleString('es-CO')} días con dato`,
+      },
+      {
+        id: 'avg',
+        label: 'Promedio diario',
+        value: `${formatNumber(aggregated.average)} ${unit}`,
+        note: 'Media del período seleccionado.',
+      },
+      {
+        id: 'peak',
+        label: metric === 'intensity' ? 'Pico horario' : 'Máximo diario',
+        value: `${formatNumber(aggregated.maxValue)} ${unit}`,
+        note: aggregated.maxValueDate ? formatDisplayDate(aggregated.maxValueDate) : undefined,
+      },
+    ];
+  }, [aggregated, metric, tense]);
 
   const handleRangePreset = (option: RangeOption) => {
     setRangeSelection(option.id);
@@ -355,120 +392,157 @@ export default function App() {
         )}
       </section>
 
-      <section className="card controls mb4">
-        <div className="row">
-          <label className="field">
-            <span>Departamento</span>
-            <select value={selectedDept} onChange={(event) => handleDeptChange(event.target.value)}>
-              {DEPARTMENT_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="field">
-            <span>Municipio / ciudad</span>
-            <select value={selectedMuni} onChange={(event) => handleMuniChange(event.target.value)}>
-              {municipalities.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="field">
-            <span>Desde</span>
-            <input type="date" value={range.from} onChange={(event) => handleFromChange(event.target.value)} />
-          </label>
-
-          <label className="field">
-            <span>Hasta</span>
-            <input type="date" value={range.to} onChange={(event) => handleToChange(event.target.value)} />
-          </label>
+      <section className="card mobile-overview mb4">
+        <div className="overview-top">
+          <div className="overview-cell">
+            <span className="tiny">Ubicación activa</span>
+            <strong>{overviewSummary.location}</strong>
+            <p className="muted tiny">{rangeSummary}</p>
+          </div>
+          <div className="overview-cell">
+            <span className="tiny">Último dato</span>
+            <strong>{overviewSummary.updated}</strong>
+            <p className="muted tiny">Fuente: {overviewSummary.source}</p>
+          </div>
         </div>
-
-        <div className="seg mt2">
-          {RANGE_OPTIONS.map((option) => (
-            <button
-              key={option.id}
-              type="button"
-              className={`btn ${rangeSelection === option.id ? 'active' : ''}`}
-              onClick={() => handleRangePreset(option)}
-            >
-              {option.label}
-            </button>
-          ))}
-          <button
-            type="button"
-            className={`btn small ${rangeSelection === 'custom' ? 'active' : ''}`}
-            onClick={() => setRangeSelection('custom')}
-            title="Edita las fechas para definir tu rango personalizado."
-          >
-            Personalizado
-          </button>
-        </div>
-
-        <div className="seg mt2">
-          {METRIC_OPTIONS.map((option) => (
-            <button
-              key={option.id}
-              type="button"
-              className={`btn ${metric === option.id ? 'active' : ''}`}
-              onClick={() => setMetric(option.id)}
-            >
-              {option.label}
-            </button>
+        <div className="overview-pills">
+          {summaryPills.map((pill) => (
+            <div key={pill.id} className="overview-pill">
+              <span className="tiny">{pill.label}</span>
+              <strong>{pill.value}</strong>
+              {pill.note && <p className="muted tiny">{pill.note}</p>}
+            </div>
           ))}
         </div>
+      </section>
 
-        <div className="row gap mt2">
-          <button
-            type="button"
-            className="btn small"
-            onClick={() => setShowTrend((prev) => !prev)}
-            disabled={isFutureRange}
-            title={isFutureRange ? 'La tendencia no aplica a pronósticos futuros' : ''}
-          >
-            {showTrend ? 'Ocultar tendencia' : 'Ver tendencia'}
+      <section className={`card controls mb4 ${filtersOpen ? 'open' : 'collapsed'}`}>
+        <div className="controls-header">
+          <div>
+            <h2>Filtros r?pidos</h2>
+            <p className="muted tiny">
+              Define ubicaci?n, rango y m?tricas para ajustar la lectura hist?rica y el pron?stico.
+            </p>
+          </div>
+          <button type="button" className="btn small ghost" onClick={() => setFiltersOpen((prev) => !prev)}>
+            {filtersOpen ? 'Ocultar filtros' : 'Mostrar filtros'}
           </button>
-          <div className="seg compact">
-            {TREND_OPTIONS.map((option) => (
+        </div>
+        <div className="controls-body">
+          <div className="row">
+            <label className="field">
+              <span>Departamento</span>
+              <select value={selectedDept} onChange={(event) => handleDeptChange(event.target.value)}>
+                {DEPARTMENT_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="field">
+              <span>Municipio / ciudad</span>
+              <select value={selectedMuni} onChange={(event) => handleMuniChange(event.target.value)}>
+                {municipalities.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="field">
+              <span>Desde</span>
+              <input type="date" value={range.from} onChange={(event) => handleFromChange(event.target.value)} />
+            </label>
+
+            <label className="field">
+              <span>Hasta</span>
+              <input type="date" value={range.to} onChange={(event) => handleToChange(event.target.value)} />
+            </label>
+          </div>
+
+          <div className="seg mt2">
+            {RANGE_OPTIONS.map((option) => (
               <button
                 key={option.id}
                 type="button"
-                className={`btn small ${trendType === option.id ? 'active' : ''}`}
-                disabled={isFutureRange}
-                onClick={() => setTrendType(option.id)}
-                title={option.helper}
+                className={`btn ${rangeSelection === option.id ? 'active' : ''}`}
+                onClick={() => handleRangePreset(option)}
+              >
+                {option.label}
+              </button>
+            ))}
+            <button
+              type="button"
+              className={`btn small ${rangeSelection === 'custom' ? 'active' : ''}`}
+              onClick={() => setRangeSelection('custom')}
+              title="Edita las fechas para definir tu rango personalizado."
+            >
+              Personalizado
+            </button>
+          </div>
+
+          <div className="seg mt2">
+            {METRIC_OPTIONS.map((option) => (
+              <button
+                key={option.id}
+                type="button"
+                className={`btn ${metric === option.id ? 'active' : ''}`}
+                onClick={() => setMetric(option.id)}
               >
                 {option.label}
               </button>
             ))}
           </div>
-        </div>
 
-        <p className="muted tiny mt2">
-          {metricHelper} {activeRangeOption ? `- ${activeRangeOption.description}` : ''}
-        </p>
-
-        <div className="refresh-controls mt2">
-          <span className="tiny">Actualización automática</span>
-          <div className="seg compact">
-            {REFRESH_OPTIONS.map((option) => (
-              <button
-                key={option.id}
-                type="button"
-                className={`btn small ${refreshRate === option.id ? 'active' : ''}`}
-                onClick={() => setRefreshRate(option.id)}
-              >
-                {option.label}
-              </button>
-            ))}
+          <div className="row gap mt2">
+            <button
+              type="button"
+              className="btn small"
+              onClick={() => setShowTrend((prev) => !prev)}
+              disabled={isFutureRange}
+              title={isFutureRange ? 'La tendencia no aplica a pron?sticos futuros' : ''}
+            >
+              {showTrend ? 'Ocultar tendencia' : 'Ver tendencia'}
+            </button>
+            <div className="seg compact">
+              {TREND_OPTIONS.map((option) => (
+                <button
+                  key={option.id}
+                  type="button"
+                  className={`btn small ${trendType === option.id ? 'active' : ''}`}
+                  disabled={isFutureRange}
+                  onClick={() => setTrendType(option.id)}
+                  title={option.helper}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
           </div>
-          <p className="muted tiny">{refreshConfig.description}</p>
+
+          <p className="muted tiny mt2">
+            {metricHelper} {activeRangeOption ? `- ${activeRangeOption.description}` : ''}
+          </p>
+
+          <div className="refresh-controls mt2">
+            <span className="tiny">Actualizaci?n autom?tica</span>
+            <div className="seg compact">
+              {REFRESH_OPTIONS.map((option) => (
+                <button
+                  key={option.id}
+                  type="button"
+                  className={`btn small ${refreshRate === option.id ? 'active' : ''}`}
+                  onClick={() => setRefreshRate(option.id)}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+            <p className="muted tiny">{refreshConfig.description}</p>
+          </div>
         </div>
       </section>
 
