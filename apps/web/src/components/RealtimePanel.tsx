@@ -2,6 +2,7 @@
 import type { Series } from '@pkg/core';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Tooltip as ChartTooltip } from 'chart.js';
+import { MiniMap } from './MiniMap';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, ChartTooltip);
 
@@ -42,6 +43,7 @@ type SnapshotLatest = {
   pressure?: number;
 };
 const DAY_MS = 24 * 60 * 60 * 1000;
+type TimelineEvent = { id: string; time: string; label: string; detail: string };
 const LIVE_TIPS = [
   {
     title: 'Último dato + Hace X min',
@@ -127,10 +129,14 @@ export function RealtimePanel({ series, busy }: RealtimePanelProps) {
     });
   };
   const alerts = useMemo(() => buildRealtimeAlerts(snapshot?.latest, userThresholds), [snapshot, userThresholds]);
+  const latencyStatus = snapshot ? getLatencyStatus(snapshot.latencyMinutes, userThresholds.latency) : 'calm';
   const latencyPercent = snapshot
     ? Math.min((snapshot.latencyMinutes ?? 0) / Math.max(userThresholds.latency, 1), 1) * 100
     : 0;
-  const latencyWarn = snapshot ? snapshot.latencyMinutes > userThresholds.latency : false;
+  const timeline = useMemo(
+    () => buildTimelineEvents(series, sparkline, snapshot, userThresholds),
+    [series, sparkline, snapshot, userThresholds]
+  );
   const sparklineChart = useMemo(() => {
     if (!sparkline) return null;
     return {
@@ -191,7 +197,9 @@ export function RealtimePanel({ series, busy }: RealtimePanelProps) {
           </p>
         </div>
         {snapshot && (
-          <span className={`status-pill ${snapshot.isStale ? 'warn' : ''}`}>{snapshot.relativeLabel}</span>
+          <span className={`status-pill ${latencyStatus === 'alert' ? 'alert' : latencyStatus === 'warn' ? 'warn' : ''}`}>
+            {snapshot.relativeLabel}
+          </span>
         )}
       </div>
 
@@ -247,6 +255,7 @@ export function RealtimePanel({ series, busy }: RealtimePanelProps) {
               </p>
             </div>
           </div>
+          <MiniMap lat={series?.meta?.lat} lon={series?.meta?.lon} status={latencyStatus} label={snapshot.locationLabel} />
 
           <div className="realtime-metrics">
             {snapshot.metrics.map((metric) => (
@@ -268,7 +277,7 @@ export function RealtimePanel({ series, busy }: RealtimePanelProps) {
             </div>
           )}
 
-          <div className={`latency-bar ${latencyWarn ? 'warn' : ''}`}>
+          <div className={`latency-bar ${latencyStatus}`}>
             <span className="tiny">Latencia relativa (<strong>{snapshot.relativeLabel}</strong>)</span>
             <div className="latency-track">
               <div className="latency-fill" style={{ width: `${latencyPercent}%` }} />
@@ -289,6 +298,23 @@ export function RealtimePanel({ series, busy }: RealtimePanelProps) {
                 <Line data={sparklineChart.data} options={sparklineChart.options} height={60} />
                 <p className="muted tiny sparkline-legend">Sólido: intensidad · Punteado: acumulado.</p>
               </div>
+            </div>
+          )}
+
+          {timeline.length > 0 && (
+            <div className="realtime-timeline">
+              <h4>Eventos recientes</h4>
+              <ul>
+                {timeline.map((event) => (
+                  <li key={event.id}>
+                    <span className="timeline-time">{event.time}</span>
+                    <div>
+                      <strong>{event.label}</strong>
+                      <p>{event.detail}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
         </>
@@ -527,6 +553,13 @@ function computeForecast(points: Series['hourly'], now: number): { total: number
 
 type Alert = { id: string; label: string; message: string; tone: 'calm' | 'warn' | 'alert' };
 
+function getLatencyStatus(minutes: number | undefined, threshold: number): 'calm' | 'warn' | 'alert' {
+  if (minutes == null) return 'calm';
+  if (minutes >= threshold * 1.5) return 'alert';
+  if (minutes >= threshold) return 'warn';
+  return 'calm';
+}
+
 function buildRealtimeAlerts(latest: SnapshotLatest | undefined, thresholds: UserThresholds): Alert[] {
   if (!latest) return [];
   const alerts: Alert[] = [];
@@ -593,5 +626,80 @@ function buildRealtimeAlerts(latest: SnapshotLatest | undefined, thresholds: Use
     });
   }
   return alerts.slice(0, 3);
+}
+
+function buildTimelineEvents(
+  series: Series | null | undefined,
+  sparkline: Sparkline | null,
+  snapshot: Snapshot | null,
+  thresholds: UserThresholds
+): TimelineEvent[] {
+  const events: TimelineEvent[] = [];
+  const now = Date.now();
+  if (series?.hourly?.length) {
+    const windowStart = now - DAY_MS;
+    const ordered = (series.hourly as Series['hourly'])
+      .filter((point) => point.t)
+      .map((point) => ({ point, stamp: Date.parse(point.t ?? '') }))
+      .filter(({ stamp }) => Number.isFinite(stamp) && stamp >= windowStart && stamp <= now)
+      .sort((a, b) => (a.stamp ?? 0) - (b.stamp ?? 0));
+    const intensityEvents = ordered.filter(
+      ({ point }) => typeof point.prcpRate === 'number' && (point.prcpRate as number) >= thresholds.intensity
+    );
+    intensityEvents.slice(-3).forEach(({ point }) => {
+      events.push({
+        id: `int-${point.t}`,
+        time: formatTimelineTime(point.t),
+        label: 'Pico de intensidad',
+        detail: `${formatNumber(point.prcpRate as number)} mm/h`,
+      });
+    });
+    let dryStart: string | null = null;
+    let dryCount = 0;
+    ordered.forEach(({ point }) => {
+      const rate = typeof point.prcpRate === 'number' ? point.prcpRate : 0;
+      if (rate < 0.2) {
+        if (!dryCount) dryStart = point.t ?? null;
+        dryCount += 1;
+      } else if (dryCount >= 3 && dryStart) {
+        events.push({
+          id: `dry-${dryStart}`,
+          time: formatTimelineTime(dryStart),
+          label: 'Ventana seca detectada',
+          detail: `${dryCount} h por debajo de 0.2 mm/h`,
+        });
+        dryStart = null;
+        dryCount = 0;
+      } else {
+        dryCount = 0;
+        dryStart = null;
+      }
+    });
+  }
+  if (sparkline?.accumulated.length) {
+    const total = sparkline.accumulated[sparkline.accumulated.length - 1] ?? 0;
+    events.push({
+      id: 'accum',
+      time: sparkline.latestLabel,
+      label: 'Acumulado 24 h',
+      detail: `${formatNumber(total, 1, 'mm')} registrados en las últimas 24 h.`,
+    });
+  }
+  if (snapshot?.hasForecast && snapshot.forecastPeak >= thresholds.intensity) {
+    events.push({
+      id: 'forecast',
+      time: 'Próximas horas',
+      label: 'Pico proyectado',
+      detail: `Se esperan ${formatNumber(snapshot.forecastPeak, 1, 'mm/h')} en las próximas 24 h.`,
+    });
+  }
+  return events.slice(-5).reverse();
+}
+
+function formatTimelineTime(iso?: string): string {
+  if (!iso) return 'sin fecha';
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return iso;
+  return date.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
 }
 
