@@ -474,31 +474,6 @@ export default function App() {
 
       <RealtimePanel series={series.data} busy={series.isFetching} />
 
-      <details className="glossary mb4" open>
-        <summary>Cómo leer el monitoreo en vivo</summary>
-        <ul>
-          <li>
-            <strong>Último dato + Hace X min:</strong> indica la latencia real del sensor. Si supera
-            los 30 minutos, valida la conectividad antes de tomar decisiones críticas.
-          </li>
-          <li>
-            <strong>Lluvia horaria vs. Intensidad:</strong> el primer valor muestra cuánto se acumuló
-            en la última hora y el segundo el pico puntual (mm/h). Un pico alto con poco acumulado
-            sugiere ráfagas cortas; ambos altos implican suelos saturados.
-          </li>
-          <li>
-            <strong>Pronóstico 24 h:</strong> resume el máximo esperado para la siguiente jornada. Si
-            la intensidad proyectada supera tu umbral operativo, reprograma labores o incrementa el
-            monitoreo.
-          </li>
-          <li>
-            <strong>Variables ambientales:</strong> temperatura, humedad, viento y presión sirven para
-            anticipar estrés térmico, ventanas de asperjado o cambios de frente. Contrasta estos
-            valores con los promedios históricos en las tarjetas inferiores.
-          </li>
-        </ul>
-      </details>
-
       <section className="card chart-card mb4">
         <div className={`busy ${busy ? 'on' : ''}`}>
           <div className="busy-pill">

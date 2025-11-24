@@ -1,11 +1,29 @@
 import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
 import { useMemo } from 'react';
 const DAY_MS = 24 * 60 * 60 * 1000;
+const LIVE_TIPS = [
+    {
+        title: 'Último dato + Hace X min',
+        body: 'Muestra la latencia real del sensor. Si supera los 30 minutos, valida la conectividad antes de tomar decisiones críticas.',
+    },
+    {
+        title: 'Lluvia horaria vs. Intensidad',
+        body: 'El primer valor refleja el acumulado de la última hora y el segundo el pico puntual (mm/h). Picos altos con poco acumulado implican ráfagas cortas.',
+    },
+    {
+        title: 'Pronóstico 24 h',
+        body: 'Resume el máximo esperado para la siguiente jornada. Si el pico proyectado supera tu umbral operativo, reprograma labores o incrementa el monitoreo.',
+    },
+    {
+        title: 'Variables ambientales',
+        body: 'Temperatura, humedad, viento y presión ayudan a anticipar estrés térmico, ventanas de asperjado o cambios de frente. Contrasta estos valores con los promedios históricos.',
+    },
+];
 export function RealtimePanel({ series, busy }) {
     const snapshot = useMemo(() => buildSnapshot(series), [series]);
     return (_jsxs("section", { className: "card realtime-card mb4", children: [_jsxs("div", { className: "section-header", children: [_jsxs("div", { children: [_jsx("h2", { children: "Monitoreo en vivo" }), _jsx("p", { className: "muted tiny", children: snapshot ? `Último dato: ${snapshot.lastDisplay}` : 'Sin observaciones en el rango actual.' })] }), snapshot && (_jsx("span", { className: `status-pill ${snapshot.isStale ? 'warn' : ''}`, children: snapshot.relativeLabel }))] }), busy && !snapshot ? (_jsxs("div", { className: "skeleton", children: [_jsx("div", { className: "skeleton-bar" }), _jsx("div", { className: "skeleton-bar" }), _jsx("div", { className: "skeleton-bar" })] })) : snapshot ? (_jsxs(_Fragment, { children: [_jsxs("div", { className: "realtime-meta", children: [_jsxs("div", { children: [_jsx("span", { className: "tiny", children: "Ubicaci\u00F3n" }), _jsx("strong", { children: snapshot.locationLabel }), _jsx("p", { className: "muted tiny", children: snapshot.sourceLabel ?? 'Fuente no disponible' })] }), _jsxs("div", { children: [_jsx("span", { className: "tiny", children: "Zona horaria" }), _jsx("strong", { children: snapshot.timezone ?? 'Sin dato' }), _jsx("p", { className: "muted tiny", children: "Hora local mostrada en la serie" })] }), _jsxs("div", { children: [_jsx("span", { className: "tiny", children: "Pron\u00F3stico 24h" }), _jsxs("strong", { children: [formatNumber(snapshot.forecastTotal, 1), " mm"] }), _jsx("p", { className: "muted tiny", children: snapshot.hasForecast
                                             ? `Intensidad pico esperada: ${formatNumber(snapshot.forecastPeak, 1)} mm/h`
-                                            : 'Sin proyección disponible' })] })] }), _jsx("div", { className: "realtime-metrics", children: snapshot.metrics.map((metric) => (_jsxs("div", { className: "realtime-metric", children: [_jsx("span", { className: "metric-label", children: metric.label }), _jsx("span", { className: "metric-value", children: metric.value }), metric.note && _jsx("span", { className: "metric-note", children: metric.note })] }, metric.id))) })] })) : (_jsx("div", { className: "empty-state", children: "Ajusta el rango o la ubicaci\u00F3n para ver datos en vivo." }))] }));
+                                            : 'Sin proyección disponible' })] })] }), _jsx("div", { className: "realtime-metrics", children: snapshot.metrics.map((metric) => (_jsxs("div", { className: "realtime-metric", children: [_jsx("span", { className: "metric-label", children: metric.label }), _jsx("span", { className: "metric-value", children: metric.value }), metric.note && _jsx("span", { className: "metric-note", children: metric.note })] }, metric.id))) })] })) : (_jsx("div", { className: "empty-state", children: "Ajusta el rango o la ubicaci\u00F3n para ver datos en vivo." })), _jsxs("details", { className: "glossary mt2", open: true, children: [_jsx("summary", { children: "C\u00F3mo leer el monitoreo en vivo" }), _jsx("ul", { children: LIVE_TIPS.map((tip) => (_jsxs("li", { children: [_jsxs("strong", { children: [tip.title, ":"] }), " ", tip.body] }, tip.title))) })] })] }));
 }
 function buildSnapshot(series) {
     if (!series || !Array.isArray(series.hourly) || !series.hourly.length) {

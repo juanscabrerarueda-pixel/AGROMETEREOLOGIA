@@ -27,6 +27,28 @@ type Snapshot = {
 };
 
 const DAY_MS = 24 * 60 * 60 * 1000;
+const LIVE_TIPS = [
+  {
+    title: 'Último dato + Hace X min',
+    body:
+      'Muestra la latencia real del sensor. Si supera los 30 minutos, valida la conectividad antes de tomar decisiones críticas.',
+  },
+  {
+    title: 'Lluvia horaria vs. Intensidad',
+    body:
+      'El primer valor refleja el acumulado de la última hora y el segundo el pico puntual (mm/h). Picos altos con poco acumulado implican ráfagas cortas.',
+  },
+  {
+    title: 'Pronóstico 24 h',
+    body:
+      'Resume el máximo esperado para la siguiente jornada. Si el pico proyectado supera tu umbral operativo, reprograma labores o incrementa el monitoreo.',
+  },
+  {
+    title: 'Variables ambientales',
+    body:
+      'Temperatura, humedad, viento y presión ayudan a anticipar estrés térmico, ventanas de asperjado o cambios de frente. Contrasta estos valores con los promedios históricos.',
+  },
+];
 
 export function RealtimePanel({ series, busy }: RealtimePanelProps) {
   const snapshot = useMemo(() => buildSnapshot(series), [series]);
@@ -88,6 +110,17 @@ export function RealtimePanel({ series, busy }: RealtimePanelProps) {
       ) : (
         <div className="empty-state">Ajusta el rango o la ubicación para ver datos en vivo.</div>
       )}
+
+      <details className="glossary mt2" open>
+        <summary>Cómo leer el monitoreo en vivo</summary>
+        <ul>
+          {LIVE_TIPS.map((tip) => (
+            <li key={tip.title}>
+              <strong>{tip.title}:</strong> {tip.body}
+            </li>
+          ))}
+        </ul>
+      </details>
     </section>
   );
 }
