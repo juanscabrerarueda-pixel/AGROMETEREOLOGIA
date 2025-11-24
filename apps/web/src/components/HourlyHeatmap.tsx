@@ -112,6 +112,8 @@ export function HourlyHeatmap({ series, variable = 'prcp', maxRows = 35 }: Hourl
       : rows.slice(Math.max(rows.length - maxRows, 0));
   const canToggle = maxRows && rows.length > maxRows;
 
+  const gridMinWidth = Math.max(visibleRows.length * 32 + 360, 520);
+
   return (
     <div className="heatmap">
       <div className="heatmap-headline">
@@ -122,43 +124,45 @@ export function HourlyHeatmap({ series, variable = 'prcp', maxRows = 35 }: Hourl
         </p>
       </div>
 
-      <div className="heatmap-grid">
-        <div className="heatmap-hours">
-          <span className="heatmap-hours-label">Hora</span>
-          <div className="heatmap-hours-cells">
-            {HOURS.map((hour) => (
-              <span key={hour} className="heatmap-hour">
-                {hour.toString().padStart(2, '0')}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {visibleRows.map((row) => (
-          <div key={row.date} className="heatmap-row">
-            <span className="heatmap-day">{row.display}</span>
-            <div className="heatmap-cells">
-              {row.values.map((item) => {
-                const background =
-                  item.value === null
-                    ? 'rgba(148, 163, 184, 0.12)'
-                    : getHeatColor(item.normalized);
-                return (
-                  <span
-                    key={item.hour}
-                    className="heatmap-cell"
-                    style={{ backgroundColor: background } as CSSProperties}
-                    title={`${row.date} ${item.hour.toString().padStart(2, '0')}:00 -> ${
-                      item.value !== null
-                        ? `${item.value.toFixed(2)} ${variable === 'prcpRate' ? 'mm/h' : 'mm'}`
-                        : 'sin dato'
-                    }`}
-                  />
-                );
-              })}
+      <div className="heatmap-scroll">
+        <div className="heatmap-grid" style={{ minWidth: `${gridMinWidth}px` }}>
+          <div className="heatmap-hours">
+            <span className="heatmap-hours-label">Hora</span>
+            <div className="heatmap-hours-cells">
+              {HOURS.map((hour) => (
+                <span key={hour} className="heatmap-hour">
+                  {hour.toString().padStart(2, '0')}
+                </span>
+              ))}
             </div>
           </div>
-        ))}
+
+          {visibleRows.map((row) => (
+            <div key={row.date} className="heatmap-row">
+              <span className="heatmap-day">{row.display}</span>
+              <div className="heatmap-cells">
+                {row.values.map((item) => {
+                  const background =
+                    item.value === null
+                      ? 'rgba(148, 163, 184, 0.12)'
+                      : getHeatColor(item.normalized);
+                  return (
+                    <span
+                      key={item.hour}
+                      className="heatmap-cell"
+                      style={{ backgroundColor: background } as CSSProperties}
+                      title={`${row.date} ${item.hour.toString().padStart(2, '0')}:00 -> ${
+                        item.value !== null
+                          ? `${item.value.toFixed(2)} ${variable === 'prcpRate' ? 'mm/h' : 'mm'}`
+                          : 'sin dato'
+                      }`}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       <div className="heatmap-meta">

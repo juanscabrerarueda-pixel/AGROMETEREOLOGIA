@@ -1,4 +1,4 @@
-﻿import { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import type { Series } from '@pkg/core';
 import './App.css';
 import { FEATURE_AGROMETEO } from './config/flags';
@@ -45,6 +45,7 @@ type ChartSummary = {
 
 type Kpi = { id: string; label: string; value: string; note?: string; badge?: KPIBadge };
 type KPIBadge = { label: string; tone?: 'warn' | 'alert' };
+type SectorNarratives = { agriculture: string; livestock: string; energy: string };
 
 type RefreshOption = {
   id: RefreshKey;
@@ -77,39 +78,39 @@ const REFRESH_OPTIONS: RefreshOption[] = [
 const RANGE_OPTIONS: RangeOption[] = [
   {
     id: 'threeMonths',
-    label: 'Últimos 3 meses',
+    label: 'Ãšltimos 3 meses',
     days: 90,
-    description: 'Observa la evolución reciente (aprox. último trimestre).',
+    description: 'Observa la evoluciÃ³n reciente (aprox. Ãºltimo trimestre).',
   },
   {
     id: 'oneYear',
-    label: 'Último año',
+    label: 'Ãšltimo aÃ±o',
     days: 365,
-    description: 'Analiza cómo cerró el último año hídrico completo.',
+    description: 'Analiza cÃ³mo cerrÃ³ el Ãºltimo aÃ±o hÃ­drico completo.',
   },
   {
     id: 'fiveYears',
-    label: 'Últimos 5 años',
+    label: 'Ãšltimos 5 aÃ±os',
     days: 365 * 5,
     description: 'Identifica tendencias multianuales y cambios estructurales.',
   },
   {
     id: 'future',
-    label: 'Próx. 14 días',
+    label: 'PrÃ³x. 14 dÃ­as',
     days: 14,
     future: true,
-    description: 'Pronóstico inmediato (sin línea de tendencia).',
+    description: 'PronÃ³stico inmediato (sin lÃ­nea de tendencia).',
   },
 ];
 
 const METRIC_OPTIONS: Array<{ id: Metric; label: string; helper: string }> = [
-  { id: 'accumulated', label: 'Acumulado diario', helper: 'Suma mm por día (precipitación acumulada).' },
+  { id: 'accumulated', label: 'Acumulado diario', helper: 'Suma mm por dÃ­a (precipitaciÃ³n acumulada).' },
   { id: 'intensity', label: 'Intensidad (mm/h)', helper: 'Pico horario diario (mm/h) como proxy de intensidad.' },
 ];
 
 const TREND_OPTIONS: Array<{ id: TrendType; label: string; helper: string }> = [
-  { id: 'MA', label: 'MA', helper: 'Media móvil con ventana fija.' },
-  { id: 'EMA', label: 'EMA', helper: 'Media móvil exponencial (pondera lo reciente).' },
+  { id: 'MA', label: 'MA', helper: 'Media mÃ³vil con ventana fija.' },
+  { id: 'EMA', label: 'EMA', helper: 'Media mÃ³vil exponencial (pondera lo reciente).' },
 ];
 
 const DEFAULT_DEPARTMENT = DEPARTMENT_OPTIONS[0];
@@ -127,7 +128,7 @@ export default function App() {
     return (
       <main className="wrap">
         <section className="card">
-          <h1>Panel agrometeorológico</h1>
+          <h1>Panel agrometeorolÃ³gico</h1>
           <p>Activa la variable VITE_FEATURE_AGROMETEO para visualizar este tablero.</p>
         </section>
       </main>
@@ -213,6 +214,10 @@ export default function App() {
     [series.data, metric, currentDepartment, selectedMuni]
   );
   const quickImpact = useMemo(() => buildImpactNarrative(aggregated, metric), [aggregated, metric]);
+  const sectorNarratives = useMemo(
+    () => buildSectorNarratives(aggregated, series.data, metric),
+    [aggregated, series.data, metric]
+  );
 
   const trendPoints = useMemo(() => {
     if (!showTrend || isFutureRange || !aggregated.points.length) {
@@ -274,23 +279,23 @@ export default function App() {
     <main className="wrap">
       <header className="mb4 intro">
         <p className="tagline">Tendencias de lluvia en Colombia</p>
-        <h1>Panel agrometeorológico</h1>
+        <h1>Panel agrometeorolÃ³gico</h1>
         <p className="muted">
           Filtra por departamento y municipio, alterna entre acumulados o intensidad diaria y usa la
-          línea de tendencia para resumir comportamientos. El mapa horario te ayuda a encontrar
+          lÃ­nea de tendencia para resumir comportamientos. El mapa horario te ayuda a encontrar
           ventanas secas o picos concentrados.
         </p>
       </header>
 
       <section className="card help mb4">
         <div className="help-header">
-          <strong>Cómo usar</strong>
+          <strong>CÃ³mo usar</strong>
           <button
             type="button"
             className="btn small"
             onClick={() => setHelpHidden((prev) => !prev)}
           >
-            {helpHidden ? 'Mostrar guía' : 'Ocultar guía'}
+            {helpHidden ? 'Mostrar guÃ­a' : 'Ocultar guÃ­a'}
           </button>
         </div>
         {!helpHidden && (
@@ -300,16 +305,16 @@ export default function App() {
               la capital).
             </li>
             <li>
-              Ajusta el rango rápido (3 meses, 1 año, 5 años o 14 días de pronóstico). También puedes
+              Ajusta el rango rÃ¡pido (3 meses, 1 aÃ±o, 5 aÃ±os o 14 dÃ­as de pronÃ³stico). TambiÃ©n puedes
               fijar fechas manualmente.
             </li>
             <li>
-              Alterna entre acumulado diario o intensidad máxima, y activa MA/EMA para suavizar la
-              serie histórica.
+              Alterna entre acumulado diario o intensidad mÃ¡xima, y activa MA/EMA para suavizar la
+              serie histÃ³rica.
             </li>
             <li>
-              Usa la distribución horaria para detectar ventanas secas y revisa los insights
-              automáticos para recomendaciones puntuales.
+              Usa la distribuciÃ³n horaria para detectar ventanas secas y revisa los insights
+              automÃ¡ticos para recomendaciones puntuales.
             </li>
           </ol>
         )}
@@ -390,7 +395,7 @@ export default function App() {
             className="btn small"
             onClick={() => setShowTrend((prev) => !prev)}
             disabled={isFutureRange}
-            title={isFutureRange ? 'La tendencia no aplica a pronósticos futuros' : ''}
+            title={isFutureRange ? 'La tendencia no aplica a pronÃ³sticos futuros' : ''}
           >
             {showTrend ? 'Ocultar tendencia' : 'Ver tendencia'}
           </button>
@@ -415,7 +420,7 @@ export default function App() {
         </p>
 
         <div className="refresh-controls mt2">
-          <span className="tiny">Actualización automática</span>
+          <span className="tiny">ActualizaciÃ³n automÃ¡tica</span>
           <div className="seg compact">
             {REFRESH_OPTIONS.map((option) => (
               <button
@@ -460,7 +465,7 @@ export default function App() {
           <div className="error-banner mb3">
             <strong>No fue posible actualizar la serie.</strong>
             <p>
-              {series.error.message || 'No pudimos contactar la API. Revisa tu conexión o intenta nuevamente.'}
+              {series.error.message || 'No pudimos contactar la API. Revisa tu conexiÃ³n o intenta nuevamente.'}
             </p>
           </div>
         )}
@@ -538,12 +543,22 @@ export default function App() {
           </div>
         </div>
         <AgroPanels series={series.data} />
+        <details className="glossary mt2">
+          <summary>Como leer estas variables</summary>
+          <ul>
+            <li>Temp. ambiente 18-32 C: confortable. &lt;15 C implica amaneceres frios y &gt;32 C demanda sombra e hidratacion.</li>
+            <li>Sensacion termica &gt;35 C: riesgo de estres para personal y ganado.</li>
+            <li>Humedad relativa &lt;40 %: ambiente seco, incrementa demanda hidrica; &gt;85 % favorece hongos.</li>
+            <li>Lluvia 24h: &lt;5 mm se absorbe rapido; &gt;30 mm provoca charcos y compactacion.</li>
+            <li>ET0 &gt;4 mm indica alta demanda de riego. Radiacion &gt;4 kWh/m2 favorece la generacion solar.</li>
+          </ul>
+        </details>
       </section>
 
       <section className="card mb4">
         <div className="section-header">
           <div>
-            <h2>Distribución horaria</h2>
+            <h2>DistribuciÃ³n horaria</h2>
             <p className="muted tiny">
               Identifica horarios con lluvia o ventanas secas (intensidad en mm/h).
             </p>
@@ -552,6 +567,14 @@ export default function App() {
         <div className="hourlyWrap">
           <HourlyHeatmap series={series.data} variable="prcpRate" />
         </div>
+        <details className="glossary mt2">
+          <summary>Como leer la distribucion</summary>
+          <ul>
+            <li>Bandas intensas al amanecer indican suelos saturados: retrasa la entrada de maquinaria.</li>
+            <li>Bloques continuos &gt;60 % señalan varios dias lluviosos. Busca ventanas palidas (&lt;30 %) para labores criticas.</li>
+            <li>Celdas claras aisladas equivalen a horas de baja probabilidad, ideales para riego o mantenimiento.</li>
+          </ul>
+        </details>
       </section>
 
       <section className="card insights">
@@ -559,16 +582,32 @@ export default function App() {
           <div>
             <h2>Insights automatizados</h2>
             <p className="muted tiny">
-              Basados en umbrales de impacto y cálculos del paquete insight-engine.
+              Basados en umbrales de impacto y cÃ¡lculos del paquete insight-engine.
             </p>
           </div>
         </div>
+        {sectorNarratives && (
+          <div className="sector-insights">
+            <div>
+              <strong>Agricultura</strong>
+              <p>{sectorNarratives.agriculture}</p>
+            </div>
+            <div>
+              <strong>Ganaderia</strong>
+              <p>{sectorNarratives.livestock}</p>
+            </div>
+            <div>
+              <strong>Energias renovables</strong>
+              <p>{sectorNarratives.energy}</p>
+            </div>
+          </div>
+        )}
         {insights.error ? (
           <div className="error-banner">
             <strong>No fue posible generar insights.</strong>
             <p>
               {insights.error.message ||
-                'No logramos conectar con la API de insights. Vuelve a intentarlo cuando tengas conexión estable.'}
+                'No logramos conectar con la API de insights. Vuelve a intentarlo cuando tengas conexiÃ³n estable.'}
             </p>
           </div>
         ) : insights.data ? (
@@ -583,7 +622,7 @@ export default function App() {
             </ul>
           ) : (
             <div className="empty-state">
-              Sin hallazgos relevantes con los umbrales actuales. Ajústalos para más sensibilidad.
+              Sin hallazgos relevantes con los umbrales actuales. AjÃºstalos para mÃ¡s sensibilidad.
             </div>
           )
         ) : (
@@ -765,9 +804,9 @@ function buildDailyData(series: Series | undefined): DailyDatum[] {
       const windMean = bucket.windCount ? bucket.wind / bucket.windCount : null;
       const apparentMean = bucket.apparentCount ? bucket.apparent / bucket.apparentCount : null;
       const icons: string[] = [];
-      if (solarKwh >= 6) icons.push('☀');
-      if (windMean != null && windMean >= 8) icons.push('💨');
-      if (apparentMean != null && apparentMean >= 32) icons.push('🔥');
+      if (solarKwh >= 6) icons.push('â˜€');
+      if (windMean != null && windMean >= 8) icons.push('ðŸ’¨');
+      if (apparentMean != null && apparentMean >= 32) icons.push('ðŸ”¥');
       return {
         date,
         label: formatDisplayDate(date),
@@ -822,6 +861,7 @@ function exponentialMovingAverage(values: number[], window: number): number[] {
 }
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
+const MS_PER_HOUR = 60 * 60 * 1000;
 
 function inferWindowFromRange(range: DateRange): number {
   const from = Date.parse(range.from);
@@ -849,7 +889,7 @@ function buildKpis(
   return [
     {
       id: 'max',
-      label: metric === 'intensity' ? 'Máximo registrado' : 'Máximo diario',
+      label: metric === 'intensity' ? 'MÃ¡ximo registrado' : 'MÃ¡ximo diario',
       value: `${formatNumber(summary.maxValue)} ${unit}`,
       note: formatDisplayDate(summary.maxValueDate),
     },
@@ -857,7 +897,7 @@ function buildKpis(
       id: 'avg',
       label: 'Promedio diario',
       value: `${formatNumber(summary.average)} ${averageUnit}`,
-      note: `${summary.count.toLocaleString('es-CO')} días analizados`,
+      note: `${summary.count.toLocaleString('es-CO')} dÃ­as analizados`,
     },
     {
       id: 'trend',
@@ -883,9 +923,9 @@ function buildMetaSummary(
   if (!series) return null;
   const hourly = (series.hourly as Series['hourly']) ?? [];
   const lastTimestamp = hourly.length ? hourly[hourly.length - 1]?.t : series.range?.to;
-  const updated = formatDisplayDate(lastTimestamp) || '—';
+  const updated = formatDisplayDate(lastTimestamp) || 'â€”';
   const muniLabel = department?.municipalities.find((item) => item.value === selectedMuni)?.label;
-  const location = [muniLabel, department?.label].filter(Boolean).join(' · ') || department?.label || '—';
+  const location = [muniLabel, department?.label].filter(Boolean).join(' Â· ') || department?.label || 'â€”';
   return {
     updated,
     location,
@@ -902,7 +942,7 @@ function buildImpactNarrative(summary: ChartSummary, metric: Metric): string | n
   const impact = impactFromBadge(badge.label);
   return `Acumulado ${formatNumber(summary.totalRain)} mm en ${summary.count.toLocaleString(
     'es-CO'
-  )} d�as. El pico diario alcanz� ${formatNumber(summary.maxValue)} ${unit} (${badge.label}). ${impact}`;
+  )} dï¿½as. El pico diario alcanzï¿½ ${formatNumber(summary.maxValue)} ${unit} (${badge.label}). ${impact}`;
 }
 
 function buildIntensityBadge(value: number, metric: Metric): KPIBadge | undefined {
@@ -917,7 +957,7 @@ function buildIntensityBadge(value: number, metric: Metric): KPIBadge | undefine
 function impactFromBadge(label: string): string {
   switch (label) {
     case 'Evento fuerte':
-      return 'Probables anegamientos y retrasos log�sticos; prioriza ventanas secas antes de ingresar maquinaria.';
+      return 'Probables anegamientos y retrasos logï¿½sticos; prioriza ventanas secas antes de ingresar maquinaria.';
     case 'Temporal':
       return 'Suelos saturados y charcos puntuales: evita labores pesadas hasta que baje la intensidad.';
     case 'Lluvia moderada':
@@ -926,11 +966,94 @@ function impactFromBadge(label: string): string {
       return 'Condiciones suaves ideales para mantenimiento ligero y aplicaciones foliares.';
   }
 }
+
+function buildSectorNarratives(
+  summary: ChartSummary,
+  series: Series | undefined,
+  metric: Metric
+): SectorNarratives | null {
+  if (!summary.count) return null;
+  const badge = buildIntensityBadge(summary.maxValue, metric);
+  const baselines = computeAgroBaselines(series);
+
+  const agriculture =
+    badge?.label === 'Evento fuerte'
+      ? `Eventos intensos (${badge.label.toLowerCase()}) acumulan ${formatNumber(
+          summary.totalRain
+        )} mm. Retrasa siembra o aplicaciones hasta que drene el lote.`
+      : summary.average < 5
+      ? `Acumulados bajos (${formatNumber(summary.average)} mm/dia) exigen reforzar riego y aprovechar eventos >5 mm.`
+      : `Condicion estable: monitorea drenajes despues de dias >20 mm y usa ventanas secas para cosecha.`;
+
+  const livestock =
+    badge && (badge.label === 'Temporal' || badge.label === 'Evento fuerte')
+      ? 'Charcos y barro en potreros bajos; rota ganado a zonas altas y evita sobrepastoreo.'
+      : summary.average < 4
+      ? 'Ambiente mas seco; refuerza sombra y bebederos para evitar estres termico.'
+      : 'Humedad moderada favorece rebrote, pero revisa accesos luego de jornadas superiores a 20 mm.';
+
+  let energy = 'Sin suficiente informacion para energia.';
+  if (baselines.solarKwh != null || baselines.wind != null) {
+    const solarText =
+      baselines.solarKwh != null
+        ? baselines.solarKwh >= 4
+          ? `Radiacion ${(baselines.solarKwh ?? 0).toFixed(1)} kWh/m2: ventana productiva para fotovoltaica.`
+          : `Radiacion baja (${(baselines.solarKwh ?? 0).toFixed(1)} kWh/m2), espera menor generacion.`
+        : null;
+    const windText =
+      baselines.wind != null
+        ? baselines.wind >= 8
+          ? `Viento medio ${(baselines.wind ?? 0).toFixed(1)} m/s: util para ventilacion y turbinas menores.`
+          : `Viento suave ${(baselines.wind ?? 0).toFixed(1)} m/s: condiciones estables para equipos expuestos.`
+        : null;
+    energy = [solarText, windText].filter(Boolean).join(' ') || energy;
+  }
+
+  return {
+    agriculture,
+    livestock,
+    energy,
+  };
+}
+
+function computeAgroBaselines(series: Series | undefined): {
+  solarKwh: number | null;
+  wind: number | null;
+} {
+  const hourly = (series?.hourly as Series['hourly']) ?? [];
+  if (!hourly.length) return { solarKwh: null, wind: null };
+
+  const avg = (key: keyof Series['hourly'][number], hours = 24) => {
+    const sample = sliceRecentHours(hourly, hours);
+    const values = sample
+      .map((point) => (typeof point[key] === 'number' ? (point[key] as number) : null))
+      .filter((value): value is number => value !== null);
+    if (!values.length) return null;
+    return values.reduce((sum, val) => sum + val, 0) / values.length;
+  };
+
+  const solarAvg = avg('rs', 24);
+  return {
+    solarKwh: solarAvg == null ? null : (solarAvg * 24) / 1000,
+    wind: avg('wind', 24),
+  };
+}
+
+function sliceRecentHours(points: Series['hourly'], hours: number): Series['hourly'] {
+  if (!points.length) return [];
+  const last = new Date(points[points.length - 1].t ?? 0).getTime();
+  const threshold = last - hours * MS_PER_HOUR;
+  return points.filter((point) => {
+    const t = new Date(point.t ?? 0).getTime();
+    return Number.isFinite(t) && t >= threshold;
+  });
+}
+
 function summarizeTrend(trend: TrendPoint[] | null): { value: string; note: string } {
   if (!trend || !trend.length) {
     return {
       value: 'Sin datos',
-      note: 'Activa MA o EMA para calcular la tendencia histórica.',
+      note: 'Activa MA o EMA para calcular la tendencia histÃ³rica.',
     };
   }
   const first = trend.find((item) => Number.isFinite(item.value));
@@ -938,7 +1061,7 @@ function summarizeTrend(trend: TrendPoint[] | null): { value: string; note: stri
   if (!first || !last) {
     return {
       value: 'Sin datos',
-      note: 'Necesitamos más puntos para calcular la tendencia.',
+      note: 'Necesitamos mÃ¡s puntos para calcular la tendencia.',
     };
   }
   const diff = last.value - first.value;
@@ -971,18 +1094,18 @@ function buildChartNarrative(
   const parts: string[] = [];
   if (metric === 'accumulated') {
     parts.push(
-      `Entre ${rangeLabel} se acumularon ${formatNumber(summary.totalRain)} mm distribuidos en ${summary.count} días con datos.`
+      `Entre ${rangeLabel} se acumularon ${formatNumber(summary.totalRain)} mm distribuidos en ${summary.count} dÃ­as con datos.`
     );
     if (summary.maxValueDate) {
       parts.push(
-        `El día más lluvioso fue ${formatDisplayDate(summary.maxValueDate)}, cuando se registraron ${formatNumber(summary.maxValue)} mm en 24 horas.`
+        `El dÃ­a mÃ¡s lluvioso fue ${formatDisplayDate(summary.maxValueDate)}, cuando se registraron ${formatNumber(summary.maxValue)} mm en 24 horas.`
       );
     }
   } else {
-    parts.push(`Analizamos ${summary.count} días de intensidades entre ${rangeLabel}.`);
+    parts.push(`Analizamos ${summary.count} dÃ­as de intensidades entre ${rangeLabel}.`);
     if (summary.maxValueDate) {
       parts.push(
-        `La ráfaga máxima ocurrió el ${formatDisplayDate(summary.maxValueDate)} y alcanzó ${formatNumber(summary.maxValue)} mm/h.`
+        `La rÃ¡faga mÃ¡xima ocurriÃ³ el ${formatDisplayDate(summary.maxValueDate)} y alcanzÃ³ ${formatNumber(summary.maxValue)} mm/h.`
       );
     }
   }

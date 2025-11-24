@@ -408,7 +408,15 @@ body {
 .heatmap-grid {
   display: grid;
   gap: 10px;
+}
+
+.heatmap-scroll {
   overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.heatmap-scroll .heatmap-grid {
+  min-width: 720px;
 }
 
 .heatmap-hours,
@@ -787,6 +795,36 @@ body {
   color: var(--ink);
 }
 
+.sector-insights {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.sector-insights div {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 14px;
+  background: rgba(13, 16, 24, 0.8);
+}
+
+.sector-insights strong {
+  display: block;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: rgba(226, 232, 240, 0.85);
+}
+
+.sector-insights p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
 .skeleton {
   display: grid;
   gap: 10px;
@@ -927,5 +965,9 @@ body {
 
   .realtime-metric .metric-value {
     font-size: 18px;
+  }
+
+  .heatmap-scroll .heatmap-grid {
+    min-width: 560px;
   }
 }
