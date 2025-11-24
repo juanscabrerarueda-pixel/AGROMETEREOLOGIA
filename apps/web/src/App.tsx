@@ -474,11 +474,9 @@ export default function App() {
 
       <RealtimePanel series={series.data} busy={series.isFetching} />
 
-      <section className="card help slim mb4">
-        <div className="help-header">
-          <strong>Cómo leer el monitoreo en vivo</strong>
-        </div>
-        <ul className="help-steps">
+      <details className="glossary mb4" open>
+        <summary>Cómo leer el monitoreo en vivo</summary>
+        <ul>
           <li>
             <strong>Último dato + Hace X min:</strong> indica la latencia real del sensor. Si supera
             los 30 minutos, valida la conectividad antes de tomar decisiones críticas.
@@ -499,7 +497,7 @@ export default function App() {
             valores con los promedios históricos en las tarjetas inferiores.
           </li>
         </ul>
-      </section>
+      </details>
 
       <section className="card chart-card mb4">
         <div className={`busy ${busy ? 'on' : ''}`}>
