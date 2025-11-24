@@ -589,17 +589,6 @@ body {
   font-size: 13px;
 }
 
-.daily-mode-toggle {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.daily-mode-toggle .btn {
-  flex: 1 1 140px;
-  min-width: 0;
-}
-
 .daily-heatmap-gridWrapper {
   overflow-x: auto;
   padding-bottom: 6px;
@@ -701,6 +690,11 @@ body {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+
+.daily-bars-range {
+  font-size: 11px;
+  color: var(--muted);
 }
 
 .daily-bars-total {

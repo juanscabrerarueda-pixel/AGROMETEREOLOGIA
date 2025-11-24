@@ -1,4 +1,4 @@
-﻿import { Fragment, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
 export type DailyDatum = {
   date: string;
@@ -6,8 +6,6 @@ export type DailyDatum = {
   value: number;
   icons: string[];
 };
-
-const DAY_LABELS = ['Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab', 'Dom'];
 
 const DAILY_HEAT_COLORS = [
   { stop: 0, color: [37, 99, 235] },
@@ -22,14 +20,12 @@ type DailyHeatmapProps = {
 };
 
 export function DailyHeatmap({ daily, metric }: DailyHeatmapProps) {
-  const [mode, setMode] = useState<'heatmap' | 'bars'>('heatmap');
   const { weeks, weekRanges, max } = useMemo(() => buildMatrix(daily), [daily]);
 
   if (!weeks.length) {
     return <div className="empty-state">Sin datos suficientes para generar el mapa de calor.</div>;
   }
 
-  const columns = weeks.length * 7;
   const unit = metric === 'intensity' ? 'mm/h' : 'mm';
 
   return (
@@ -42,28 +38,7 @@ export function DailyHeatmap({ daily, metric }: DailyHeatmapProps) {
         </p>
       </div>
 
-      <div className="daily-mode-toggle">
-        <button
-          type="button"
-          className={`btn small ${mode === 'heatmap' ? 'active' : ''}`}
-          onClick={() => setMode('heatmap')}
-        >
-          Heatmap
-        </button>
-        <button
-          type="button"
-          className={`btn small ${mode === 'bars' ? 'active' : ''}`}
-          onClick={() => setMode('bars')}
-        >
-          Barras
-        </button>
-      </div>
-
-      {mode === 'heatmap' ? (
-        <HeatmapView weeks={weeks} ranges={weekRanges} columns={columns} unit={unit} />
-      ) : (
-        <WeeklyBars weeks={weeks} ranges={weekRanges} unit={unit} />
-      )}
+      <WeeklyBars weeks={weeks} ranges={weekRanges} unit={unit} />
 
       <div className="heatmap-scale">
         <span>Seco</span>
@@ -74,97 +49,34 @@ export function DailyHeatmap({ daily, metric }: DailyHeatmapProps) {
   );
 }
 
-function HeatmapView({
-  weeks,
-  ranges,
-  columns,
-  unit,
-}: {
-  weeks: HeatmapCell[][];
-  ranges: Array<{ id: string; label: string; range: string }>;
-  columns: number;
-  unit: string;
-}) {
-  return (
-    <>
-      <div className="daily-week-row" style={{ gridTemplateColumns: `56px repeat(${columns}, 18px)` }}>
-        <span className="daily-week-placeholder">Semana</span>
-        {ranges.map((week) => (
-          <span
-            key={week.id}
-            className="daily-week-label"
-            style={{ gridColumn: 'span 7' }}
-            title={week.range}
-          >
-            {week.label}
-          </span>
-        ))}
-      </div>
+type WeekRange = { id: string; label: string; range: string };
 
-      <div className="daily-heatmap-gridWrapper">
-        <div
-          className="daily-heatmap-grid"
-          style={{ gridTemplateColumns: `56px repeat(${columns}, 18px)` }}
-        >
-          {DAY_LABELS.map((label, dayIndex) => (
-            <Fragment key={label}>
-              <span className="daily-heatmap-day">{label}</span>
-              {weeks.map((week, weekIndex) => {
-                const cell = week[dayIndex];
-                const background =
-                  cell && cell.value > 0
-                    ? getDailyColor(cell.normalized)
-                    : 'rgba(148, 163, 184, 0.14)';
-                return (
-                  <span
-                    key={`${ranges[weekIndex].id}-${dayIndex}`}
-                    className="daily-heatmap-cell"
-                    style={{ backgroundColor: background }}
-                    title={
-                      cell
-                        ? `${cell.label} -> ${cell.value.toFixed(2)} ${unit}`
-                        : 'Sin dato'
-                    }
-                  >
-                    {cell && cell.icons.length ? (
-                      <span className="daily-cell-icons">{cell.icons.join(' ')}</span>
-                    ) : null}
-                  </span>
-                );
-              })}
-            </Fragment>
-          ))}
-        </div>
-      </div>
-    </>
-  );
-}
-
-function WeeklyBars({
-  weeks,
-  ranges,
-  unit,
-}: {
+type WeeklyBarsProps = {
   weeks: HeatmapCell[][];
-  ranges: Array<{ id: string; label: string; range: string }>;
+  ranges: WeekRange[];
   unit: string;
-}) {
+};
+
+function WeeklyBars({ weeks, ranges, unit }: WeeklyBarsProps) {
   const totals = weeks.map((week) => week.reduce((sum, day) => sum + (day?.value ?? 0), 0));
   const maxTotal = Math.max(...totals, 1);
+
   return (
     <div className="daily-bars">
       {weeks.map((week, index) => {
         const total = totals[index];
         const columnHeight = (total / maxTotal) * 100;
+        const meta = ranges[index];
+
         return (
-          <div key={ranges[index].id} className="daily-bars-week" title={ranges[index].range}>
+          <div key={meta.id} className="daily-bars-week" title={meta.range}>
             <div className="daily-bars-column">
               <div className="daily-bars-stack" style={{ height: `${columnHeight}%` }}>
                 {week.map((day, dayIndex) => {
                   const portion = total > 0 ? (day.value / total) * 100 : 0;
                   return (
                     <span
-                      key={`${ranges[index].id}-${dayIndex}`}
+                      key={`${meta.id}-${dayIndex}`}
                       className="daily-bar-segment"
                       style={{
                         height: `${portion}%`,
@@ -179,7 +91,8 @@ function WeeklyBars({
                 })}
               </div>
             </div>
-            <span className="daily-bars-label">{ranges[index].label}</span>
+            <span className="daily-bars-label">{meta.label}</span>
+            <span className="daily-bars-range">{meta.range}</span>
             <span className="daily-bars-total">{total.toFixed(1)} mm</span>
           </div>
         );
@@ -190,7 +103,7 @@ function WeeklyBars({
 
 function buildMatrix(daily: DailyDatum[]): {
   weeks: HeatmapCell[][];
-  weekRanges: Array<{ id: string; label: string; range: string }>;
+  weekRanges: WeekRange[];
   max: number;
 } {
   if (!daily.length) return { weeks: [], weekRanges: [], max: 0 };
@@ -230,11 +143,15 @@ function buildMatrix(daily: DailyDatum[]): {
     weeks.push(normalized.slice(i, i + 7));
   }
 
-  const weekRanges = weeks.map((week, index) => ({
-    id: `week-${index}`,
-    label: `Sem ${index + 1}`,
-    range: `${week[0]?.label ?? ''} -> ${week[week.length - 1]?.label ?? ''}`,
-  }));
+  const weekRanges: WeekRange[] = weeks.map((week, index) => {
+    const startLabel = week[0]?.label ?? '';
+    const endLabel = week[week.length - 1]?.label ?? '';
+    return {
+      id: `week-${index}`,
+      label: `Sem ${index + 1}`,
+      range: startLabel && endLabel ? `${startLabel} - ${endLabel}` : startLabel || endLabel,
+    };
+  });
 
   return { weeks, weekRanges, max };
 }

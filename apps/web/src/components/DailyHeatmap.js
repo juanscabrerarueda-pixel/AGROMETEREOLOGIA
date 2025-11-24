@@ -1,6 +1,5 @@
-import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
-import { Fragment, useMemo, useState } from 'react';
-const DAY_LABELS = ['Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab', 'Dom'];
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { useMemo } from 'react';
 const DAILY_HEAT_COLORS = [
     { stop: 0, color: [37, 99, 235] },
     { stop: 0.4, color: [59, 130, 246] },
@@ -8,41 +7,29 @@ const DAILY_HEAT_COLORS = [
     { stop: 1, color: [239, 68, 68] },
 ];
 export function DailyHeatmap({ daily, metric }) {
-    const [mode, setMode] = useState('heatmap');
     const { weeks, weekRanges, max } = useMemo(() => buildMatrix(daily), [daily]);
     if (!weeks.length) {
         return _jsx("div", { className: "empty-state", children: "Sin datos suficientes para generar el mapa de calor." });
     }
-    const columns = weeks.length * 7;
     const unit = metric === 'intensity' ? 'mm/h' : 'mm';
-    return (_jsxs("div", { className: "daily-heatmap", children: [_jsxs("div", { className: "daily-heatmap-headline", children: [_jsx("h3", { children: "Distribucion diaria" }), _jsxs("p", { children: ["Concentra los dias mas humedos para planear riego, cosecha, disponibilidad de pasturas y generacion solar. Pico observado: ", _jsx("strong", { children: max.toFixed(2) }), " ", unit, "."] })] }), _jsxs("div", { className: "daily-mode-toggle", children: [_jsx("button", { type: "button", className: `btn small ${mode === 'heatmap' ? 'active' : ''}`, onClick: () => setMode('heatmap'), children: "Heatmap" }), _jsx("button", { type: "button", className: `btn small ${mode === 'bars' ? 'active' : ''}`, onClick: () => setMode('bars'), children: "Barras" })] }), mode === 'heatmap' ? (_jsx(HeatmapView, { weeks: weeks, ranges: weekRanges, columns: columns, unit: unit })) : (_jsx(WeeklyBars, { weeks: weeks, ranges: weekRanges, unit: unit })), _jsxs("div", { className: "heatmap-scale", children: [_jsx("span", { children: "Seco" }), _jsx("div", { className: "heatmap-scale-bar" }), _jsx("span", { children: "Max" })] })] }));
+    return (_jsxs("div", { className: "daily-heatmap", children: [_jsxs("div", { className: "daily-heatmap-headline", children: [_jsx("h3", { children: "Distribucion diaria" }), _jsxs("p", { children: ["Concentra los dias mas humedos para planear riego, cosecha, disponibilidad de pasturas y generacion solar. Pico observado: ", _jsx("strong", { children: max.toFixed(2) }), " ", unit, "."] })] }), _jsx(WeeklyBars, { weeks: weeks, ranges: weekRanges, unit: unit }), _jsxs("div", { className: "heatmap-scale", children: [_jsx("span", { children: "Seco" }), _jsx("div", { className: "heatmap-scale-bar" }), _jsx("span", { children: "Max" })] })] }));
 }
-function HeatmapView({ weeks, ranges, columns, unit, }) {
-    return (_jsxs(_Fragment, { children: [_jsxs("div", { className: "daily-week-row", style: { gridTemplateColumns: `56px repeat(${columns}, 18px)` }, children: [_jsx("span", { className: "daily-week-placeholder", children: "Semana" }), ranges.map((week) => (_jsx("span", { className: "daily-week-label", style: { gridColumn: 'span 7' }, title: week.range, children: week.label }, week.id)))] }), _jsx("div", { className: "daily-heatmap-gridWrapper", children: _jsx("div", { className: "daily-heatmap-grid", style: { gridTemplateColumns: `56px repeat(${columns}, 18px)` }, children: DAY_LABELS.map((label, dayIndex) => (_jsxs(Fragment, { children: [_jsx("span", { className: "daily-heatmap-day", children: label }), weeks.map((week, weekIndex) => {
-                                const cell = week[dayIndex];
-                                const background = cell && cell.value > 0
-                                    ? getDailyColor(cell.normalized)
-                                    : 'rgba(148, 163, 184, 0.14)';
-                                return (_jsx("span", { className: "daily-heatmap-cell", style: { backgroundColor: background }, title: cell
-                                        ? `${cell.label} -> ${cell.value.toFixed(2)} ${unit}`
-                                        : 'Sin dato', children: cell && cell.icons.length ? (_jsx("span", { className: "daily-cell-icons", children: cell.icons.join(' ') })) : null }, `${ranges[weekIndex].id}-${dayIndex}`));
-                            })] }, label))) }) })] }));
-}
-function WeeklyBars({ weeks, ranges, unit, }) {
+function WeeklyBars({ weeks, ranges, unit }) {
     const totals = weeks.map((week) => week.reduce((sum, day) => sum + (day?.value ?? 0), 0));
     const maxTotal = Math.max(...totals, 1);
     return (_jsx("div", { className: "daily-bars", children: weeks.map((week, index) => {
             const total = totals[index];
             const columnHeight = (total / maxTotal) * 100;
-            return (_jsxs("div", { className: "daily-bars-week", title: ranges[index].range, children: [_jsx("div", { className: "daily-bars-column", children: _jsx("div", { className: "daily-bars-stack", style: { height: `${columnHeight}%` }, children: week.map((day, dayIndex) => {
+            const meta = ranges[index];
+            return (_jsxs("div", { className: "daily-bars-week", title: meta.range, children: [_jsx("div", { className: "daily-bars-column", children: _jsx("div", { className: "daily-bars-stack", style: { height: `${columnHeight}%` }, children: week.map((day, dayIndex) => {
                                 const portion = total > 0 ? (day.value / total) * 100 : 0;
                                 return (_jsx("span", { className: "daily-bar-segment", style: {
                                         height: `${portion}%`,
                                         backgroundColor: day.value > 0
                                             ? getDailyColor(day.normalized)
                                             : 'rgba(148, 163, 184, 0.2)',
-                                    }, title: `${day.label} -> ${day.value.toFixed(2)} ${unit}` }, `${ranges[index].id}-${dayIndex}`));
-                            }) }) }), _jsx("span", { className: "daily-bars-label", children: ranges[index].label }), _jsxs("span", { className: "daily-bars-total", children: [total.toFixed(1), " mm"] })] }, ranges[index].id));
+                                    }, title: `${day.label} -> ${day.value.toFixed(2)} ${unit}` }, `${meta.id}-${dayIndex}`));
+                            }) }) }), _jsx("span", { className: "daily-bars-label", children: meta.label }), _jsx("span", { className: "daily-bars-range", children: meta.range }), _jsxs("span", { className: "daily-bars-total", children: [total.toFixed(1), " mm"] })] }, meta.id));
         }) }));
 }
 function buildMatrix(daily) {
@@ -81,11 +68,15 @@ function buildMatrix(daily) {
     for (let i = 0; i < normalized.length; i += 7) {
         weeks.push(normalized.slice(i, i + 7));
     }
-    const weekRanges = weeks.map((week, index) => ({
-        id: `week-${index}`,
-        label: `Sem ${index + 1}`,
-        range: `${week[0]?.label ?? ''} -> ${week[week.length - 1]?.label ?? ''}`,
-    }));
+    const weekRanges = weeks.map((week, index) => {
+        const startLabel = week[0]?.label ?? '';
+        const endLabel = week[week.length - 1]?.label ?? '';
+        return {
+            id: `week-${index}`,
+            label: `Sem ${index + 1}`,
+            range: startLabel && endLabel ? `${startLabel} - ${endLabel}` : startLabel || endLabel,
+        };
+    });
     return { weeks, weekRanges, max };
 }
 function getDailyColor(value) {
