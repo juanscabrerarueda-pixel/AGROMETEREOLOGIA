@@ -78,39 +78,39 @@ const REFRESH_OPTIONS: RefreshOption[] = [
 const RANGE_OPTIONS: RangeOption[] = [
   {
     id: 'threeMonths',
-    label: 'Asltimos 3 meses',
+    label: 'Ultimos 3 meses',
     days: 90,
-    description: 'Observa la evoluciA3n reciente (aprox. Aoltimo trimestre).',
+    description: 'Observa la evolucion reciente (aprox. Ultimo trimestre).',
   },
   {
     id: 'oneYear',
-    label: 'Asltimo aAo',
+    label: 'Ultimo ano',
     days: 365,
-    description: 'Analiza cA3mo cerrA3 el Aoltimo aAo hAdrico completo.',
+    description: 'Analiza como cerro el Ultimo ano hidrico completo.',
   },
   {
     id: 'fiveYears',
-    label: 'Asltimos 5 aAos',
+    label: 'Ultimos 5 anos',
     days: 365 * 5,
     description: 'Identifica tendencias multianuales y cambios estructurales.',
   },
   {
     id: 'future',
-    label: 'PrA3x. 14 dAas',
+    label: 'Prox. 14 dias',
     days: 14,
     future: true,
-    description: 'PronA3stico inmediato (sin lAnea de tendencia).',
+    description: 'Pronostico inmediato (sin lAnea de tendencia).',
   },
 ];
 
 const METRIC_OPTIONS: Array<{ id: Metric; label: string; helper: string }> = [
-  { id: 'accumulated', label: 'Acumulado diario', helper: 'Suma mm por dAa (precipitaciA3n acumulada).' },
+  { id: 'accumulated', label: 'Acumulado diario', helper: 'Suma mm por dia (precipitacion acumulada).' },
   { id: 'intensity', label: 'Intensidad (mm/h)', helper: 'Pico horario diario (mm/h) como proxy de intensidad.' },
 ];
 
 const TREND_OPTIONS: Array<{ id: TrendType; label: string; helper: string }> = [
-  { id: 'MA', label: 'MA', helper: 'Media mA3vil con ventana fija.' },
-  { id: 'EMA', label: 'EMA', helper: 'Media mA3vil exponencial (pondera lo reciente).' },
+  { id: 'MA', label: 'MA', helper: 'Media movil con ventana fija.' },
+  { id: 'EMA', label: 'EMA', helper: 'Media movil exponencial (pondera lo reciente).' },
 ];
 
 const DEFAULT_DEPARTMENT = DEPARTMENT_OPTIONS[0];
@@ -128,7 +128,7 @@ export default function App() {
     return (
       <main className="wrap">
         <section className="card">
-          <h1>Panel agrometeorolA3gico</h1>
+          <h1>Panel agrometeorologico</h1>
           <p>Activa la variable VITE_FEATURE_AGROMETEO para visualizar este tablero.</p>
         </section>
       </main>
@@ -279,7 +279,7 @@ export default function App() {
     <main className="wrap">
       <header className="mb4 intro">
         <p className="tagline">Tendencias de lluvia en Colombia</p>
-        <h1>Panel agrometeorolA3gico</h1>
+        <h1>Panel agrometeorologico</h1>
         <p className="muted">
           Filtra por departamento y municipio, alterna entre acumulados o intensidad diaria y usa la
           lAnea de tendencia para resumir comportamientos. El mapa horario te ayuda a encontrar
@@ -289,13 +289,13 @@ export default function App() {
 
       <section className="card help mb4">
         <div className="help-header">
-          <strong>CA3mo usar</strong>
+          <strong>Como usar</strong>
           <button
             type="button"
             className="btn small"
             onClick={() => setHelpHidden((prev) => !prev)}
           >
-            {helpHidden ? 'Mostrar guAa' : 'Ocultar guAa'}
+            {helpHidden ? 'Mostrar guia' : 'Ocultar guia'}
           </button>
         </div>
         {!helpHidden && (
@@ -305,15 +305,15 @@ export default function App() {
               la capital).
             </li>
             <li>
-              Ajusta el rango rApido (3 meses, 1 aAo, 5 aAos o 14 dAas de pronA3stico). TambiAn puedes
+              Ajusta el rango rapido (3 meses, 1 ano, 5 anos o 14 dias de pronostico). Tambien puedes
               fijar fechas manualmente.
             </li>
             <li>
               Alterna entre acumulado diario o intensidad mAxima, y activa MA/EMA para suavizar la
-              serie histA3rica.
+              serie historica.
             </li>
             <li>
-              Usa la distribuciA3n horaria para detectar ventanas secas y revisa los insights
+              Usa la distribucion horaria para detectar ventanas secas y revisa los insights
               automAticos para recomendaciones puntuales.
             </li>
           </ol>
@@ -395,7 +395,7 @@ export default function App() {
             className="btn small"
             onClick={() => setShowTrend((prev) => !prev)}
             disabled={isFutureRange}
-            title={isFutureRange ? 'La tendencia no aplica a pronA3sticos futuros' : ''}
+            title={isFutureRange ? 'La tendencia no aplica a pronosticos futuros' : ''}
           >
             {showTrend ? 'Ocultar tendencia' : 'Ver tendencia'}
           </button>
@@ -420,7 +420,7 @@ export default function App() {
         </p>
 
         <div className="refresh-controls mt2">
-          <span className="tiny">ActualizaciA3n automAtica</span>
+          <span className="tiny">Actualizacion automAtica</span>
           <div className="seg compact">
             {REFRESH_OPTIONS.map((option) => (
               <button
@@ -465,7 +465,7 @@ export default function App() {
           <div className="error-banner mb3">
             <strong>No fue posible actualizar la serie.</strong>
             <p>
-              {series.error.message || 'No pudimos contactar la API. Revisa tu conexiA3n o intenta nuevamente.'}
+              {series.error.message || 'No pudimos contactar la API. Revisa tu conexion o intenta nuevamente.'}
             </p>
           </div>
         )}
@@ -558,7 +558,7 @@ export default function App() {
       <section className="card mb4">
         <div className="section-header">
           <div>
-            <h2>DistribuciA3n horaria</h2>
+            <h2>Distribucion horaria</h2>
             <p className="muted tiny">
               Identifica horarios con lluvia o ventanas secas (intensidad en mm/h).
             </p>
@@ -607,7 +607,7 @@ export default function App() {
             <strong>No fue posible generar insights.</strong>
             <p>
               {insights.error.message ||
-                'No logramos conectar con la API de insights. Vuelve a intentarlo cuando tengas conexiA3n estable.'}
+                'No logramos conectar con la API de insights. Vuelve a intentarlo cuando tengas conexion estable.'}
             </p>
           </div>
         ) : insights.data ? (
@@ -622,7 +622,7 @@ export default function App() {
             </ul>
           ) : (
             <div className="empty-state">
-              Sin hallazgos relevantes con los umbrales actuales. AjAostalos para mAs sensibilidad.
+              Sin hallazgos relevantes con los umbrales actuales. Ajustalos para mas sensibilidad.
             </div>
           )
         ) : (
@@ -897,7 +897,7 @@ function buildKpis(
       id: 'avg',
       label: 'Promedio diario',
       value: `${formatNumber(summary.average)} ${averageUnit}`,
-      note: `${summary.count.toLocaleString('es-CO')} dAas analizados`,
+      note: `${summary.count.toLocaleString('es-CO')} dias analizados`,
     },
     {
       id: 'trend',
@@ -1053,7 +1053,7 @@ function summarizeTrend(trend: TrendPoint[] | null): { value: string; note: stri
   if (!trend || !trend.length) {
     return {
       value: 'Sin datos',
-      note: 'Activa MA o EMA para calcular la tendencia histA3rica.',
+      note: 'Activa MA o EMA para calcular la tendencia historica.',
     };
   }
   const first = trend.find((item) => Number.isFinite(item.value));
@@ -1061,7 +1061,7 @@ function summarizeTrend(trend: TrendPoint[] | null): { value: string; note: stri
   if (!first || !last) {
     return {
       value: 'Sin datos',
-      note: 'Necesitamos mAs puntos para calcular la tendencia.',
+      note: 'Necesitamos mas puntos para calcular la tendencia.',
     };
   }
   const diff = last.value - first.value;
@@ -1094,18 +1094,18 @@ function buildChartNarrative(
   const parts: string[] = [];
   if (metric === 'accumulated') {
     parts.push(
-      `Entre ${rangeLabel} se acumularon ${formatNumber(summary.totalRain)} mm distribuidos en ${summary.count} dAas con datos.`
+      `Entre ${rangeLabel} se acumularon ${formatNumber(summary.totalRain)} mm distribuidos en ${summary.count} dias con datos.`
     );
     if (summary.maxValueDate) {
       parts.push(
-        `El dAa mAs lluvioso fue ${formatDisplayDate(summary.maxValueDate)}, cuando se registraron ${formatNumber(summary.maxValue)} mm en 24 horas.`
+        `El dia mas lluvioso fue ${formatDisplayDate(summary.maxValueDate)}, cuando se registraron ${formatNumber(summary.maxValue)} mm en 24 horas.`
       );
     }
   } else {
-    parts.push(`Analizamos ${summary.count} dAas de intensidades entre ${rangeLabel}.`);
+    parts.push(`Analizamos ${summary.count} dias de intensidades entre ${rangeLabel}.`);
     if (summary.maxValueDate) {
       parts.push(
-        `La rAfaga mAxima ocurriA3 el ${formatDisplayDate(summary.maxValueDate)} y alcanzA3 ${formatNumber(summary.maxValue)} mm/h.`
+        `La rAfaga mAxima ocurrio el ${formatDisplayDate(summary.maxValueDate)} y alcanzo ${formatNumber(summary.maxValue)} mm/h.`
       );
     }
   }
