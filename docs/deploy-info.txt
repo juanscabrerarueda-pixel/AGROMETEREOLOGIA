@@ -1,1 +1,1 @@
-Manual deploy: fix accents 2025-11-24T19:18:04.3544320Z
+Manual deploy: thresholds + history 2025-11-24T19:44:43.6564100Z

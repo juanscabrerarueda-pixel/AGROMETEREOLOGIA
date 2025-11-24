@@ -1,4 +1,4 @@
-﻿import { useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import type { Series } from '@pkg/core';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Tooltip as ChartTooltip } from 'chart.js';
@@ -71,14 +71,66 @@ type Sparkline = {
   peak: number;
   latest: number;
   latestLabel: string;
+  accumulated: number[];
 };
+
+type UserThresholds = {
+  intensity: number;
+  latency: number;
+};
+
+const DEFAULT_THRESHOLDS: UserThresholds = {
+  intensity: 8,
+  latency: 60,
+};
+
+function loadThresholds(): UserThresholds {
+  if (typeof window === 'undefined') return DEFAULT_THRESHOLDS;
+  try {
+    const raw = window.localStorage.getItem('realtime-thresholds');
+    if (!raw) return DEFAULT_THRESHOLDS;
+    const parsed = JSON.parse(raw);
+    return {
+      intensity:
+        typeof parsed.intensity === 'number' && Number.isFinite(parsed.intensity)
+          ? parsed.intensity
+          : DEFAULT_THRESHOLDS.intensity,
+      latency:
+        typeof parsed.latency === 'number' && Number.isFinite(parsed.latency)
+          ? parsed.latency
+          : DEFAULT_THRESHOLDS.latency,
+    };
+  } catch {
+    return DEFAULT_THRESHOLDS;
+  }
+}
 
 export function RealtimePanel({ series, busy }: RealtimePanelProps) {
   const snapshot = useMemo(() => buildSnapshot(series), [series]);
   const sparkline = useMemo(() => buildSparkline(series), [series]);
+  const [userThresholds, setUserThresholds] = useState<UserThresholds>(() => loadThresholds());
   const [guideOpen, setGuideOpen] = useState(true);
-  const alerts = useMemo(() => buildRealtimeAlerts(snapshot?.latest), [snapshot]);
-  const latencyPercent = snapshot ? Math.min((snapshot.latencyMinutes ?? 0) / 60, 1) * 100 : 0;
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem('realtime-thresholds', JSON.stringify(userThresholds));
+    }
+  }, [userThresholds]);
+  const handleThresholdChange = (key: keyof UserThresholds, rawValue: number) => {
+    if (Number.isNaN(rawValue)) return;
+    setUserThresholds((prev) => {
+      const next = { ...prev };
+      next[key] =
+        key === 'latency'
+          ? Math.max(10, Math.round(rawValue))
+          : Math.max(0, Number(rawValue.toFixed(1)));
+      return next;
+    });
+  };
+  const alerts = useMemo(() => buildRealtimeAlerts(snapshot?.latest, userThresholds), [snapshot, userThresholds]);
+  const latencyPercent = snapshot
+    ? Math.min((snapshot.latencyMinutes ?? 0) / Math.max(userThresholds.latency, 1), 1) * 100
+    : 0;
+  const latencyWarn = snapshot ? snapshot.latencyMinutes > userThresholds.latency : false;
   const sparklineChart = useMemo(() => {
     if (!sparkline) return null;
     return {
@@ -93,6 +145,16 @@ export function RealtimePanel({ series, busy }: RealtimePanelProps) {
             pointRadius: 0,
             tension: 0.35,
             fill: true,
+            yAxisID: 'y',
+          },
+          {
+            data: sparkline.accumulated,
+            borderColor: '#22d3ee',
+            borderDash: [6, 4],
+            borderWidth: 1.5,
+            pointRadius: 0,
+            fill: false,
+            yAxisID: 'y2',
           },
         ],
       },
@@ -106,6 +168,12 @@ export function RealtimePanel({ series, busy }: RealtimePanelProps) {
             display: false,
             beginAtZero: true,
             suggestedMax: Math.max(sparkline.peak * 1.2, 1),
+          },
+          y2: {
+            type: 'linear' as const,
+            display: false,
+            beginAtZero: true,
+            position: 'right' as const,
           },
         },
         elements: { point: { radius: 0 } },
@@ -125,6 +193,29 @@ export function RealtimePanel({ series, busy }: RealtimePanelProps) {
         {snapshot && (
           <span className={`status-pill ${snapshot.isStale ? 'warn' : ''}`}>{snapshot.relativeLabel}</span>
         )}
+      </div>
+
+      <div className="threshold-controls">
+        <label>
+          <span>Intensidad crítica (mm/h)</span>
+          <input
+            type="number"
+            min={0}
+            step={0.5}
+            value={userThresholds.intensity}
+            onChange={(event) => handleThresholdChange('intensity', Number(event.target.value))}
+          />
+        </label>
+        <label>
+          <span>Latencia máxima (min)</span>
+          <input
+            type="number"
+            min={10}
+            step={5}
+            value={userThresholds.latency}
+            onChange={(event) => handleThresholdChange('latency', Number(event.target.value))}
+          />
+        </label>
       </div>
 
       {busy && !snapshot ? (
@@ -177,12 +268,12 @@ export function RealtimePanel({ series, busy }: RealtimePanelProps) {
             </div>
           )}
 
-          <div className={`latency-bar ${snapshot.isStale ? 'warn' : ''}`}>
+          <div className={`latency-bar ${latencyWarn ? 'warn' : ''}`}>
             <span className="tiny">Latencia relativa (<strong>{snapshot.relativeLabel}</strong>)</span>
             <div className="latency-track">
               <div className="latency-fill" style={{ width: `${latencyPercent}%` }} />
             </div>
-            <p className="muted tiny">0 min = actualizado, 60 min = umbral crítico</p>
+            <p className="muted tiny">0 min = actualizado · {userThresholds.latency} min = umbral crítico</p>
           </div>
 
           {sparkline && sparklineChart && (
@@ -196,6 +287,7 @@ export function RealtimePanel({ series, busy }: RealtimePanelProps) {
               </div>
               <div className="sparkline-chart">
                 <Line data={sparklineChart.data} options={sparklineChart.options} height={60} />
+                <p className="muted tiny sparkline-legend">Sólido: intensidad · Punteado: acumulado.</p>
               </div>
             </div>
           )}
@@ -290,6 +382,7 @@ function buildSparkline(series?: Series | null): Sparkline | null {
     .map((point) => ({
       iso: point.t as string,
       value: typeof point.prcpRate === 'number' ? Number(point.prcpRate.toFixed(2)) : 0,
+      rain: typeof point.prcp === 'number' ? Number(point.prcp.toFixed(2)) : 0,
     }))
     .filter((point) => {
       const stamp = Date.parse(point.iso);
@@ -299,6 +392,12 @@ function buildSparkline(series?: Series | null): Sparkline | null {
   if (!candidates.length) return null;
   const windowed = candidates.slice(-24);
   const values = windowed.map((point) => point.value);
+  const accumulated: number[] = [];
+  let running = 0;
+  windowed.forEach((point) => {
+    running += point.rain;
+    accumulated.push(Number(running.toFixed(2)));
+  });
   const peak = values.reduce((max, value) => (value > max ? value : max), 0);
   const latest = values[values.length - 1] ?? 0;
   return {
@@ -307,6 +406,7 @@ function buildSparkline(series?: Series | null): Sparkline | null {
     peak,
     latest,
     latestLabel: formatSparklineLabel(windowed[windowed.length - 1]?.iso),
+    accumulated,
   };
 }
 
@@ -427,7 +527,7 @@ function computeForecast(points: Series['hourly'], now: number): { total: number
 
 type Alert = { id: string; label: string; message: string; tone: 'calm' | 'warn' | 'alert' };
 
-function buildRealtimeAlerts(latest?: SnapshotLatest): Alert[] {
+function buildRealtimeAlerts(latest: SnapshotLatest | undefined, thresholds: UserThresholds): Alert[] {
   if (!latest) return [];
   const alerts: Alert[] = [];
   if (latest.rain != null && latest.rain >= 3) {
@@ -441,12 +541,13 @@ function buildRealtimeAlerts(latest?: SnapshotLatest): Alert[] {
           : 'Humedece el suelo; verifica escorrentía en zonas bajas.',
     });
   }
-  if (latest.intensity != null && latest.intensity >= 8) {
+  const intensityThreshold = thresholds?.intensity ?? DEFAULT_THRESHOLDS.intensity;
+  if (latest.intensity != null && latest.intensity >= intensityThreshold) {
     alerts.push({
       id: 'intensity',
       label: 'Pico de intensidad',
       tone: 'alert',
-      message: 'Ráfagas >8 mm/h; evita labores de aspersión o riego superficial.',
+      message: `Ráfagas >${intensityThreshold.toFixed(1)} mm/h; evita labores de aspersión o riego superficial.`,
     });
   }
   if (latest.temp != null) {

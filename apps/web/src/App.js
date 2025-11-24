@@ -423,18 +423,26 @@ function buildKpis(summary, metric, trend, range, selection, activeRange, trendI
     const unit = metric === 'intensity' ? 'mm/h' : 'mm';
     const averageUnit = metric === 'intensity' ? 'mm/h' : 'mm';
     const rangeLabel = selection === 'custom' ? formatRangeSummary(range) : activeRange?.label ?? formatRangeSummary(range);
+    const history = computeHistoricalStats(summary);
     return [
         {
             id: 'max',
             label: metric === 'intensity' ? 'Máximo registrado' : 'Máximo diario',
             value: `${formatNumber(summary.maxValue)} ${unit}`,
-            note: formatDisplayDate(summary.maxValueDate),
+            note: [formatDisplayDate(summary.maxValueDate), history?.max != null ? formatDeltaText(summary.maxValue, history.max, unit) : null]
+                .filter(Boolean)
+                .join(' · '),
         },
         {
             id: 'avg',
             label: 'Promedio diario',
             value: `${formatNumber(summary.average)} ${averageUnit}`,
-            note: `${summary.count.toLocaleString('es-CO')} días analizados`,
+            note: [
+                `${summary.count.toLocaleString('es-CO')} días analizados`,
+                history?.average != null ? formatDeltaText(summary.average, history.average, averageUnit) : null,
+            ]
+                .filter(Boolean)
+                .join(' · '),
         },
         {
             id: 'trend',
@@ -449,6 +457,37 @@ function buildKpis(summary, metric, trend, range, selection, activeRange, trendI
             note: rangeLabel,
         },
     ];
+}
+function computeHistoricalStats(summary, years = 5) {
+    if (!summary.points.length || !summary.lastDate)
+        return null;
+    const lastStamp = Date.parse(`${summary.lastDate}T00:00:00Z`);
+    if (!Number.isFinite(lastStamp))
+        return null;
+    const cutoff = new Date(lastStamp);
+    cutoff.setUTCFullYear(cutoff.getUTCFullYear() - years);
+    const cutoffMs = cutoff.getTime();
+    const filtered = summary.points.filter((point) => {
+        const stamp = Date.parse(`${point.date}T00:00:00Z`);
+        return Number.isFinite(stamp) && stamp >= cutoffMs;
+    });
+    if (!filtered.length)
+        return null;
+    const values = filtered.map((point) => point.value);
+    return {
+        average: values.reduce((sum, value) => sum + value, 0) / values.length,
+        max: Math.max(...values),
+    };
+}
+function formatDeltaText(current, baseline, unit) {
+    if (!Number.isFinite(current) || !Number.isFinite(baseline))
+        return '';
+    const delta = Number((current - baseline).toFixed(2));
+    if (Math.abs(delta) < 0.01) {
+        return `sin cambio vs. 5 años`;
+    }
+    const prefix = delta >= 0 ? '+' : '−';
+    return `${prefix}${formatNumber(Math.abs(delta))} ${unit} vs. 5 años`;
 }
 function buildMetaSummary(series, metric, department, selectedMuni) {
     if (!series)

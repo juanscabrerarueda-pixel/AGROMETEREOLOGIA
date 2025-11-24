@@ -53,6 +53,29 @@ body {
   gap: 16px;
 }
 
+.threshold-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.threshold-controls label {
+  flex: 1 1 200px;
+  display: flex;
+  flex-direction: column;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.threshold-controls input {
+  margin-top: 6px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: rgba(12, 15, 24, 0.9);
+  color: #fff;
+}
+
 .chart-narrative {
   margin-top: 18px;
   color: var(--muted);
@@ -109,8 +132,8 @@ body {
 .status-chip {
   border-radius: 12px;
   padding: 12px 14px;
-  background: rgba(34, 197, 94, 0.08);
-  border: 1px solid rgba(34, 197, 94, 0.4);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .status-chip.calm {
@@ -194,6 +217,12 @@ body {
 .sparkline-chart canvas {
   width: 100% !important;
   height: 70px !important;
+}
+
+.sparkline-legend {
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--muted);
 }
 
 .realtime-guide {
