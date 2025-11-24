@@ -632,8 +632,9 @@ body {
 
 .kpis {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 14px;
+  align-items: stretch;
 }
 
 .kpis + .narrative-card {
@@ -1295,13 +1296,23 @@ body {
 
   .kpis {
     display: flex;
-    overflow-x: auto;
-    gap: 12px;
-    padding-bottom: 6px;
+    flex-direction: column;
+    overflow: visible;
+    gap: 10px;
+    padding-bottom: 0;
   }
 
   .kpi {
-    min-width: 180px;
+    min-width: 100%;
+    padding: 16px;
+  }
+
+  .kpis + .narrative-card {
+    margin-top: 12px;
+  }
+
+  .narrative-card {
+    font-size: 12px;
   }
 
   .meta-panel {
