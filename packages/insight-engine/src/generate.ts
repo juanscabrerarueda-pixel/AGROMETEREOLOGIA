@@ -64,6 +64,8 @@ export function insightsFromSeries(series: Series, thresholds: Thresholds): Insi
 
   const rangeText = buildRangeLabel(series);
 
+  const spanDays = computeRangeSpanDays(series);
+
   const mode = inferTemporalMode(series);
 
   const isFuture = mode === 'future';
@@ -71,6 +73,14 @@ export function insightsFromSeries(series: Series, thresholds: Thresholds): Insi
 
 
   if (daily.totalDays > 0) {
+
+    const rainyShare = spanDays ? Math.min((daily.totalDays / spanDays) * 100, 100) : null;
+
+    const dryDays = spanDays ? Math.max(spanDays - daily.totalDays, 0) : null;
+
+    const avgRainyDay = daily.totalDays ? daily.totalRain / daily.totalDays : null;
+
+    const avgWholeSpan = spanDays ? daily.totalRain / spanDays : null;
 
     const rainSentence =
 
@@ -108,6 +118,34 @@ export function insightsFromSeries(series: Series, thresholds: Thresholds): Insi
 
         : '';
 
+    const coverageSentence =
+
+      rainyShare != null && spanDays
+
+        ? `Hubo lluvia en ${daily.totalDays} de ${spanDays} d?as (${rainyShare.toFixed(0)} % del periodo) y ${dryDays ?? 0} se mantuvieron secos.`
+
+        : '';
+
+    const averagesSentence = avgRainyDay
+
+      ? `Cuando llovi?, promedi? ${formatNumber(avgRainyDay)} mm por d?a${
+
+          avgWholeSpan ? ` (${formatNumber(avgWholeSpan)} mm diarios sobre toda la ventana).` : '.'
+
+        }`
+
+      : '';
+
+    const drySentence = daily.longestDry
+
+      ? `La racha seca m?s larga ${isFuture ? 'proyectada ser?a' : 'dur?'} ${
+
+          daily.longestDry.length
+
+        } d?as entre ${formatDate(daily.longestDry.from)} y ${formatDate(daily.longestDry.to)}.`
+
+      : '';
+
 
 
     insights.push({
@@ -116,7 +154,7 @@ export function insightsFromSeries(series: Series, thresholds: Thresholds): Insi
 
       kind: 'trend',
 
-      text: `${rainSentence} ${maxSentence} ${lastSentence}`.trim(),
+      text: `${rainSentence} ${maxSentence} ${lastSentence} ${coverageSentence} ${averagesSentence} ${drySentence}`.trim(),
 
       data: { daily },
 
@@ -154,7 +192,23 @@ export function insightsFromSeries(series: Series, thresholds: Thresholds): Insi
 
   if (peaks.length) {
 
+    const threshold = thresholds?.intensityMmHr ?? 6;
+
     const highest = peaks.reduce((max, peak) => (peak.value > max.value ? peak : max), peaks[0]);
+
+    const uniquePeakDays = Array.from(new Set(peaks.map((peak) => peak.from?.slice(0, 10) ?? '')));
+
+    const earliestPeak = peaks[0];
+
+    const latestPeak = peaks[peaks.length - 1];
+
+    const distributionSentence =
+
+      uniquePeakDays.length > 1
+
+        ? `Impactaron ${uniquePeakDays.length} d?as distintos entre ${formatDate(earliestPeak.from)} y ${formatDate(latestPeak.from)}.`
+
+        : `Se concentraron el ${formatDate(earliestPeak.from)}, se?al de un evento puntual.`;
 
     insights.push({
 
@@ -162,15 +216,15 @@ export function insightsFromSeries(series: Series, thresholds: Thresholds): Insi
 
       kind: 'event',
 
-      text: `${isFuture ? 'Se proyectan' : 'Se detectaron'} ${peaks.length} episodios con intensidades superiores a ${(thresholds?.intensityMmHr ?? 6).toFixed(
+      text: `${isFuture ? 'Se proyectan' : 'Se detectaron'} ${peaks.length} episodios con intensidades superiores a ${threshold.toFixed(
 
         1
 
-      )} mm/h. El más intenso ${isFuture ? 'alcanzaría' : 'alcanzó'} ${formatNumber(highest.value)} mm/h el ${formatDate(
+      )} mm/h. El m?s intenso ${isFuture ? 'alcanzar?a' : 'alcanz?'} ${formatNumber(highest.value)} mm/h el ${formatDate(
 
         highest.from
 
-      )}.`,
+      )}. ${distributionSentence} Programa labores cr?ticas fuera de esas ventanas para evitar da?os por escorrent?a.`,
 
       data: { peaks },
 
@@ -448,6 +502,26 @@ function buildRangeLabel(series: Series): string {
 
 }
 
+function computeRangeSpanDays(series: Series): number | null {
+
+  const from = series.range?.from;
+
+  const to = series.range?.to;
+
+  if (!from || !to) return null;
+
+  const start = new Date(`${from}T00:00:00Z`);
+
+  const end = new Date(`${to}T00:00:00Z`);
+
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return null;
+
+  const diff = Math.round((end.getTime() - start.getTime()) / MS_PER_DAY) + 1;
+
+  return diff > 0 ? diff : null;
+
+}
+
 
 
 function inferTemporalMode(series: Series): TemporalMode {
@@ -505,6 +579,8 @@ function addDaysToIso(startIso: string, days: number): string {
 
 
 const MS_PER_HOUR = 60 * 60 * 1000;
+
+const MS_PER_DAY = 24 * MS_PER_HOUR;
 
 
 

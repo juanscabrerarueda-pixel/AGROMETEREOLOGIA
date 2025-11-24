@@ -26,9 +26,14 @@ export function insightsFromSeries(series, thresholds) {
     const hourly = series.hourly;
     const daily = summarizeDaily(series);
     const rangeText = buildRangeLabel(series);
+    const spanDays = computeRangeSpanDays(series);
     const mode = inferTemporalMode(series);
     const isFuture = mode === 'future';
     if (daily.totalDays > 0) {
+        const rainyShare = spanDays ? Math.min((daily.totalDays / spanDays) * 100, 100) : null;
+        const dryDays = spanDays ? Math.max(spanDays - daily.totalDays, 0) : null;
+        const avgRainyDay = daily.totalDays ? daily.totalRain / daily.totalDays : null;
+        const avgWholeSpan = spanDays ? daily.totalRain / spanDays : null;
         const rainSentence = daily.totalRain > 0
             ? `Entre ${rangeText} ${isFuture ? 'se proyectan' : 'se acumularon'} ${formatNumber(daily.totalRain)} mm repartidos en ${daily.totalDays} días con registro.`
             : `Entre ${rangeText} ${isFuture ? 'no se proyecta' : 'no se registró'} lluvia medible.`;
@@ -38,10 +43,19 @@ export function insightsFromSeries(series, thresholds) {
         const lastSentence = daily.lastRainDate && daily.lastRainValue != null
             ? `El último día con lluvia ${isFuture ? 'proyectada sería' : 'fue'} ${formatDate(daily.lastRainDate)}, con ${formatNumber(daily.lastRainValue)} mm.`
             : '';
+        const coverageSentence = rainyShare != null && spanDays
+            ? `Hubo lluvia en ${daily.totalDays} de ${spanDays} d?as (${rainyShare.toFixed(0)} % del periodo) y ${dryDays ?? 0} se mantuvieron secos.`
+            : '';
+        const averagesSentence = avgRainyDay
+            ? `Cuando llovi?, promedi? ${formatNumber(avgRainyDay)} mm por d?a${avgWholeSpan ? ` (${formatNumber(avgWholeSpan)} mm diarios sobre toda la ventana).` : '.'}`
+            : '';
+        const drySentence = daily.longestDry
+            ? `La racha seca m?s larga ${isFuture ? 'proyectada ser?a' : 'dur?'} ${daily.longestDry.length} d?as entre ${formatDate(daily.longestDry.from)} y ${formatDate(daily.longestDry.to)}.`
+            : '';
         insights.push({
             id: 'daily-summary',
             kind: 'trend',
-            text: `${rainSentence} ${maxSentence} ${lastSentence}`.trim(),
+            text: `${rainSentence} ${maxSentence} ${lastSentence} ${coverageSentence} ${averagesSentence} ${drySentence}`.trim(),
             data: { daily },
         });
     }
@@ -56,11 +70,18 @@ export function insightsFromSeries(series, thresholds) {
     }
     const peaks = peaksIntensity(hourly, thresholds?.intensityMmHr ?? 6);
     if (peaks.length) {
+        const threshold = thresholds?.intensityMmHr ?? 6;
         const highest = peaks.reduce((max, peak) => (peak.value > max.value ? peak : max), peaks[0]);
+        const uniquePeakDays = Array.from(new Set(peaks.map((peak) => peak.from?.slice(0, 10) ?? '')));
+        const earliestPeak = peaks[0];
+        const latestPeak = peaks[peaks.length - 1];
+        const distributionSentence = uniquePeakDays.length > 1
+            ? `Impactaron ${uniquePeakDays.length} d?as distintos entre ${formatDate(earliestPeak.from)} y ${formatDate(latestPeak.from)}.`
+            : `Se concentraron el ${formatDate(earliestPeak.from)}, se?al de un evento puntual.`;
         insights.push({
             id: 'intensity-peaks',
             kind: 'event',
-            text: `${isFuture ? 'Se proyectan' : 'Se detectaron'} ${peaks.length} episodios con intensidades superiores a ${(thresholds?.intensityMmHr ?? 6).toFixed(1)} mm/h. El más intenso ${isFuture ? 'alcanzaría' : 'alcanzó'} ${formatNumber(highest.value)} mm/h el ${formatDate(highest.from)}.`,
+            text: `${isFuture ? 'Se proyectan' : 'Se detectaron'} ${peaks.length} episodios con intensidades superiores a ${threshold.toFixed(1)} mm/h. El m?s intenso ${isFuture ? 'alcanzar?a' : 'alcanz?'} ${formatNumber(highest.value)} mm/h el ${formatDate(highest.from)}. ${distributionSentence} Programa labores cr?ticas fuera de esas ventanas para evitar da?os por escorrent?a.`,
             data: { peaks },
         });
     }
@@ -174,6 +195,18 @@ function buildRangeLabel(series) {
     const to = series.range?.to ?? '';
     return `${formatDate(from)} - ${formatDate(to)}`;
 }
+function computeRangeSpanDays(series) {
+    const from = series.range?.from;
+    const to = series.range?.to;
+    if (!from || !to)
+        return null;
+    const start = new Date(`${from}T00:00:00Z`);
+    const end = new Date(`${to}T00:00:00Z`);
+    if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime()))
+        return null;
+    const diff = Math.round((end.getTime() - start.getTime()) / MS_PER_DAY) + 1;
+    return diff > 0 ? diff : null;
+}
 function inferTemporalMode(series) {
     const to = Date.parse(series.range?.to ?? '');
     if (Number.isFinite(to)) {
@@ -202,6 +235,7 @@ function addDaysToIso(startIso, days) {
     return date.toISOString().slice(0, 10);
 }
 const MS_PER_HOUR = 60 * 60 * 1000;
+const MS_PER_DAY = 24 * MS_PER_HOUR;
 function sliceRecent(hourly, hours) {
     if (!hourly.length)
         return [];
