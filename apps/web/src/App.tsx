@@ -99,7 +99,7 @@ const RANGE_OPTIONS: RangeOption[] = [
     label: 'Prox. 14 dias',
     days: 14,
     future: true,
-    description: 'Pronostico inmediato (sin lAnea de tendencia).',
+    description: 'Pronostico inmediato (sin linea de tendencia).',
   },
 ];
 
@@ -218,6 +218,8 @@ export default function App() {
     () => buildSectorNarratives(aggregated, series.data, metric),
     [aggregated, series.data, metric]
   );
+  const agroNarrative = useMemo(() => buildAgroNarrative(series.data), [series.data]);
+  const hourlyNarrative = useMemo(() => buildHourlyNarrative(series.data), [series.data]);
 
   const trendPoints = useMemo(() => {
     if (!showTrend || isFutureRange || !aggregated.points.length) {
@@ -321,12 +323,12 @@ export default function App() {
               fijar fechas manualmente.
             </li>
             <li>
-              Alterna entre acumulado diario o intensidad mAxima, y activa MA/EMA para suavizar la
+              Alterna entre acumulado diario o intensidad maxima, y activa MA/EMA para suavizar la
               serie historica.
             </li>
             <li>
               Usa la distribucion horaria para detectar ventanas secas y revisa los insights
-              automAticos para recomendaciones puntuales.
+              automaticos para recomendaciones puntuales.
             </li>
           </ol>
         )}
@@ -432,7 +434,7 @@ export default function App() {
         </p>
 
         <div className="refresh-controls mt2">
-          <span className="tiny">Actualizacion automAtica</span>
+          <span className="tiny">Actualizacion automatica</span>
           <div className="seg compact">
             {REFRESH_OPTIONS.map((option) => (
               <button
@@ -555,6 +557,11 @@ export default function App() {
           </div>
         </div>
         <AgroPanels series={series.data} />
+        {agroNarrative && (
+          <div className="narrative-card slim mt2">
+            <p>{agroNarrative}</p>
+          </div>
+        )}
         <details className="glossary mt2">
           <summary>Como leer estas variables</summary>
           <ul>
@@ -579,6 +586,11 @@ export default function App() {
         <div className="hourlyWrap">
           <HourlyHeatmap series={series.data} variable="prcpRate" />
         </div>
+        {hourlyNarrative && (
+          <div className="narrative-card slim mt2">
+            <p>{hourlyNarrative}</p>
+          </div>
+        )}
         <details className="glossary mt2">
           <summary>Como leer la distribucion</summary>
           <ul>
@@ -594,7 +606,7 @@ export default function App() {
           <div>
             <h2>Insights automatizados</h2>
             <p className="muted tiny">
-              Basados en umbrales de impacto y cAlculos del paquete insight-engine.
+              Basados en umbrales de impacto y calculos del paquete insight-engine.
             </p>
           </div>
         </div>
@@ -954,7 +966,7 @@ function buildImpactNarrative(summary: ChartSummary, metric: Metric): string | n
   const impact = impactFromBadge(badge.label);
   return `Acumulado ${formatNumber(summary.totalRain)} mm en ${summary.count.toLocaleString(
     'es-CO'
-  )} di12as. El pico diario alcanzi12 ${formatNumber(summary.maxValue)} ${unit} (${badge.label}). ${impact}`;
+  )} dias. El pico diario alcanzo ${formatNumber(summary.maxValue)} ${unit} (${badge.label}). ${impact}`;
 }
 
 function buildIntensityBadge(value: number, metric: Metric): KPIBadge | undefined {
@@ -969,7 +981,7 @@ function buildIntensityBadge(value: number, metric: Metric): KPIBadge | undefine
 function impactFromBadge(label: string): string {
   switch (label) {
     case 'Evento fuerte':
-      return 'Probables anegamientos y retrasos logi12sticos; prioriza ventanas secas antes de ingresar maquinaria.';
+      return 'Probables anegamientos y retrasos logisticos; prioriza ventanas secas antes de ingresar maquinaria.';
     case 'Temporal':
       return 'Suelos saturados y charcos puntuales: evita labores pesadas hasta que baje la intensidad.';
     case 'Lluvia moderada':
@@ -988,44 +1000,241 @@ function buildSectorNarratives(
   const badge = buildIntensityBadge(summary.maxValue, metric);
   const baselines = computeAgroBaselines(series);
 
-  const agriculture =
-    badge?.label === 'Evento fuerte'
-      ? `Eventos intensos (${badge.label.toLowerCase()}) acumulan ${formatNumber(
-          summary.totalRain
-        )} mm. Retrasa siembra o aplicaciones hasta que drene el lote.`
-      : summary.average < 5
-      ? `Acumulados bajos (${formatNumber(summary.average)} mm/dia) exigen reforzar riego y aprovechar eventos >5 mm.`
-      : `Condicion estable: monitorea drenajes despues de dias >20 mm y usa ventanas secas para cosecha.`;
+  const agricultureParts: string[] = [];
+  agricultureParts.push(
+    `Analizamos ${summary.count.toLocaleString('es-CO')} dias con ${formatNumber(
+      summary.totalRain
+    )} mm (${formatNumber(summary.average)} mm/dia).`
+  );
+  if (badge?.label === 'Evento fuerte') {
+    agricultureParts.push(
+      'La lluvia mas intensa sugiere atrasar siembra, fertilizacion foliar y entrada de maquinaria hasta que el lote drene.'
+    );
+  } else if (badge?.label === 'Temporal') {
+    agricultureParts.push('Charcos probables; programa labores en franjas secas y verifica drenajes secundarios.');
+  } else if (summary.average < 5) {
+    agricultureParts.push('Acumulado modesto, ideal para preparar riego y aprovechar cualquier evento >5 mm.');
+  } else {
+    agricultureParts.push('Humedad regular: vigila malezas y usa las ventanas con menos de 10 mm para cosecha mecanica.');
+  }
 
-  const livestock =
-    badge && (badge.label === 'Temporal' || badge.label === 'Evento fuerte')
-      ? 'Charcos y barro en potreros bajos; rota ganado a zonas altas y evita sobrepastoreo.'
-      : summary.average < 4
-      ? 'Ambiente mas seco; refuerza sombra y bebederos para evitar estres termico.'
-      : 'Humedad moderada favorece rebrote, pero revisa accesos luego de jornadas superiores a 20 mm.';
+  const livestockParts: string[] = [];
+  if (badge && (badge.label === 'Temporal' || badge.label === 'Evento fuerte')) {
+    livestockParts.push('Pasturas en zonas bajas pueden encharcarse; rota hatos a potreros altos y refuerza caminos.');
+  } else if (summary.average < 4) {
+    livestockParts.push('Secuencia mas seca; provee sombra, sales y agua fresca para evitar estres termico.');
+  } else {
+    livestockParts.push('Humedad media favorece rebrote, pero revisa corrales despues de jornadas superiores a 20 mm.');
+  }
+  if (baselines.wind != null) {
+    livestockParts.push(
+      baselines.wind >= 8
+        ? `Viento medio ${(baselines.wind ?? 0).toFixed(1)} m/s ayuda a ventilar establos.`
+        : `Viento suave ${(baselines.wind ?? 0).toFixed(1)} m/s: monitorea insectos y calor acumulado.`
+    );
+  }
 
-  let energy = 'Sin suficiente informacion para energia.';
-  if (baselines.solarKwh != null || baselines.wind != null) {
-    const solarText =
-      baselines.solarKwh != null
-        ? baselines.solarKwh >= 4
-          ? `Radiacion ${(baselines.solarKwh ?? 0).toFixed(1)} kWh/m2: ventana productiva para fotovoltaica.`
-          : `Radiacion baja (${(baselines.solarKwh ?? 0).toFixed(1)} kWh/m2), espera menor generacion.`
-        : null;
-    const windText =
-      baselines.wind != null
-        ? baselines.wind >= 8
-          ? `Viento medio ${(baselines.wind ?? 0).toFixed(1)} m/s: util para ventilacion y turbinas menores.`
-          : `Viento suave ${(baselines.wind ?? 0).toFixed(1)} m/s: condiciones estables para equipos expuestos.`
-        : null;
-    energy = [solarText, windText].filter(Boolean).join(' ') || energy;
+  const energyParts: string[] = [];
+  if (baselines.solarKwh != null) {
+    energyParts.push(
+      baselines.solarKwh >= 4.5
+        ? `Radiacion ${(baselines.solarKwh ?? 0).toFixed(1)} kWh/m2: buen rendimiento fotovoltaico y para secado de forraje.`
+        : `Radiacion limitada (${(baselines.solarKwh ?? 0).toFixed(
+            1
+          )} kWh/m2); reduce expectativas de generacion solar.`
+    );
+  }
+  if (baselines.wind != null) {
+    energyParts.push(
+      baselines.wind >= 9
+        ? `Viento ${(baselines.wind ?? 0).toFixed(1)} m/s soporta turbinas menores y ventilacion forzada.`
+        : `Viento por debajo de ${(baselines.wind ?? 0).toFixed(
+            1
+          )} m/s: enfocate en capturar ventana solar.`
+    );
+  }
+  if (!energyParts.length) {
+    energyParts.push('Sin lecturas recientes de radiacion ni viento; mantente atento a la proxima actualizacion.');
   }
 
   return {
-    agriculture,
-    livestock,
-    energy,
+    agriculture: agricultureParts.join(' '),
+    livestock: livestockParts.join(' '),
+    energy: energyParts.join(' '),
   };
+}
+
+function buildAgroNarrative(series: Series | undefined): string | null {
+  const hourly = (series?.hourly as Series['hourly']) ?? [];
+  if (!hourly.length) return null;
+  const sample = sliceRecentHours(hourly, 24);
+  if (!sample.length) return null;
+
+  const avg = (key: keyof Series['hourly'][number]) => {
+    const values = sample
+      .map((point) => (typeof point[key] === 'number' ? (point[key] as number) : null))
+      .filter((value): value is number => value !== null);
+    if (!values.length) return null;
+    return values.reduce((sum, val) => sum + val, 0) / values.length;
+  };
+  const sum = (key: keyof Series['hourly'][number]) => {
+    const values = sample
+      .map((point) => (typeof point[key] === 'number' ? (point[key] as number) : null))
+      .filter((value): value is number => value !== null);
+    if (!values.length) return null;
+    return values.reduce((total, val) => total + val, 0);
+  };
+
+  const temp = avg('temp');
+  const feels = avg('apparentTemp');
+  const humidity = avg('rh');
+  const rain = sum('prcp');
+  const evap = sum('evap');
+  const solarAvg = avg('rs');
+  const solarKwh = solarAvg == null ? null : (solarAvg * 24) / 1000;
+  const wind = avg('wind');
+
+  const notes: string[] = [];
+  if (temp != null) {
+    if (temp >= 32 || (feels ?? temp) >= 35) {
+      notes.push(
+        `Calor alto (${temp.toFixed(1)} C) con sensacion ${(feels ?? temp).toFixed(
+          1
+        )} C: prioriza sombra, hidratacion y labores cortas.`
+      );
+    } else if (temp <= 16) {
+      notes.push(`Mananas frescas (${temp.toFixed(1)} C): protege viveros y riegos tempranos.`);
+    } else {
+      notes.push(`Franja confortable (${temp.toFixed(1)} C) para trabajo continuo a campo.`);
+    }
+  }
+
+  if (humidity != null) {
+    if (humidity >= 85) {
+      notes.push(`Humedad elevada (${humidity.toFixed(0)} %) favorece hongos; ventila invernaderos.`);
+    } else if (humidity <= 40) {
+      notes.push(`Humedad baja (${humidity.toFixed(0)} %) incrementa demanda hidrica y riesgo de polvo.`);
+    } else {
+      notes.push(`Humedad en equilibrio (${humidity.toFixed(0)} %).`);
+    }
+  }
+
+  if (rain != null) {
+    if (rain >= 40) {
+      notes.push(`Lluvia abundante (${rain.toFixed(1)} mm/24 h) satura suelos; espera drenaje antes de entrar maquinaria.`);
+    } else if (rain >= 12) {
+      notes.push(`Lluvia util (${rain.toFixed(1)} mm) recarga humedad superficial.`);
+    } else if (rain < 5) {
+      notes.push(`Solo ${rain.toFixed(1)} mm en 24 h: ten listo riego suplementario.`);
+    }
+  } else {
+    notes.push('Sin acumulado de lluvia en las ultimas 24 h.');
+  }
+
+  if (evap != null) {
+    notes.push(
+      evap >= 5
+        ? `ET0 de ${evap.toFixed(1)} mm indica demanda hidrica alta.`
+        : `ET0 ${evap.toFixed(1)} mm mantiene consumo moderado.`
+    );
+  }
+
+  if (solarKwh != null) {
+    notes.push(
+      solarKwh >= 4.5
+        ? `Radiacion ${(solarKwh ?? 0).toFixed(1)} kWh/m2 habilita buena generacion solar.`
+        : `Radiacion limitada ${(solarKwh ?? 0).toFixed(1)} kWh/m2; planifica secado con mas tiempo.`
+    );
+  }
+
+  if (wind != null) {
+    notes.push(
+      wind >= 9
+        ? `Viento ${(wind ?? 0).toFixed(1)} m/s: asegura cubiertas y controla deriva de pulverizaciones.`
+        : `Viento suave ${(wind ?? 0).toFixed(1)} m/s mantiene condiciones estables para equipos expuestos.`
+    );
+  }
+
+  return notes.join(' ');
+}
+
+type HourlyPointSummary = { iso: string; value: number };
+
+function buildHourlyNarrative(series: Series | undefined): string | null {
+  const hourly = (series?.hourly as Series['hourly']) ?? [];
+  if (!hourly.length) return null;
+  const sample = sliceRecentHours(hourly, 72);
+  if (!sample.length) return null;
+
+  const ratePoints: HourlyPointSummary[] = sample
+    .map((point) =>
+      point.t && typeof point.prcpRate === 'number'
+        ? { iso: point.t, value: Number(point.prcpRate.toFixed(2)) }
+        : null
+    )
+    .filter((item): item is HourlyPointSummary => !!item);
+  if (!ratePoints.length) return null;
+
+  const ordered = [...ratePoints].sort((a, b) => a.iso.localeCompare(b.iso));
+  const peak = ordered.reduce((max, point) => (point.value > max.value ? point : max), ordered[0]);
+
+  let bestDryStart: string | null = null;
+  let bestDryLen = 0;
+  let currentStart: string | null = null;
+  let currentLen = 0;
+
+  for (const point of ordered) {
+    if (point.value < 0.2) {
+      if (!currentLen) currentStart = point.iso;
+      currentLen += 1;
+    } else if (currentLen) {
+      if (currentLen > bestDryLen && currentStart) {
+        bestDryLen = currentLen;
+        bestDryStart = currentStart;
+      }
+      currentLen = 0;
+      currentStart = null;
+    }
+  }
+  if (currentLen && currentStart && currentLen > bestDryLen) {
+    bestDryLen = currentLen;
+    bestDryStart = currentStart;
+  }
+
+  const heavyHours = ordered.filter((point) => point.value >= 2).length;
+  const wetShare = Math.round((heavyHours / ordered.length) * 100);
+
+  const notes: string[] = [];
+  notes.push(`Pico mas alto: ${peak.value.toFixed(1)} mm/h el ${formatHourLabel(peak.iso)}.`);
+  if (bestDryStart && bestDryLen >= 3) {
+    notes.push(`Ventana seca de ${bestDryLen} h entre ${formatHourRange(bestDryStart, bestDryLen)}.`);
+  } else {
+    notes.push('Sin ventanas secas mayores a 3 h en las ultimas 72 h.');
+  }
+  notes.push(
+    wetShare >= 50
+      ? 'Mas del 50% de las horas recientes tuvieron lluvia significativa; agenda labores bajo techo.'
+      : `Solo ${wetShare}% de las horas mostraron lluvia >2 mm/h; aprovecha las franjas restantes para riego o mantenimiento.`
+  );
+
+  return notes.join(' ');
+}
+
+function formatHourLabel(iso?: string): string {
+  if (!iso) return 'sin fecha';
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return iso;
+  const day = date.getUTCDate().toString().padStart(2, '0');
+  const month = (date.getUTCMonth() + 1).toString().padStart(2, '0');
+  const hour = date.getUTCHours().toString().padStart(2, '0');
+  return `${day}/${month} ${hour}:00 UTC`;
+}
+
+function formatHourRange(startIso: string, hours: number): string {
+  const start = new Date(startIso);
+  if (Number.isNaN(start.getTime())) return `${startIso} +${hours}h`;
+  const end = new Date(start.getTime() + hours * MS_PER_HOUR);
+  return `${formatHourLabel(startIso)} - ${formatHourLabel(end.toISOString())}`;
 }
 
 function computeAgroBaselines(series: Series | undefined): {
@@ -1117,7 +1326,7 @@ function buildChartNarrative(
     parts.push(`Analizamos ${summary.count} dias de intensidades entre ${rangeLabel}.`);
     if (summary.maxValueDate) {
       parts.push(
-        `La rAfaga mAxima ocurrio el ${formatDisplayDate(summary.maxValueDate)} y alcanzo ${formatNumber(summary.maxValue)} mm/h.`
+        `La rafaga maxima ocurrio el ${formatDisplayDate(summary.maxValueDate)} y alcanzo ${formatNumber(summary.maxValue)} mm/h.`
       );
     }
   }

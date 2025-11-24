@@ -1,4 +1,4 @@
-﻿import { Series, Thresholds } from '@pkg/core';
+import { Series, Thresholds } from '@pkg/core';
 import { peaksIntensity, thiBand, thiC } from '@pkg/meteo-calcs';
 import { Insight } from './types.js';
 
@@ -33,15 +33,15 @@ export function insightsFromSeries(series: Series, thresholds: Thresholds): Insi
   if (daily.totalDays > 0) {
     const rainSentence =
       daily.totalRain > 0
-        ? `Entre ${rangeText} se acumularon ${formatNumber(daily.totalRain)} mm repartidos en ${daily.totalDays} días con registro.`
-        : `Entre ${rangeText} no se registró lluvia medible.`;
+        ? `Entre ${rangeText} se acumularon ${formatNumber(daily.totalRain)} mm repartidos en ${daily.totalDays} dias con registro.`
+        : `Entre ${rangeText} no se registro lluvia medible.`;
     const maxSentence =
       daily.maxRainDate && daily.maxRain > 0
-        ? `El día más lluvioso fue ${formatDate(daily.maxRainDate)} con ${formatNumber(daily.maxRain)} mm.`
+        ? `El dia mas lluvioso fue ${formatDate(daily.maxRainDate)} con ${formatNumber(daily.maxRain)} mm.`
         : '';
     const lastSentence =
       daily.lastRainDate && daily.lastRainValue != null
-        ? `El último día con lluvia fue ${formatDate(daily.lastRainDate)}, cuando cayeron ${formatNumber(daily.lastRainValue)} mm.`
+        ? `El ultimo dia con lluvia fue ${formatDate(daily.lastRainDate)}, cuando cayeron ${formatNumber(daily.lastRainValue)} mm.`
         : '';
 
     insights.push({
@@ -57,7 +57,7 @@ export function insightsFromSeries(series: Series, thresholds: Thresholds): Insi
     insights.push({
       id: 'dry-spell',
       kind: 'advice',
-      text: `Se presentó una sequía de ${dry.length} días entre ${formatDate(dry.from)} y ${formatDate(dry.to)}. Considera riego suplementario o proteger los cultivos sensibles.`,
+      text: `Se presento una sequia de ${dry.length} dias entre ${formatDate(dry.from)} y ${formatDate(dry.to)}. Considera riego suplementario o proteger los cultivos sensibles.`,
       data: dry,
     });
   }
@@ -68,7 +68,7 @@ export function insightsFromSeries(series: Series, thresholds: Thresholds): Insi
     insights.push({
       id: 'intensity-peaks',
       kind: 'event',
-      text: `Detectamos ${peaks.length} episodios con intensidades superiores a ${(thresholds?.intensityMmHr ?? 6).toFixed(1)} mm/h. El más intenso alcanzó ${formatNumber(highest.value)} mm/h el ${formatDate(highest.from)}.`,
+      text: `Detectamos ${peaks.length} episodios con intensidades superiores a ${(thresholds?.intensityMmHr ?? 6).toFixed(1)} mm/h. El mas intenso alcanzo ${formatNumber(highest.value)} mm/h el ${formatDate(highest.from)}.`,
       data: { peaks },
     });
   }
@@ -85,7 +85,7 @@ export function insightsFromSeries(series: Series, thresholds: Thresholds): Insi
     insights.push({
       id: 'thi-tomorrow',
       kind: 'advice',
-      text: `Para mañana se proyecta un THI máximo de ${maxThi.toFixed(1)} (${band}). Ajusta ventilación, sombra o hidratación si observas estrés térmico.`,
+      text: `Para manana se proyecta un THI maximo de ${maxThi.toFixed(1)} (${band}). Ajusta ventilacion, sombra o hidratacion si observas estres termico.`,
       data: { maxThi, band, points: thiCandidates },
     });
   }
@@ -104,9 +104,9 @@ export function insightsFromSeries(series: Series, thresholds: Thresholds): Insi
       insights.push({
         id: 'root-moisture-high',
         kind: 'advice',
-        text: `Suelo muy h�medo (${(rootMoist * 100).toFixed(
+        text: `Suelo muy humedo (${(rootMoist * 100).toFixed(
           0
-        )}%). Evita labores pesadas para no compactar ni dañar cultivos.`,
+        )}%). Evita labores pesadas para no compactar ni danar cultivos.`,
       });
     }
   }
@@ -116,9 +116,9 @@ export function insightsFromSeries(series: Series, thresholds: Thresholds): Insi
     insights.push({
       id: 'et0-demand',
       kind: 'advice',
-      text: `La ET� alcanz� ${evapDemand.toFixed(
+      text: `La ET0 alcanzo ${evapDemand.toFixed(
         1
-      )} mm en las �ltimas 24 h. Refuerza hidrataci�n animal o riego.`,
+      )} mm en las ultimas 24 h. Refuerza hidratacion animal o riego.`,
     });
   }
 
@@ -127,7 +127,7 @@ export function insightsFromSeries(series: Series, thresholds: Thresholds): Insi
     insights.push({
       id: 'solar-window',
       kind: 'event',
-      text: 'Alta radiaci�n solar: condiciones favorables para secado de forrajes y generaci�n fotovoltaica.',
+      text: 'Alta radiacion solar: condiciones favorables para secado de forrajes y generacion fotovoltaica.',
     });
   }
 
@@ -255,4 +255,5 @@ function sumField(hourly: Series['hourly'], key: keyof Series['hourly'][number],
   if (!values.length) return null;
   return values.reduce((sum, value) => sum + value, 0);
 }
+
 
