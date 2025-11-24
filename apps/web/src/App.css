@@ -1,12 +1,15 @@
 :root {
   color-scheme: dark;
-  --bg: #0a0b11;
-  --card: #11131a;
-  --muted: #a0a4b4;
-  --ink: #e8e8f5;
-  --line: rgba(255, 255, 255, 0.08);
-  --c1: #22d3ee;
-  --c2: #60a5fa;
+  --bg: #05060d;
+  --card: rgba(12, 13, 23, 0.85);
+  --muted: #cdd7f6;
+  --ink: #ffffff;
+  --line: rgba(255, 255, 255, 0.12);
+  --accent: linear-gradient(120deg, rgba(255, 145, 120, 1), rgba(255, 214, 102, 0.9), rgba(120, 191, 255, 1));
+  --accent-soft: linear-gradient(135deg, rgba(255, 115, 182, 0.85), rgba(103, 178, 255, 0.9));
+  --deep: rgba(8, 8, 18, 0.85);
+  --aqua: #5ff0d0;
+  --sun: #ffca3a;
 }
 
 * {
@@ -15,9 +18,10 @@
 
 body {
   margin: 0;
-  background: radial-gradient(1000px 800px at 15% -10%, rgba(34, 211, 238, 0.18), transparent 50%),
-    radial-gradient(900px 900px at 110% 110%, rgba(96, 165, 250, 0.2), transparent 45%),
-    linear-gradient(180deg, #080a11, #04050a 70%);
+  background: radial-gradient(900px 700px at -10% -20%, rgba(255, 109, 166, 0.22), transparent),
+    radial-gradient(1200px 800px at 110% 10%, rgba(103, 178, 255, 0.25), transparent),
+    radial-gradient(700px 600px at 80% 90%, rgba(255, 214, 102, 0.18), transparent),
+    linear-gradient(160deg, #070312, #0e0b26 50%, #06161b);
   color: var(--ink);
   font: 14px 'Inter', 'Segoe UI', system-ui, sans-serif;
   min-height: 100vh;
@@ -26,17 +30,18 @@ body {
 .wrap {
   max-width: 1080px;
   margin: 0 auto;
-  padding: 32px 20px 64px;
+  padding: 40px 20px 72px;
   display: grid;
   gap: 24px;
 }
 
 .card {
   background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  padding: 20px;
-  box-shadow: 0 14px 48px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 22px;
+  padding: 24px;
+  box-shadow: 0 20px 50px rgba(6, 6, 20, 0.55);
+  backdrop-filter: blur(10px);
 }
 
 .realtime-card {
@@ -118,18 +123,92 @@ body {
   gap: 6px;
 }
 
+.hero-brand {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.brand-icon {
+  position: relative;
+  width: 92px;
+  height: 92px;
+  border-radius: 28px;
+  background: linear-gradient(135deg, #ff8a8a, #ffd966, #60c9ff);
+  box-shadow: 0 20px 35px rgba(255, 138, 138, 0.4);
+  overflow: hidden;
+}
+
+.brand-sun {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #ffd966;
+  top: 12px;
+  right: 12px;
+}
+
+.brand-cloud {
+  position: absolute;
+  width: 70px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 40px;
+  left: 14px;
+  top: 34px;
+}
+
+.brand-leaf {
+  position: absolute;
+  width: 22px;
+  height: 12px;
+  background: #4ade80;
+  border-radius: 50% 50% 0 50%;
+  top: 40px;
+}
+
+.brand-leaf.left {
+  left: 32px;
+  transform: rotate(-20deg);
+}
+
+.brand-leaf.right {
+  left: 48px;
+  transform: scaleX(-1) rotate(-20deg);
+}
+
+.brand-grid {
+  position: absolute;
+  inset: 52px 8px 10px 8px;
+  border-radius: 16px;
+  border: 3px solid rgba(255, 153, 0, 0.9);
+  border-top: none;
+}
+
+.brand-drops {
+  position: absolute;
+  left: 26px;
+  bottom: 10px;
+  width: 40px;
+  height: 12px;
+  background: radial-gradient(circle at 20% 0%, rgba(255, 102, 0, 0.8), transparent 60%),
+    radial-gradient(circle at 60% 0%, rgba(255, 102, 0, 0.7), transparent 60%),
+    radial-gradient(circle at 90% 0%, rgba(255, 102, 0, 0.7), transparent 60%);
+}
+
 .intro .tagline {
   margin: 0 0 8px;
   font-size: 12px;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: rgba(96, 165, 250, 0.9);
+  letter-spacing: 0.2em;
+  color: var(--muted);
 }
 
 .intro h1 {
   margin: 0 0 12px;
-  font-size: clamp(26px, 5vw, 34px);
-  background: linear-gradient(90deg, var(--c1), var(--c2));
+  font-size: clamp(28px, 5vw, 38px);
+  background: linear-gradient(90deg, #ffd966, #ff8a8a, #60c9ff);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -215,34 +294,37 @@ body {
 }
 
 .btn {
-  background: rgba(15, 18, 28, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: var(--ink);
-  padding: 10px 14px;
-  border-radius: 14px;
+  background: var(--accent);
+  border: none;
+  color: #05060d;
+  padding: 11px 18px;
+  border-radius: 999px;
   cursor: pointer;
   font-size: 13px;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  transition: all 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
   min-width: 140px;
+  font-weight: 700;
+  box-shadow: 0 16px 38px rgba(255, 170, 120, 0.35);
 }
 
 .btn.small {
-  padding: 8px 12px;
-  min-width: 115px;
+  padding: 9px 14px;
+  min-width: 120px;
   font-size: 12px;
 }
 
 .btn:hover {
-  border-color: rgba(96, 165, 250, 0.45);
+  transform: translateY(-1px);
+  box-shadow: 0 20px 44px rgba(255, 214, 120, 0.4);
 }
 
 .btn.active {
-  background: linear-gradient(90deg, rgba(34, 211, 238, 0.85), rgba(96, 165, 250, 0.85));
+  background: var(--accent-soft);
   border-color: transparent;
   color: #030712;
-  box-shadow: 0 12px 35px rgba(34, 211, 238, 0.35);
+  box-shadow: 0 18px 40px rgba(96, 165, 250, 0.35);
 }
 
 .btn:disabled {

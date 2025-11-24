@@ -278,13 +278,25 @@ export default function App() {
   return (
     <main className="wrap">
       <header className="mb4 intro">
-        <p className="tagline">Tendencias de lluvia en Colombia</p>
-        <h1>Panel agrometeorologico</h1>
-        <p className="muted">
-          Filtra por departamento y municipio, alterna entre acumulados o intensidad diaria y usa la
-          lAnea de tendencia para resumir comportamientos. El mapa horario te ayuda a encontrar
-          ventanas secas o picos concentrados.
-        </p>
+        <div className="hero-brand">
+          <div className="brand-icon" aria-hidden="true">
+            <span className="brand-sun" />
+            <span className="brand-cloud" />
+            <span className="brand-leaf left" />
+            <span className="brand-leaf right" />
+            <span className="brand-grid" />
+            <span className="brand-drops" />
+          </div>
+          <div>
+            <p className="tagline">Tendencias de lluvia en Colombia</p>
+            <h1>Panel agrometeorologico</h1>
+            <p className="muted">
+              Filtra por departamento y municipio, alterna entre acumulados o intensidad diaria y usa la
+              linea de tendencia para resumir comportamientos. El mapa horario te ayuda a encontrar
+              ventanas secas o picos concentrados.
+            </p>
+          </div>
+        </div>
       </header>
 
       <section className="card help mb4">
