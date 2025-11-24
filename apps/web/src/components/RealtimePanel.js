@@ -22,6 +22,10 @@ const LIVE_TIPS = [
         title: 'Variables ambientales',
         body: 'Temperatura, humedad, viento y presión ayudan a anticipar estrés térmico, ventanas de asperjado o cambios de frente. Contrasta estos valores con los promedios históricos.',
     },
+    {
+        title: 'Viento y presión',
+        body: 'Viento menor a 3 m/s es ideal para aspersiones; por encima de 9 m/s suele causar deriva. Presiones cercanas a 1000 hPa indican estabilidad, mientras caídas rápidas anticipan sistemas de lluvia.',
+    },
 ];
 const DEFAULT_THRESHOLDS = {
     intensity: 8,
@@ -361,7 +365,7 @@ function buildRealtimeAlerts(latest, thresholds) {
             id: 'intensity',
             label: 'Pico de intensidad',
             tone: 'alert',
-            message: `Ráfagas >${intensityThreshold.toFixed(1)} mm/h; evita labores de aspersión o riego superficial.`,
+            message: `Intensidad >${intensityThreshold.toFixed(1)} mm/h; evita labores de aspersión o riego superficial.`,
         });
     }
     if (latest.temp != null) {
