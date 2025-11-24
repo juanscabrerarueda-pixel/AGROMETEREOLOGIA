@@ -1,4 +1,4 @@
-﻿import { useMemo } from 'react';
+﻿import { useMemo, useState } from 'react';
 import type { Series } from '@pkg/core';
 
 type RealtimePanelProps = {
@@ -52,6 +52,7 @@ const LIVE_TIPS = [
 
 export function RealtimePanel({ series, busy }: RealtimePanelProps) {
   const snapshot = useMemo(() => buildSnapshot(series), [series]);
+  const [guideOpen, setGuideOpen] = useState(false);
 
   return (
     <section className="card realtime-card mb4">
@@ -111,16 +112,25 @@ export function RealtimePanel({ series, busy }: RealtimePanelProps) {
         <div className="empty-state">Ajusta el rango o la ubicación para ver datos en vivo.</div>
       )}
 
-      <details className="glossary mt2" open>
-        <summary>Cómo leer el monitoreo en vivo</summary>
-        <ul>
-          {LIVE_TIPS.map((tip) => (
-            <li key={tip.title}>
-              <strong>{tip.title}:</strong> {tip.body}
-            </li>
-          ))}
-        </ul>
-      </details>
+      {snapshot && (
+        <div className="realtime-guide mt3">
+          <div className="help-header">
+            <strong>C?mo leer el monitoreo en vivo</strong>
+            <button type="button" className="btn small" onClick={() => setGuideOpen((prev) => !prev)}>
+              {guideOpen ? 'Ocultar gu?a' : 'Mostrar gu?a'}
+            </button>
+          </div>
+          {guideOpen && (
+            <ul className="help-steps">
+              {LIVE_TIPS.map((tip) => (
+                <li key={tip.title}>
+                  <strong>{tip.title}:</strong> {tip.body}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
     </section>
   );
 }
@@ -270,5 +280,4 @@ function computeForecast(points: Series['hourly'], now: number): { total: number
   }
   return { total, peak, count };
 }
-
 
