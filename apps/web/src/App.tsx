@@ -78,39 +78,39 @@ const REFRESH_OPTIONS: RefreshOption[] = [
 const RANGE_OPTIONS: RangeOption[] = [
   {
     id: 'threeMonths',
-    label: 'Ãšltimos 3 meses',
+    label: 'Asltimos 3 meses',
     days: 90,
-    description: 'Observa la evoluciÃ³n reciente (aprox. Ãºltimo trimestre).',
+    description: 'Observa la evoluciA3n reciente (aprox. Aoltimo trimestre).',
   },
   {
     id: 'oneYear',
-    label: 'Ãšltimo aÃ±o',
+    label: 'Asltimo aAo',
     days: 365,
-    description: 'Analiza cÃ³mo cerrÃ³ el Ãºltimo aÃ±o hÃ­drico completo.',
+    description: 'Analiza cA3mo cerrA3 el Aoltimo aAo hAdrico completo.',
   },
   {
     id: 'fiveYears',
-    label: 'Ãšltimos 5 aÃ±os',
+    label: 'Asltimos 5 aAos',
     days: 365 * 5,
     description: 'Identifica tendencias multianuales y cambios estructurales.',
   },
   {
     id: 'future',
-    label: 'PrÃ³x. 14 dÃ­as',
+    label: 'PrA3x. 14 dAas',
     days: 14,
     future: true,
-    description: 'PronÃ³stico inmediato (sin lÃ­nea de tendencia).',
+    description: 'PronA3stico inmediato (sin lAnea de tendencia).',
   },
 ];
 
 const METRIC_OPTIONS: Array<{ id: Metric; label: string; helper: string }> = [
-  { id: 'accumulated', label: 'Acumulado diario', helper: 'Suma mm por dÃ­a (precipitaciÃ³n acumulada).' },
+  { id: 'accumulated', label: 'Acumulado diario', helper: 'Suma mm por dAa (precipitaciA3n acumulada).' },
   { id: 'intensity', label: 'Intensidad (mm/h)', helper: 'Pico horario diario (mm/h) como proxy de intensidad.' },
 ];
 
 const TREND_OPTIONS: Array<{ id: TrendType; label: string; helper: string }> = [
-  { id: 'MA', label: 'MA', helper: 'Media mÃ³vil con ventana fija.' },
-  { id: 'EMA', label: 'EMA', helper: 'Media mÃ³vil exponencial (pondera lo reciente).' },
+  { id: 'MA', label: 'MA', helper: 'Media mA3vil con ventana fija.' },
+  { id: 'EMA', label: 'EMA', helper: 'Media mA3vil exponencial (pondera lo reciente).' },
 ];
 
 const DEFAULT_DEPARTMENT = DEPARTMENT_OPTIONS[0];
@@ -128,7 +128,7 @@ export default function App() {
     return (
       <main className="wrap">
         <section className="card">
-          <h1>Panel agrometeorolÃ³gico</h1>
+          <h1>Panel agrometeorolA3gico</h1>
           <p>Activa la variable VITE_FEATURE_AGROMETEO para visualizar este tablero.</p>
         </section>
       </main>
@@ -279,23 +279,23 @@ export default function App() {
     <main className="wrap">
       <header className="mb4 intro">
         <p className="tagline">Tendencias de lluvia en Colombia</p>
-        <h1>Panel agrometeorolÃ³gico</h1>
+        <h1>Panel agrometeorolA3gico</h1>
         <p className="muted">
           Filtra por departamento y municipio, alterna entre acumulados o intensidad diaria y usa la
-          lÃ­nea de tendencia para resumir comportamientos. El mapa horario te ayuda a encontrar
+          lAnea de tendencia para resumir comportamientos. El mapa horario te ayuda a encontrar
           ventanas secas o picos concentrados.
         </p>
       </header>
 
       <section className="card help mb4">
         <div className="help-header">
-          <strong>CÃ³mo usar</strong>
+          <strong>CA3mo usar</strong>
           <button
             type="button"
             className="btn small"
             onClick={() => setHelpHidden((prev) => !prev)}
           >
-            {helpHidden ? 'Mostrar guÃ­a' : 'Ocultar guÃ­a'}
+            {helpHidden ? 'Mostrar guAa' : 'Ocultar guAa'}
           </button>
         </div>
         {!helpHidden && (
@@ -305,16 +305,16 @@ export default function App() {
               la capital).
             </li>
             <li>
-              Ajusta el rango rÃ¡pido (3 meses, 1 aÃ±o, 5 aÃ±os o 14 dÃ­as de pronÃ³stico). TambiÃ©n puedes
+              Ajusta el rango rApido (3 meses, 1 aAo, 5 aAos o 14 dAas de pronA3stico). TambiAn puedes
               fijar fechas manualmente.
             </li>
             <li>
-              Alterna entre acumulado diario o intensidad mÃ¡xima, y activa MA/EMA para suavizar la
-              serie histÃ³rica.
+              Alterna entre acumulado diario o intensidad mAxima, y activa MA/EMA para suavizar la
+              serie histA3rica.
             </li>
             <li>
-              Usa la distribuciÃ³n horaria para detectar ventanas secas y revisa los insights
-              automÃ¡ticos para recomendaciones puntuales.
+              Usa la distribuciA3n horaria para detectar ventanas secas y revisa los insights
+              automAticos para recomendaciones puntuales.
             </li>
           </ol>
         )}
@@ -395,7 +395,7 @@ export default function App() {
             className="btn small"
             onClick={() => setShowTrend((prev) => !prev)}
             disabled={isFutureRange}
-            title={isFutureRange ? 'La tendencia no aplica a pronÃ³sticos futuros' : ''}
+            title={isFutureRange ? 'La tendencia no aplica a pronA3sticos futuros' : ''}
           >
             {showTrend ? 'Ocultar tendencia' : 'Ver tendencia'}
           </button>
@@ -420,7 +420,7 @@ export default function App() {
         </p>
 
         <div className="refresh-controls mt2">
-          <span className="tiny">ActualizaciÃ³n automÃ¡tica</span>
+          <span className="tiny">ActualizaciA3n automAtica</span>
           <div className="seg compact">
             {REFRESH_OPTIONS.map((option) => (
               <button
@@ -465,7 +465,7 @@ export default function App() {
           <div className="error-banner mb3">
             <strong>No fue posible actualizar la serie.</strong>
             <p>
-              {series.error.message || 'No pudimos contactar la API. Revisa tu conexiÃ³n o intenta nuevamente.'}
+              {series.error.message || 'No pudimos contactar la API. Revisa tu conexiA3n o intenta nuevamente.'}
             </p>
           </div>
         )}
@@ -558,7 +558,7 @@ export default function App() {
       <section className="card mb4">
         <div className="section-header">
           <div>
-            <h2>DistribuciÃ³n horaria</h2>
+            <h2>DistribuciA3n horaria</h2>
             <p className="muted tiny">
               Identifica horarios con lluvia o ventanas secas (intensidad en mm/h).
             </p>
@@ -571,7 +571,7 @@ export default function App() {
           <summary>Como leer la distribucion</summary>
           <ul>
             <li>Bandas intensas al amanecer indican suelos saturados: retrasa la entrada de maquinaria.</li>
-            <li>Bloques continuos &gt;60 % señalan varios dias lluviosos. Busca ventanas palidas (&lt;30 %) para labores criticas.</li>
+            <li>Bloques continuos &gt;60 % senalan varios dias lluviosos. Busca ventanas palidas (&lt;30 %) para labores criticas.</li>
             <li>Celdas claras aisladas equivalen a horas de baja probabilidad, ideales para riego o mantenimiento.</li>
           </ul>
         </details>
@@ -582,7 +582,7 @@ export default function App() {
           <div>
             <h2>Insights automatizados</h2>
             <p className="muted tiny">
-              Basados en umbrales de impacto y cÃ¡lculos del paquete insight-engine.
+              Basados en umbrales de impacto y cAlculos del paquete insight-engine.
             </p>
           </div>
         </div>
@@ -607,7 +607,7 @@ export default function App() {
             <strong>No fue posible generar insights.</strong>
             <p>
               {insights.error.message ||
-                'No logramos conectar con la API de insights. Vuelve a intentarlo cuando tengas conexiÃ³n estable.'}
+                'No logramos conectar con la API de insights. Vuelve a intentarlo cuando tengas conexiA3n estable.'}
             </p>
           </div>
         ) : insights.data ? (
@@ -622,7 +622,7 @@ export default function App() {
             </ul>
           ) : (
             <div className="empty-state">
-              Sin hallazgos relevantes con los umbrales actuales. AjÃºstalos para mÃ¡s sensibilidad.
+              Sin hallazgos relevantes con los umbrales actuales. AjAostalos para mAs sensibilidad.
             </div>
           )
         ) : (
@@ -804,9 +804,9 @@ function buildDailyData(series: Series | undefined): DailyDatum[] {
       const windMean = bucket.windCount ? bucket.wind / bucket.windCount : null;
       const apparentMean = bucket.apparentCount ? bucket.apparent / bucket.apparentCount : null;
       const icons: string[] = [];
-      if (solarKwh >= 6) icons.push('â˜€');
-      if (windMean != null && windMean >= 8) icons.push('ðŸ’¨');
-      if (apparentMean != null && apparentMean >= 32) icons.push('ðŸ”¥');
+      if (solarKwh >= 6) icons.push('a ');
+      if (windMean != null && windMean >= 8) icons.push('Y ');
+      if (apparentMean != null && apparentMean >= 32) icons.push('Y');
       return {
         date,
         label: formatDisplayDate(date),
@@ -889,7 +889,7 @@ function buildKpis(
   return [
     {
       id: 'max',
-      label: metric === 'intensity' ? 'MÃ¡ximo registrado' : 'MÃ¡ximo diario',
+      label: metric === 'intensity' ? 'MAximo registrado' : 'MAximo diario',
       value: `${formatNumber(summary.maxValue)} ${unit}`,
       note: formatDisplayDate(summary.maxValueDate),
     },
@@ -897,7 +897,7 @@ function buildKpis(
       id: 'avg',
       label: 'Promedio diario',
       value: `${formatNumber(summary.average)} ${averageUnit}`,
-      note: `${summary.count.toLocaleString('es-CO')} dÃ­as analizados`,
+      note: `${summary.count.toLocaleString('es-CO')} dAas analizados`,
     },
     {
       id: 'trend',
@@ -923,9 +923,9 @@ function buildMetaSummary(
   if (!series) return null;
   const hourly = (series.hourly as Series['hourly']) ?? [];
   const lastTimestamp = hourly.length ? hourly[hourly.length - 1]?.t : series.range?.to;
-  const updated = formatDisplayDate(lastTimestamp) || 'â€”';
+  const updated = formatDisplayDate(lastTimestamp) || 'a';
   const muniLabel = department?.municipalities.find((item) => item.value === selectedMuni)?.label;
-  const location = [muniLabel, department?.label].filter(Boolean).join(' Â· ') || department?.label || 'â€”';
+  const location = [muniLabel, department?.label].filter(Boolean).join(' A ') || department?.label || 'a';
   return {
     updated,
     location,
@@ -942,7 +942,7 @@ function buildImpactNarrative(summary: ChartSummary, metric: Metric): string | n
   const impact = impactFromBadge(badge.label);
   return `Acumulado ${formatNumber(summary.totalRain)} mm en ${summary.count.toLocaleString(
     'es-CO'
-  )} dï¿½as. El pico diario alcanzï¿½ ${formatNumber(summary.maxValue)} ${unit} (${badge.label}). ${impact}`;
+  )} di12as. El pico diario alcanzi12 ${formatNumber(summary.maxValue)} ${unit} (${badge.label}). ${impact}`;
 }
 
 function buildIntensityBadge(value: number, metric: Metric): KPIBadge | undefined {
@@ -957,7 +957,7 @@ function buildIntensityBadge(value: number, metric: Metric): KPIBadge | undefine
 function impactFromBadge(label: string): string {
   switch (label) {
     case 'Evento fuerte':
-      return 'Probables anegamientos y retrasos logï¿½sticos; prioriza ventanas secas antes de ingresar maquinaria.';
+      return 'Probables anegamientos y retrasos logi12sticos; prioriza ventanas secas antes de ingresar maquinaria.';
     case 'Temporal':
       return 'Suelos saturados y charcos puntuales: evita labores pesadas hasta que baje la intensidad.';
     case 'Lluvia moderada':
@@ -1053,7 +1053,7 @@ function summarizeTrend(trend: TrendPoint[] | null): { value: string; note: stri
   if (!trend || !trend.length) {
     return {
       value: 'Sin datos',
-      note: 'Activa MA o EMA para calcular la tendencia histÃ³rica.',
+      note: 'Activa MA o EMA para calcular la tendencia histA3rica.',
     };
   }
   const first = trend.find((item) => Number.isFinite(item.value));
@@ -1061,7 +1061,7 @@ function summarizeTrend(trend: TrendPoint[] | null): { value: string; note: stri
   if (!first || !last) {
     return {
       value: 'Sin datos',
-      note: 'Necesitamos mÃ¡s puntos para calcular la tendencia.',
+      note: 'Necesitamos mAs puntos para calcular la tendencia.',
     };
   }
   const diff = last.value - first.value;
@@ -1094,18 +1094,18 @@ function buildChartNarrative(
   const parts: string[] = [];
   if (metric === 'accumulated') {
     parts.push(
-      `Entre ${rangeLabel} se acumularon ${formatNumber(summary.totalRain)} mm distribuidos en ${summary.count} dÃ­as con datos.`
+      `Entre ${rangeLabel} se acumularon ${formatNumber(summary.totalRain)} mm distribuidos en ${summary.count} dAas con datos.`
     );
     if (summary.maxValueDate) {
       parts.push(
-        `El dÃ­a mÃ¡s lluvioso fue ${formatDisplayDate(summary.maxValueDate)}, cuando se registraron ${formatNumber(summary.maxValue)} mm en 24 horas.`
+        `El dAa mAs lluvioso fue ${formatDisplayDate(summary.maxValueDate)}, cuando se registraron ${formatNumber(summary.maxValue)} mm en 24 horas.`
       );
     }
   } else {
-    parts.push(`Analizamos ${summary.count} dÃ­as de intensidades entre ${rangeLabel}.`);
+    parts.push(`Analizamos ${summary.count} dAas de intensidades entre ${rangeLabel}.`);
     if (summary.maxValueDate) {
       parts.push(
-        `La rÃ¡faga mÃ¡xima ocurriÃ³ el ${formatDisplayDate(summary.maxValueDate)} y alcanzÃ³ ${formatNumber(summary.maxValue)} mm/h.`
+        `La rAfaga mAxima ocurriA3 el ${formatDisplayDate(summary.maxValueDate)} y alcanzA3 ${formatNumber(summary.maxValue)} mm/h.`
       );
     }
   }
