@@ -39,17 +39,17 @@ export function insightsFromSeries(series: Series, thresholds: Thresholds): Insi
       daily.totalRain > 0
         ? `Entre ${rangeText} ${isFuture ? 'se proyectan' : 'se acumularon'} ${formatNumber(
             daily.totalRain
-          )} mm repartidos en ${daily.totalDays} dias con registro.`
-        : `Entre ${rangeText} ${isFuture ? 'no se proyecta' : 'no se registro'} lluvia medible.`;
+          )} mm repartidos en ${daily.totalDays} días con registro.`
+        : `Entre ${rangeText} ${isFuture ? 'no se proyecta' : 'no se registró'} lluvia medible.`;
     const maxSentence =
       daily.maxRainDate && daily.maxRain > 0
-        ? `El dia mas lluvioso ${isFuture ? 'proyectado seria' : 'fue'} ${formatDate(
+        ? `El día más lluvioso ${isFuture ? 'proyectado sería' : 'fue'} ${formatDate(
             daily.maxRainDate
           )} con ${formatNumber(daily.maxRain)} mm.`
         : '';
     const lastSentence =
       daily.lastRainDate && daily.lastRainValue != null
-        ? `El ultimo dia con lluvia ${isFuture ? 'proyectada seria' : 'fue'} ${formatDate(
+        ? `El último día con lluvia ${isFuture ? 'proyectada sería' : 'fue'} ${formatDate(
             daily.lastRainDate
           )}, con ${formatNumber(daily.lastRainValue)} mm.`
         : '';
@@ -67,7 +67,7 @@ export function insightsFromSeries(series: Series, thresholds: Thresholds): Insi
     insights.push({
       id: 'dry-spell',
       kind: 'advice',
-      text: `${isFuture ? 'Se proyecta' : 'Se presento'} una sequia de ${dry.length} dias entre ${formatDate(
+      text: `${isFuture ? 'Se proyecta' : 'Se presentó'} una sequía de ${dry.length} días entre ${formatDate(
         dry.from
       )} y ${formatDate(dry.to)}. Considera riego suplementario o proteger los cultivos sensibles.`,
       data: dry,
@@ -82,7 +82,7 @@ export function insightsFromSeries(series: Series, thresholds: Thresholds): Insi
       kind: 'event',
       text: `${isFuture ? 'Se proyectan' : 'Se detectaron'} ${peaks.length} episodios con intensidades superiores a ${(thresholds?.intensityMmHr ?? 6).toFixed(
         1
-      )} mm/h. El mas intenso ${isFuture ? 'alcanzaria' : 'alcanzo'} ${formatNumber(highest.value)} mm/h el ${formatDate(
+      )} mm/h. El más intenso ${isFuture ? 'alcanzaría' : 'alcanzó'} ${formatNumber(highest.value)} mm/h el ${formatDate(
         highest.from
       )}.`,
       data: { peaks },
@@ -112,7 +112,7 @@ export function insightsFromSeries(series: Series, thresholds: Thresholds): Insi
       insights.push({
         id: 'root-moisture-low',
         kind: 'advice',
-        text: `El perfil 10-30 cm ${isFuture ? 'mostraria' : 'mostro'} humedad baja (${(rootMoist * 100).toFixed(
+        text: `El perfil 10-30 cm ${isFuture ? 'mostraría' : 'mostró'} humedad baja (${(rootMoist * 100).toFixed(
           0
         )}%). Planea riego o rota el ganado para proteger las pasturas.`,
       });
@@ -120,9 +120,9 @@ export function insightsFromSeries(series: Series, thresholds: Thresholds): Insi
       insights.push({
         id: 'root-moisture-high',
         kind: 'advice',
-        text: `Suelo muy humedo (${(rootMoist * 100).toFixed(
+        text: `Suelo muy húmedo (${(rootMoist * 100).toFixed(
           0
-        )}%) ${isFuture ? 'podria' : 'pudo'} compactar cultivos con maquinaria pesada.`,
+        )}%) ${isFuture ? 'podría' : 'pudo'} compactar cultivos con maquinaria pesada.`,
       });
     }
   }
@@ -132,9 +132,9 @@ export function insightsFromSeries(series: Series, thresholds: Thresholds): Insi
     insights.push({
       id: 'et0-demand',
       kind: 'advice',
-      text: `La ET0 ${isFuture ? 'alcanzaria' : 'alcanzo'} ${evapDemand.toFixed(
+      text: `La ET0 ${isFuture ? 'alcanzaría' : 'alcanzó'} ${evapDemand.toFixed(
         1
-      )} mm en 24 h. Refuerza hidratacion animal o riego.`,
+      )} mm en 24 h. Refuerza hidratación animal o riego.`,
     });
   }
 
@@ -143,7 +143,7 @@ export function insightsFromSeries(series: Series, thresholds: Thresholds): Insi
     insights.push({
       id: 'solar-window',
       kind: 'event',
-      text: `${isFuture ? 'Se proyecta' : 'Hubo'} alta radiacion solar: condiciones favorables para secado de forrajes y generacion fotovoltaica.`,
+      text: `${isFuture ? 'Se proyecta' : 'Hubo'} alta radiación solar: condiciones favorables para secado de forrajes y generación fotovoltaica.`,
     });
   }
 

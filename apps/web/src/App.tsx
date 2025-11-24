@@ -79,39 +79,39 @@ const REFRESH_OPTIONS: RefreshOption[] = [
 const RANGE_OPTIONS: RangeOption[] = [
   {
     id: 'threeMonths',
-    label: 'Ultimos 3 meses',
+    label: 'Últimos 3 meses',
     days: 90,
-    description: 'Observa la evolucion reciente (aprox. Ultimo trimestre).',
+    description: 'Observa la evolución reciente (aprox. último trimestre).',
   },
   {
     id: 'oneYear',
-    label: 'Ultimo ano',
+    label: 'Último año',
     days: 365,
-    description: 'Analiza como cerro el Ultimo ano hidrico completo.',
+    description: 'Analiza cómo cerró el último año hídrico completo.',
   },
   {
     id: 'fiveYears',
-    label: 'Ultimos 5 anos',
+    label: 'Últimos 5 años',
     days: 365 * 5,
     description: 'Identifica tendencias multianuales y cambios estructurales.',
   },
   {
     id: 'future',
-    label: 'Prox. 14 dias',
+    label: 'Próx. 14 días',
     days: 14,
     future: true,
-    description: 'Pronostico inmediato (sin linea de tendencia).',
+    description: 'Pronóstico inmediato (sin línea de tendencia).',
   },
 ];
 
 const METRIC_OPTIONS: Array<{ id: Metric; label: string; helper: string }> = [
-  { id: 'accumulated', label: 'Acumulado diario', helper: 'Suma mm por dia (precipitacion acumulada).' },
+  { id: 'accumulated', label: 'Acumulado diario', helper: 'Suma mm por día (precipitación acumulada).' },
   { id: 'intensity', label: 'Intensidad (mm/h)', helper: 'Pico horario diario (mm/h) como proxy de intensidad.' },
 ];
 
 const TREND_OPTIONS: Array<{ id: TrendType; label: string; helper: string }> = [
-  { id: 'MA', label: 'MA', helper: 'Media movil con ventana fija.' },
-  { id: 'EMA', label: 'EMA', helper: 'Media movil exponencial (pondera lo reciente).' },
+  { id: 'MA', label: 'MA', helper: 'Media móvil con ventana fija.' },
+  { id: 'EMA', label: 'EMA', helper: 'Media móvil exponencial (pondera lo reciente).' },
 ];
 
 const DEFAULT_DEPARTMENT = DEPARTMENT_OPTIONS[0];
@@ -129,7 +129,7 @@ export default function App() {
     return (
       <main className="wrap">
         <section className="card">
-          <h1>Panel agrometeorologico</h1>
+          <h1>Panel agrometeorológico</h1>
           <p>Activa la variable VITE_FEATURE_AGROMETEO para visualizar este tablero.</p>
         </section>
       </main>
@@ -299,10 +299,10 @@ export default function App() {
           </div>
           <div>
             <p className="tagline">Tendencias de lluvia en Colombia</p>
-            <h1>Panel agrometeorologico</h1>
+            <h1>Panel agrometeorológico</h1>
             <p className="muted">
               Filtra por departamento y municipio, alterna entre acumulados o intensidad diaria y usa la
-              linea de tendencia para resumir comportamientos. El mapa horario te ayuda a encontrar
+              línea de tendencia para resumir comportamientos. El mapa horario te ayuda a encontrar
               ventanas secas o picos concentrados.
             </p>
           </div>
@@ -311,7 +311,7 @@ export default function App() {
 
       <section className="card help mb4">
         <div className="help-header">
-          <strong>Como usar</strong>
+          <strong>Cómo usar</strong>
           <button
             type="button"
             className="btn small"
@@ -327,12 +327,12 @@ export default function App() {
               la capital).
             </li>
             <li>
-              Ajusta el rango rapido (3 meses, 1 ano, 5 anos o 14 dias de pronostico). Tambien puedes
+              Ajusta el rango rápido (3 meses, 1 año, 5 años o 14 días de pronóstico). También puedes
               fijar fechas manualmente.
             </li>
             <li>
-              Alterna entre acumulado diario o intensidad maxima, y activa MA/EMA para suavizar la
-              serie historica.
+              Alterna entre acumulado diario o intensidad máxima, y activa MA/EMA para suavizar la
+              serie histórica.
             </li>
             <li>
               Usa la distribucion horaria para detectar ventanas secas y revisa los insights
@@ -417,7 +417,7 @@ export default function App() {
             className="btn small"
             onClick={() => setShowTrend((prev) => !prev)}
             disabled={isFutureRange}
-            title={isFutureRange ? 'La tendencia no aplica a pronosticos futuros' : ''}
+            title={isFutureRange ? 'La tendencia no aplica a pronósticos futuros' : ''}
           >
             {showTrend ? 'Ocultar tendencia' : 'Ver tendencia'}
           </button>
@@ -473,7 +473,7 @@ export default function App() {
           <div>
             <h2>Serie diaria</h2>
             <p className="muted tiny">
-              {rangeSummary} - {metric === 'intensity' ? 'Intensidad maxima por dia' : 'Acumulado diario (mm)'}
+              {rangeSummary} - {metric === 'intensity' ? 'Intensidad máxima por día' : 'Acumulado diario (mm)'}
             </p>
           </div>
           <div className="series-meta tiny">
@@ -495,7 +495,7 @@ export default function App() {
         {metaSummary && (
           <div className="meta-panel">
             <div className="meta-item">
-              <strong>Ultima actualizacion</strong>
+              <strong>Ultima actualizaci?n</strong>
               <span>{metaSummary.updated}</span>
             </div>
             <div className="meta-item">
@@ -518,7 +518,7 @@ export default function App() {
         <div className="mt3">
           <DailyHeatmap daily={dailyData} metric={metric} />
           <details className="glossary">
-            <summary>Como leer la intensidad</summary>
+          <summary>Cómo leer la intensidad</summary>
             <ul>
               <li>0-5 mm: Llovizna ligera, humedece sin generar escorrentia.</li>
               <li>5-20 mm: Lluvia moderada, posible pausa corta en labores.</li>
@@ -557,10 +557,10 @@ export default function App() {
       <section className="card mb4">
         <div className="section-header">
           <div>
-            <h2>Condiciones agroenergeticas</h2>
+            <h2>Condiciones agroenergéticas</h2>
             <p className="muted tiny">
-              Temperatura y humedad del suelo, ET0, radiacion y viento para apoyar ganaderos,
-              agricultores y generacion renovable.
+              Temperatura y humedad del suelo, ET0, radiación y viento para apoyar ganaderos,
+              agricultores y generación renovable.
             </p>
           </div>
         </div>
@@ -571,13 +571,13 @@ export default function App() {
           </div>
         )}
         <details className="glossary mt2">
-          <summary>Como leer estas variables</summary>
+          <summary>Cómo leer estas variables</summary>
           <ul>
             <li>Temp. ambiente 18-32 C: confortable. &lt;15 C implica amaneceres frios y &gt;32 C demanda sombra e hidratacion.</li>
-            <li>Sensacion termica &gt;35 C: riesgo de estres para personal y ganado.</li>
+            <li>Sensacion termica &gt;35 C: riesgo de estr?s para personal y ganado.</li>
             <li>Humedad relativa &lt;40 %: ambiente seco, incrementa demanda hidrica; &gt;85 % favorece hongos.</li>
             <li>Lluvia 24h: &lt;5 mm se absorbe rapido; &gt;30 mm provoca charcos y compactacion.</li>
-            <li>ET0 &gt;4 mm indica alta demanda de riego. Radiacion &gt;4 kWh/m2 favorece la generacion solar.</li>
+            <li>ET0 &gt;4 mm indica alta demanda de riego. Radiación &gt;4 kWh/m2 favorece la generación solar.</li>
           </ul>
         </details>
       </section>
@@ -600,10 +600,10 @@ export default function App() {
           </div>
         )}
         <details className="glossary mt2">
-          <summary>Como leer la distribucion</summary>
+          <summary>Cómo leer la distribución</summary>
           <ul>
             <li>Bandas intensas al amanecer indican suelos saturados: retrasa la entrada de maquinaria.</li>
-            <li>Bloques continuos &gt;60 % senalan varios dias lluviosos. Busca ventanas palidas (&lt;30 %) para labores criticas.</li>
+            <li>Bloques continuos &gt;60 % señalan varios días lluviosos. Busca ventanas pálidas (&lt;30 %) para labores críticas.</li>
             <li>Celdas claras aisladas equivalen a horas de baja probabilidad, ideales para riego o mantenimiento.</li>
           </ul>
         </details>
@@ -639,7 +639,7 @@ export default function App() {
             <strong>No fue posible generar insights.</strong>
             <p>
               {insights.error.message ||
-                'No logramos conectar con la API de insights. Vuelve a intentarlo cuando tengas conexion estable.'}
+                'No logramos conectar con la API de insights. Vuelve a intentarlo cuando tengas conexión estable.'}
             </p>
           </div>
         ) : insights.data ? (
@@ -654,7 +654,7 @@ export default function App() {
             </ul>
           ) : (
             <div className="empty-state">
-              Sin hallazgos relevantes con los umbrales actuales. Ajustalos para mas sensibilidad.
+              Sin hallazgos relevantes con los umbrales actuales. Ajústalos para más sensibilidad.
             </div>
           )
         ) : (
@@ -921,7 +921,7 @@ function buildKpis(
   return [
     {
       id: 'max',
-      label: metric === 'intensity' ? 'MAximo registrado' : 'MAximo diario',
+      label: metric === 'intensity' ? 'M?ximo registrado' : 'M?ximo diario',
       value: `${formatNumber(summary.maxValue)} ${unit}`,
       note: formatDisplayDate(summary.maxValueDate),
     },
@@ -992,7 +992,7 @@ function impactFromBadge(label: string, tense: Tense): string {
   const caution = tense === 'future' ? 'podrian' : 'pudieron';
   switch (label) {
     case 'Evento fuerte':
-      return `Anegamientos y retrasos logisticos ${caution} requerir ventanas secas antes de ingresar maquinaria.`;
+      return `Anegamientos y retrasos logísticos ${caution} requerir ventanas secas antes de ingresar maquinaria.`;
     case 'Temporal':
       return `Suelos saturados y charcos puntuales ${caution} frenar labores pesadas.`;
     case 'Lluvia moderada':
@@ -1021,8 +1021,8 @@ function buildSectorNarratives(
   );
   if (badge?.label === 'Evento fuerte') {
     agricultureParts.push(
-      `${isFuture ? 'La lluvia mas intensa proyectada sugiere' : 'La lluvia mas intensa sugirio'} atrasar siembra, fertilizacion foliar y entrada de maquinaria hasta que el lote drene.`
-    );
+      `${isFuture ? 'La lluvia más intensa proyectada sugiere' : 'La lluvia más intensa sugirió'} atrasar siembra, fertilización foliar y entrada de maquinaria hasta que el lote drene.`
+  );
   } else if (badge?.label === 'Temporal') {
     agricultureParts.push(
       `${isFuture ? 'Charcos probables; programa' : 'Hubo charcos probables; programar'} labores en franjas secas y verifica drenajes secundarios.`
@@ -1033,7 +1033,7 @@ function buildSectorNarratives(
     );
   } else {
     agricultureParts.push(
-      `${isFuture ? 'Humedad regular proyectada' : 'Humedad regular observada'}: vigila malezas y usa las ventanas con menos de 10 mm para cosecha mecanica.`
+      `${isFuture ? 'Humedad regular proyectada' : 'Humedad regular observada'}: vigila malezas y usa las ventanas con menos de 10 mm para cosecha mec?nica.`
     );
   }
 
@@ -1044,7 +1044,7 @@ function buildSectorNarratives(
     );
   } else if (summary.average < 4) {
     livestockParts.push(
-      `${isFuture ? 'Secuencia mas seca proyectada' : 'Secuencia mas seca observada'}; provee sombra, sales y agua fresca para evitar estres termico.`
+      `${isFuture ? 'Secuencia más seca proyectada' : 'Secuencia más seca observada'}; provee sombra, sales y agua fresca para evitar estrés térmico.`
     );
   } else {
     livestockParts.push(
@@ -1054,7 +1054,7 @@ function buildSectorNarratives(
   if (baselines.wind != null) {
     livestockParts.push(
       baselines.wind >= 8
-        ? `Viento medio ${(baselines.wind ?? 0).toFixed(1)} m/s ${isFuture ? 'ayudaria' : 'ayudo'} a ventilar establos.`
+        ? `Viento medio ${(baselines.wind ?? 0).toFixed(1)} m/s ${isFuture ? 'ayudar?a' : 'ayudo'} a ventilar establos.`
         : `Viento suave ${(baselines.wind ?? 0).toFixed(1)} m/s: monitorea insectos y calor acumulado.`
     );
   }
@@ -1063,8 +1063,8 @@ function buildSectorNarratives(
   if (baselines.solarKwh != null) {
     energyParts.push(
       baselines.solarKwh >= 4.5
-        ? `Radiacion ${(baselines.solarKwh ?? 0).toFixed(1)} kWh/m2: ${isFuture ? 'daria' : 'dio'} buen rendimiento fotovoltaico y para secado de forraje.`
-        : `Radiacion limitada (${(baselines.solarKwh ?? 0).toFixed(1)} kWh/m2); ${isFuture ? 'reduce' : 'redujo'} expectativas de generacion solar.`
+        ? `Radiaci?n ${(baselines.solarKwh ?? 0).toFixed(1)} kWh/m2: ${isFuture ? 'dar?a' : 'dio'} buen rendimiento fotovoltaico y para secado de forraje.`
+        : `Radiaci?n limitada (${(baselines.solarKwh ?? 0).toFixed(1)} kWh/m2); ${isFuture ? 'reduce' : 'redujo'} expectativas de generaci?n solar.`
     );
   }
   if (baselines.wind != null) {
@@ -1075,7 +1075,7 @@ function buildSectorNarratives(
     );
   }
   if (!energyParts.length) {
-    energyParts.push('Sin lecturas recientes de radiacion ni viento; mantente atento a la proxima actualizacion.');
+    energyParts.push('Sin lecturas recientes de radiacion ni viento; mantente atento a la pr?xima actualizaci?n.');
   }
 
   return {
@@ -1154,7 +1154,7 @@ function buildAgroNarrative(series: Series | undefined, tense: Tense): string | 
       notes.push(`Solo ${rain.toFixed(1)} mm en 24 h: ten listo riego suplementario.`);
     }
   } else {
-    notes.push(`${isFuture ? 'Sin acumulado esperado' : 'Sin acumulado observado'} en las ultimas 24 h.`);
+    notes.push(`${isFuture ? 'Sin acumulado esperado' : 'Sin acumulado observado'} en las últim?s 24 h.`);
   }
 
   if (evap != null) {
@@ -1168,8 +1168,8 @@ function buildAgroNarrative(series: Series | undefined, tense: Tense): string | 
   if (solarKwh != null) {
     notes.push(
       solarKwh >= 4.5
-        ? `Radiacion ${(solarKwh ?? 0).toFixed(1)} kWh/m2 ${isFuture ? 'habilitaria' : 'habilito'} buena generacion solar.`
-        : `Radiacion limitada ${(solarKwh ?? 0).toFixed(1)} kWh/m2; planifica secado con mas tiempo.`
+        ? `Radiaci?n ${(solarKwh ?? 0).toFixed(1)} kWh/m2 ${isFuture ? 'habilitaria' : 'habilito'} buena generaci?n solar.`
+        : `Radiación limitada ${(solarKwh ?? 0).toFixed(1)} kWh/m2; planifica secado con más tiempo.`
     );
   }
 
@@ -1245,11 +1245,11 @@ function buildHourlyNarrative(series: Series | undefined, tense: Tense): string 
       )}.`
     );
   } else {
-    notes.push(`Sin ventanas secas mayores a 3 h en las ${isFuture ? 'proximas' : 'ultimas'} 72 h.`);
+    notes.push(`Sin ventanas secas mayores a 3 h en las ${isFuture ? 'pr?ximas' : 'ultimas'} 72 h.`);
   }
   notes.push(
     wetShare >= 50
-      ? `Mas del 50% de las horas ${isFuture ? 'proyectadas' : 'recientes'} tuvieron lluvia significativa; agenda labores bajo techo.`
+      ? `M?s del 50% de las horas ${isFuture ? 'proyectadas' : 'recientes'} tuvieron lluvia significativa; agenda labores bajo techo.`
       : `Solo ${wetShare}% de las horas ${isFuture ? 'proyectadas' : 'observadas'} muestran lluvia >2 mm/h; aprovecha las franjas restantes para riego o mantenimiento.`
   );
 
@@ -1318,7 +1318,7 @@ function summarizeTrend(trend: TrendPoint[] | null): { value: string; note: stri
   if (!first || !last) {
     return {
       value: 'Sin datos',
-      note: 'Necesitamos mas puntos para calcular la tendencia.',
+      note: 'Necesitamos más puntos para calcular la tendencia.',
     };
   }
   const diff = last.value - first.value;
@@ -1359,7 +1359,7 @@ function buildChartNarrative(
     );
     if (summary.maxValueDate) {
       parts.push(
-        `El dia mas lluvioso ${isFuture ? 'proyectado seria' : 'fue'} ${formatDisplayDate(
+        `El dia m?s lluvioso ${isFuture ? 'proyectado seria' : 'fue'} ${formatDisplayDate(
           summary.maxValueDate
         )}, con ${formatNumber(summary.maxValue)} mm en 24 horas.`
       );
@@ -1370,7 +1370,7 @@ function buildChartNarrative(
     );
     if (summary.maxValueDate) {
       parts.push(
-        `La rafaga maxima ${isFuture ? 'proyectada ocurriria' : 'ocurrio'} el ${formatDisplayDate(
+        `La rafaga m?xima ${isFuture ? 'proyectada ocurriria' : 'ocurrio'} el ${formatDisplayDate(
           summary.maxValueDate
         )} y ${isFuture ? 'alcanzaria' : 'alcanzo'} ${formatNumber(summary.maxValue)} mm/h.`
       );
