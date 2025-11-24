@@ -380,39 +380,33 @@ export default function App() {
         </div>
       </header>
 
-      <section className="card help mb4">
-        <div className="help-header">
-          <strong>Cómo usar</strong>
-          <button
-            type="button"
-            className="btn small"
-            onClick={() => setHelpHidden((prev) => !prev)}
-          >
-            {helpHidden ? 'Mostrar guia' : 'Ocultar guia'}
+      <section className={`card help mb4 mobile-fold ${helpHidden ? 'collapsed' : 'open'}`}>
+        <div className="fold-toggle-row">
+          <strong>C?mo usar</strong>
+          <button type="button" className="btn small ghost" onClick={() => setHelpHidden((prev) => !prev)}>
+            {helpHidden ? 'Mostrar gu?a' : 'Ocultar gu?a'}
           </button>
         </div>
         {!helpHidden && (
-          <ol className="help-steps">
-            <li>
-              Comienza en <strong>Monitoreo en vivo</strong>: valida el sello “Hace X min” y usa la
-              actualización automática (1, 5 o 15 min) para seguir tormentas en tiempo real.
-            </li>
-            <li>
-              Elige un departamento y opcionalmente un municipio para la serie local (por defecto usa
-              la capital) y confirma la fuente mostrada en la tarjeta en vivo.
-            </li>
-            <li>
-              Ajusta el rango rápido (3 meses, 1 año, 5 años o 14 días de pronóstico). También puedes
-              fijar fechas manualmente cuando necesites comparar ventanas específicas.
-            </li>
-            <li>
-              Alterna entre acumulado diario o intensidad máxima, activa MA/EMA para suavizar la serie
-              histórica y combina los insights automáticos para traducir la señal en acciones.
-            </li>
-            <li>
-              Usa la distribución diaria y horaria para detectar ventanas secas o picos concentrados antes de programar labores a campo.
-            </li>
-          </ol>
+          <div className="fold-body">
+            <ol className="help-steps">
+              <li>
+                Comienza en <strong>Monitoreo en vivo</strong>: valida el sello ?Hace X min? y usa la actualizaci?n autom?tica (1, 5 o 15 min) para seguir tormentas en tiempo real.
+              </li>
+              <li>
+                Elige un departamento y opcionalmente un municipio para la serie local (por defecto usa la capital) y confirma la fuente mostrada en la tarjeta en vivo.
+              </li>
+              <li>
+                Ajusta el rango r?pido (3 meses, 1 a?o, 5 a?os o 14 d?as de pron?stico). Tambi?n puedes fijar fechas manualmente cuando necesites comparar ventanas espec?ficas.
+              </li>
+              <li>
+                Alterna entre acumulado diario o intensidad m?xima, activa MA/EMA para suavizar la serie hist?rica y combina los insights autom?ticos para traducir la se?al en acciones.
+              </li>
+              <li>
+                Usa la distribuci?n diaria y horaria para detectar ventanas secas o picos concentrados antes de programar labores a campo.
+              </li>
+            </ol>
+          </div>
         )}
       </section>
 
