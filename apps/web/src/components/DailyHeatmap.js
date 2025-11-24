@@ -1,5 +1,5 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 const DAILY_HEAT_COLORS = [
     { stop: 0, color: [37, 99, 235] },
     { stop: 0.4, color: [59, 130, 246] },
@@ -7,12 +7,28 @@ const DAILY_HEAT_COLORS = [
     { stop: 1, color: [239, 68, 68] },
 ];
 export function DailyHeatmap({ daily, metric }) {
+    const [compact, setCompact] = useState(false);
+    useEffect(() => {
+        if (typeof window === 'undefined')
+            return;
+        const mq = window.matchMedia('(max-width: 768px)');
+        const handler = () => setCompact(mq.matches);
+        handler();
+        if (typeof mq.addEventListener === 'function') {
+            mq.addEventListener('change', handler);
+            return () => mq.removeEventListener('change', handler);
+        }
+        mq.addListener(handler);
+        return () => mq.removeListener(handler);
+    }, []);
     const { weeks, weekRanges, max } = useMemo(() => buildMatrix(daily), [daily]);
     if (!weeks.length) {
         return _jsx("div", { className: "empty-state", children: "Sin datos suficientes para generar el mapa de calor." });
     }
     const unit = metric === 'intensity' ? 'mm/h' : 'mm';
-    return (_jsxs("div", { className: "daily-heatmap", children: [_jsxs("div", { className: "daily-heatmap-headline", children: [_jsx("h3", { children: "Distribucion diaria" }), _jsxs("p", { children: ["Concentra los dias mas humedos para planear riego, cosecha, disponibilidad de pasturas y generacion solar. Pico observado: ", _jsx("strong", { children: max.toFixed(2) }), " ", unit, "."] })] }), _jsx(WeeklyBars, { weeks: weeks, ranges: weekRanges, unit: unit }), _jsxs("div", { className: "heatmap-scale", children: [_jsx("span", { children: "Seco" }), _jsx("div", { className: "heatmap-scale-bar" }), _jsx("span", { children: "Max" })] })] }));
+    const renderWeeks = compact ? weeks.slice(-8) : weeks;
+    const renderRanges = compact ? weekRanges.slice(-renderWeeks.length) : weekRanges;
+    return (_jsxs("div", { className: "daily-heatmap", children: [_jsxs("div", { className: "daily-heatmap-headline", children: [_jsx("h3", { children: "Distribucion diaria" }), _jsxs("p", { children: ["Concentra los dias mas humedos para planear riego, cosecha, disponibilidad de pasturas y generacion solar. Pico observado: ", _jsx("strong", { children: max.toFixed(2) }), " ", unit, "."] })] }), _jsx(WeeklyBars, { weeks: renderWeeks, ranges: renderRanges, unit: unit }), _jsxs("div", { className: "heatmap-scale", children: [_jsx("span", { children: "Seco" }), _jsx("div", { className: "heatmap-scale-bar" }), _jsx("span", { children: "Max" })] })] }));
 }
 function WeeklyBars({ weeks, ranges, unit }) {
     const totals = weeks.map((week) => week.reduce((sum, day) => sum + (day?.value ?? 0), 0));

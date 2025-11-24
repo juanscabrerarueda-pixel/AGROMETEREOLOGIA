@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 export type DailyDatum = {
   date: string;
@@ -20,6 +20,19 @@ type DailyHeatmapProps = {
 };
 
 export function DailyHeatmap({ daily, metric }: DailyHeatmapProps) {
+  const [compact, setCompact] = useState(false);
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mq = window.matchMedia('(max-width: 768px)');
+    const handler = () => setCompact(mq.matches);
+    handler();
+    if (typeof mq.addEventListener === 'function') {
+      mq.addEventListener('change', handler);
+      return () => mq.removeEventListener('change', handler);
+    }
+    mq.addListener(handler);
+    return () => mq.removeListener(handler);
+  }, []);
   const { weeks, weekRanges, max } = useMemo(() => buildMatrix(daily), [daily]);
 
   if (!weeks.length) {
@@ -27,6 +40,8 @@ export function DailyHeatmap({ daily, metric }: DailyHeatmapProps) {
   }
 
   const unit = metric === 'intensity' ? 'mm/h' : 'mm';
+  const renderWeeks = compact ? weeks.slice(-8) : weeks;
+  const renderRanges = compact ? weekRanges.slice(-renderWeeks.length) : weekRanges;
 
   return (
     <div className="daily-heatmap">
@@ -38,7 +53,7 @@ export function DailyHeatmap({ daily, metric }: DailyHeatmapProps) {
         </p>
       </div>
 
-      <WeeklyBars weeks={weeks} ranges={weekRanges} unit={unit} />
+      <WeeklyBars weeks={renderWeeks} ranges={renderRanges} unit={unit} />
 
       <div className="heatmap-scale">
         <span>Seco</span>

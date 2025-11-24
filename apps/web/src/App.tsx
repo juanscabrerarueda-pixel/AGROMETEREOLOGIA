@@ -14,7 +14,7 @@ import { HourlyHeatmap } from './components/HourlyHeatmap';
 import { DailyHeatmap, type DailyDatum } from './components/DailyHeatmap';
 import { RealtimePanel } from './components/RealtimePanel';
 import { AgroPanels } from './components/AgroPanels';
-import { DEPARTMENT_OPTIONS } from './data/locations';
+import { DEPARTMENT_OPTIONS, type DepartmentOption } from './data/locations';
 
 type Metric = 'accumulated' | 'intensity';
 type TrendType = 'MA' | 'EMA';
@@ -43,7 +43,8 @@ type ChartSummary = {
   lastDate?: string;
 };
 
-type Kpi = { id: string; label: string; value: string; note?: string };
+type Kpi = { id: string; label: string; value: string; note?: string; badge?: KPIBadge };
+type KPIBadge = { label: string; tone?: 'warn' | 'alert' };
 
 type RefreshOption = {
   id: RefreshKey;
@@ -207,6 +208,11 @@ export default function App() {
     series.data,
   ]);
   const dailyData = useMemo(() => buildDailyData(series.data), [series.data]);
+  const metaSummary = useMemo(
+    () => buildMetaSummary(series.data, metric, currentDepartment, selectedMuni),
+    [series.data, metric, currentDepartment, selectedMuni]
+  );
+  const quickImpact = useMemo(() => buildImpactNarrative(aggregated, metric), [aggregated, metric]);
 
   const trendPoints = useMemo(() => {
     if (!showTrend || isFutureRange || !aggregated.points.length) {
@@ -459,22 +465,66 @@ export default function App() {
           </div>
         )}
 
+        {metaSummary && (
+          <div className="meta-panel">
+            <div className="meta-item">
+              <strong>Ultima actualizacion</strong>
+              <span>{metaSummary.updated}</span>
+            </div>
+            <div className="meta-item">
+              <strong>Ubicacion</strong>
+              <span>{metaSummary.location}</span>
+            </div>
+            <div className="meta-item">
+              <strong>Fuente</strong>
+              <span>{metaSummary.source}</span>
+            </div>
+            <div className="meta-item">
+              <strong>Unidad</strong>
+              <span>{metaSummary.unit}</span>
+            </div>
+          </div>
+        )}
+
         <PrecipitationChart points={aggregated.points} trend={trendPoints} metric={metric} />
 
         <div className="mt3">
-        <DailyHeatmap daily={dailyData} metric={metric} />
+          <DailyHeatmap daily={dailyData} metric={metric} />
+          <details className="glossary">
+            <summary>Como leer la intensidad</summary>
+            <ul>
+              <li>0-5 mm: Llovizna ligera, humedece sin generar escorrentia.</li>
+              <li>5-20 mm: Lluvia moderada, posible pausa corta en labores.</li>
+              <li>20-60 mm: Temporal, suelos saturados y riesgo de charcos.</li>
+              <li>{'> 60'} mm: Evento fuerte, probables anegamientos y retrasos.</li>
+            </ul>
+          </details>
         </div>
 
         <div className="kpis mt3">
           {kpis.map((item) => (
             <div key={item.id} className="kpi">
               <span className="kcap">{item.label}</span>
-              <span className="kval">{item.value}</span>
+              <span className="kval">
+                {item.value}
+                {item.badge && (
+                  <span className={`badge ${item.badge.tone ?? ''}`.trim()}>{item.badge.label}</span>
+                )}
+              </span>
               {item.note && <span className="ksub">{item.note}</span>}
             </div>
           ))}
         </div>
-        {chartNarrative && <p className="chart-narrative">{chartNarrative}</p>}
+        {(chartNarrative || quickImpact) && (
+          <div className="narrative-card">
+            {quickImpact && (
+              <p>
+                <strong>Lectura rapida:</strong> {quickImpact}
+              </p>
+            )}
+            {chartNarrative && <p className="chart-narrative">{chartNarrative}</p>}
+          </div>
+        )}
       </section>
 
       <section className="card mb4">
@@ -822,6 +872,59 @@ function buildKpis(
       note: rangeLabel,
     },
   ];
+}
+
+function buildMetaSummary(
+  series: Series | undefined,
+  metric: Metric,
+  department: DepartmentOption | undefined,
+  selectedMuni: string
+): { updated: string; location: string; source: string; unit: string } | null {
+  if (!series) return null;
+  const hourly = (series.hourly as Series['hourly']) ?? [];
+  const lastTimestamp = hourly.length ? hourly[hourly.length - 1]?.t : series.range?.to;
+  const updated = formatDisplayDate(lastTimestamp) || '—';
+  const muniLabel = department?.municipalities.find((item) => item.value === selectedMuni)?.label;
+  const location = [muniLabel, department?.label].filter(Boolean).join(' · ') || department?.label || '—';
+  return {
+    updated,
+    location,
+    source: series.meta?.source ?? 'Open-Meteo',
+    unit: metric === 'intensity' ? 'mm/h' : 'mm',
+  };
+}
+
+function buildImpactNarrative(summary: ChartSummary, metric: Metric): string | null {
+  if (!summary.count) return null;
+  const badge = buildIntensityBadge(summary.maxValue, metric);
+  if (!badge) return null;
+  const unit = metric === 'intensity' ? 'mm/h' : 'mm';
+  const impact = impactFromBadge(badge.label);
+  return `Acumulado ${formatNumber(summary.totalRain)} mm en ${summary.count.toLocaleString(
+    'es-CO'
+  )} d�as. El pico diario alcanz� ${formatNumber(summary.maxValue)} ${unit} (${badge.label}). ${impact}`;
+}
+
+function buildIntensityBadge(value: number, metric: Metric): KPIBadge | undefined {
+  if (!Number.isFinite(value) || value <= 0) return undefined;
+  const mm = value;
+  if (mm >= 60) return { label: 'Evento fuerte', tone: 'alert' };
+  if (mm >= 20) return { label: 'Temporal', tone: 'warn' };
+  if (mm >= 5) return { label: 'Lluvia moderada' };
+  return { label: 'Llovizna ligera' };
+}
+
+function impactFromBadge(label: string): string {
+  switch (label) {
+    case 'Evento fuerte':
+      return 'Probables anegamientos y retrasos log�sticos; prioriza ventanas secas antes de ingresar maquinaria.';
+    case 'Temporal':
+      return 'Suelos saturados y charcos puntuales: evita labores pesadas hasta que baje la intensidad.';
+    case 'Lluvia moderada':
+      return 'Mojado general que puede interrumpir labores breves; aprovecha ventanas menores a 5 mm.';
+    default:
+      return 'Condiciones suaves ideales para mantenimiento ligero y aplicaciones foliares.';
+  }
 }
 function summarizeTrend(trend: TrendPoint[] | null): { value: string; note: string } {
   if (!trend || !trend.length) {

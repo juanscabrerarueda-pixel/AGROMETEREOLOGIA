@@ -529,6 +529,27 @@ body {
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 }
 
+.meta-panel {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.meta-item {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: rgba(15, 17, 27, 0.8);
+  font-size: 13px;
+}
+
+.meta-item strong {
+  display: block;
+  font-size: 14px;
+  color: var(--ink);
+}
+
 .agro-card {
   border: 1px solid var(--line);
   border-radius: 16px;
@@ -554,6 +575,29 @@ body {
 .agro-card.muted {
   border-color: var(--line);
   color: var(--muted);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: rgba(96, 165, 250, 0.15);
+  color: rgba(248, 250, 252, 0.9);
+  margin-left: 4px;
+}
+
+.badge.warn {
+  background: rgba(250, 204, 21, 0.18);
+  color: #fde68a;
+}
+
+.badge.alert {
+  background: rgba(248, 113, 113, 0.2);
+  color: #fecaca;
 }
 
 .agro-card__label {
@@ -702,6 +746,47 @@ body {
   color: var(--muted);
 }
 
+.glossary {
+  margin-top: 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: rgba(15, 17, 26, 0.8);
+  font-size: 13px;
+}
+
+.glossary summary {
+  cursor: pointer;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(226, 232, 240, 0.85);
+}
+
+.glossary ul {
+  margin: 12px 0 0;
+  padding-left: 18px;
+  color: var(--muted);
+}
+
+.narrative-card {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 16px;
+  background: rgba(12, 14, 22, 0.85);
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.narrative-card p {
+  margin: 0 0 8px;
+}
+
+.narrative-card strong {
+  color: var(--ink);
+}
+
 .skeleton {
   display: grid;
   gap: 10px;
@@ -811,7 +896,29 @@ body {
   }
 
   .kpis {
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    display: flex;
+    overflow-x: auto;
+    gap: 12px;
+    padding-bottom: 6px;
+  }
+
+  .kpi {
+    min-width: 180px;
+  }
+
+  .meta-panel {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  }
+
+  .agro-panels {
+    display: flex;
+    overflow-x: auto;
+    gap: 12px;
+    padding-bottom: 6px;
+  }
+
+  .agro-card {
+    min-width: 200px;
   }
 
   .realtime-meta {
