@@ -25,12 +25,22 @@ type Snapshot = {
   lastDisplay: string;
   relativeLabel: string;
   isStale: boolean;
+  latencyMinutes: number;
   metrics: SnapshotMetric[];
   forecastTotal: number;
   forecastPeak: number;
   hasForecast: boolean;
+  latest: SnapshotLatest;
 };
 
+type SnapshotLatest = {
+  rain?: number;
+  intensity?: number;
+  temp?: number;
+  humidity?: number;
+  wind?: number;
+  pressure?: number;
+};
 const DAY_MS = 24 * 60 * 60 * 1000;
 const LIVE_TIPS = [
   {
@@ -67,6 +77,8 @@ export function RealtimePanel({ series, busy }: RealtimePanelProps) {
   const snapshot = useMemo(() => buildSnapshot(series), [series]);
   const sparkline = useMemo(() => buildSparkline(series), [series]);
   const [guideOpen, setGuideOpen] = useState(true);
+  const alerts = useMemo(() => buildRealtimeAlerts(snapshot?.latest), [snapshot]);
+  const latencyPercent = snapshot ? Math.min((snapshot.latencyMinutes ?? 0) / 60, 1) * 100 : 0;
   const sparklineChart = useMemo(() => {
     if (!sparkline) return null;
     return {
@@ -154,6 +166,24 @@ export function RealtimePanel({ series, busy }: RealtimePanelProps) {
               </div>
             ))}
           </div>
+          {alerts.length > 0 && (
+            <div className="status-chips">
+              {alerts.map((alert) => (
+                <div key={alert.id} className={`status-chip ${alert.tone}`}>
+                  <span className="chip-title">{alert.label}</span>
+                  <p>{alert.message}</p>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className={`latency-bar ${snapshot.isStale ? 'warn' : ''}`}>
+            <span className="tiny">Latencia relativa (<strong>{snapshot.relativeLabel}</strong>)</span>
+            <div className="latency-track">
+              <div className="latency-fill" style={{ width: `${latencyPercent}%` }} />
+            </div>
+            <p className="muted tiny">0 min = actualizado, 60 min = umbral crítico</p>
+          </div>
 
           {sparkline && sparklineChart && (
             <div className="realtime-sparkline">
@@ -233,10 +263,19 @@ function buildSnapshot(series?: Series | null): Snapshot | null {
     lastDisplay: formatDateTime(lastStamp, series.meta?.tz),
     relativeLabel: relative.label,
     isStale: relative.isStale,
+    latencyMinutes: relative.minutes,
     metrics: buildMetrics(latest),
     forecastTotal: forecast.total,
     forecastPeak: forecast.peak,
     hasForecast: forecast.count > 0,
+    latest: {
+      rain: typeof latest.prcp === 'number' ? latest.prcp : undefined,
+      intensity: typeof latest.prcpRate === 'number' ? latest.prcpRate : undefined,
+      temp: typeof latest.temp === 'number' ? latest.temp : typeof latest.apparentTemp === 'number' ? latest.apparentTemp : undefined,
+      humidity: typeof latest.rh === 'number' ? latest.rh : undefined,
+      wind: typeof latest.wind === 'number' ? latest.wind : undefined,
+      pressure: typeof latest.pressure === 'number' ? latest.pressure : undefined,
+    },
   };
 }
 
@@ -340,19 +379,19 @@ function formatDateTime(timestamp: number, tz?: string): string {
   }
 }
 
-function formatRelativeLabel(timestamp: number, now: number): { label: string; isStale: boolean } {
+function formatRelativeLabel(timestamp: number, now: number): { label: string; isStale: boolean; minutes: number } {
   if (!Number.isFinite(timestamp)) {
-    return { label: 'Fecha desconocida', isStale: true };
+    return { label: 'Fecha desconocida', isStale: true, minutes: 999 };
   }
   if (timestamp > now) {
     const minutesAhead = Math.round((timestamp - now) / 60000);
-    return { label: `Proximo dato en ${minutesAhead} min`, isStale: false };
+    return { label: `Próximo dato en ${minutesAhead} min`, isStale: false, minutes: 0 };
   }
   const minutesDiff = Math.max(0, Math.round((now - timestamp) / 60000));
-  if (minutesDiff < 1) return { label: 'Actualizado hace instantes', isStale: false };
-  if (minutesDiff < 60) return { label: `Hace ${minutesDiff} min`, isStale: false };
+  if (minutesDiff < 1) return { label: 'Actualizado hace instantes', isStale: false, minutes: minutesDiff };
+  if (minutesDiff < 60) return { label: `Hace ${minutesDiff} min`, isStale: false, minutes: minutesDiff };
   const hours = minutesDiff / 60;
-  return { label: `Hace ${hours.toFixed(1)} h`, isStale: minutesDiff > 180 };
+  return { label: `Hace ${hours.toFixed(1)} h`, isStale: minutesDiff > 180, minutes: minutesDiff };
 }
 
 function formatSparklineLabel(iso?: string): string {
@@ -384,5 +423,74 @@ function computeForecast(points: Series['hourly'], now: number): { total: number
     count += 1;
   }
   return { total, peak, count };
+}
+
+type Alert = { id: string; label: string; message: string; tone: 'calm' | 'warn' | 'alert' };
+
+function buildRealtimeAlerts(latest?: SnapshotLatest): Alert[] {
+  if (!latest) return [];
+  const alerts: Alert[] = [];
+  if (latest.rain != null && latest.rain >= 3) {
+    alerts.push({
+      id: 'rain',
+      label: latest.rain >= 10 ? 'Lluvia fuerte' : 'Lluvia útil',
+      tone: latest.rain >= 10 ? 'alert' : 'warn',
+      message:
+        latest.rain >= 10
+          ? 'Considera pausar la entrada de maquinaria hasta que drene el lote.'
+          : 'Humedece el suelo; verifica escorrentía en zonas bajas.',
+    });
+  }
+  if (latest.intensity != null && latest.intensity >= 8) {
+    alerts.push({
+      id: 'intensity',
+      label: 'Pico de intensidad',
+      tone: 'alert',
+      message: 'Ráfagas >8 mm/h; evita labores de aspersión o riego superficial.',
+    });
+  }
+  if (latest.temp != null) {
+    if (latest.temp >= 32) {
+      alerts.push({
+        id: 'heat',
+        label: 'Calor elevado',
+        tone: 'warn',
+        message: 'Prioriza sombra e hidratación para personal y ganado.',
+      });
+    } else if (latest.temp <= 16) {
+      alerts.push({
+        id: 'cool',
+        label: 'Mañana fría',
+        tone: 'calm',
+        message: 'Protege viveros y planifica riegos más tarde para evitar shock térmico.',
+      });
+    }
+  }
+  if (latest.humidity != null) {
+    if (latest.humidity >= 85) {
+      alerts.push({
+        id: 'humidity-high',
+        label: 'Humedad alta',
+        tone: 'warn',
+        message: 'Favorece hongos; ventila invernaderos y monitorea cultivos sensibles.',
+      });
+    } else if (latest.humidity <= 40) {
+      alerts.push({
+        id: 'humidity-low',
+        label: 'Ambiente seco',
+        tone: 'warn',
+        message: 'Incrementa la demanda hídrica y la presencia de polvo.',
+      });
+    }
+  }
+  if (latest.wind != null && latest.wind >= 9) {
+    alerts.push({
+      id: 'wind',
+      label: 'Viento fuerte',
+      tone: 'alert',
+      message: 'Revisa estructuras ligeras y posterga aspersiones para evitar deriva.',
+    });
+  }
+  return alerts.slice(0, 3);
 }
 

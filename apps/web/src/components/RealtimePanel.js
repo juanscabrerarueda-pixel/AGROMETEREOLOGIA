@@ -26,6 +26,8 @@ export function RealtimePanel({ series, busy }) {
     const snapshot = useMemo(() => buildSnapshot(series), [series]);
     const sparkline = useMemo(() => buildSparkline(series), [series]);
     const [guideOpen, setGuideOpen] = useState(true);
+    const alerts = useMemo(() => buildRealtimeAlerts(snapshot?.latest), [snapshot]);
+    const latencyPercent = snapshot ? Math.min((snapshot.latencyMinutes ?? 0) / 60, 1) * 100 : 0;
     const sparklineChart = useMemo(() => {
         if (!sparkline)
             return null;
@@ -62,7 +64,7 @@ export function RealtimePanel({ series, busy }) {
     }, [sparkline]);
     return (_jsxs("section", { className: "card realtime-card mb4", children: [_jsxs("div", { className: "section-header", children: [_jsxs("div", { children: [_jsx("h2", { children: "Monitoreo en vivo" }), _jsx("p", { className: "muted tiny", children: snapshot ? `Último dato: ${snapshot.lastDisplay}` : 'Sin observaciones en el rango actual.' })] }), snapshot && (_jsx("span", { className: `status-pill ${snapshot.isStale ? 'warn' : ''}`, children: snapshot.relativeLabel }))] }), busy && !snapshot ? (_jsxs("div", { className: "skeleton", children: [_jsx("div", { className: "skeleton-bar" }), _jsx("div", { className: "skeleton-bar" }), _jsx("div", { className: "skeleton-bar" })] })) : snapshot ? (_jsxs(_Fragment, { children: [_jsxs("div", { className: "realtime-meta", children: [_jsxs("div", { children: [_jsx("span", { className: "tiny", children: "Ubicaci\u00F3n" }), _jsx("strong", { children: snapshot.locationLabel }), _jsx("p", { className: "muted tiny", children: snapshot.sourceLabel ?? 'Fuente no disponible' })] }), _jsxs("div", { children: [_jsx("span", { className: "tiny", children: "Zona horaria" }), _jsx("strong", { children: snapshot.timezone ?? 'Sin dato' }), _jsx("p", { className: "muted tiny", children: "Hora local mostrada en la serie" })] }), _jsxs("div", { children: [_jsx("span", { className: "tiny", children: "Pron\u00F3stico 24h" }), _jsxs("strong", { children: [formatNumber(snapshot.forecastTotal, 1), " mm"] }), _jsx("p", { className: "muted tiny", children: snapshot.hasForecast
                                             ? `Intensidad pico esperada: ${formatNumber(snapshot.forecastPeak, 1)} mm/h`
-                                            : 'Sin proyección disponible' })] })] }), _jsx("div", { className: "realtime-metrics", children: snapshot.metrics.map((metric) => (_jsxs("div", { className: "realtime-metric", children: [_jsx("span", { className: "metric-label", children: metric.label }), _jsx("span", { className: "metric-value", children: metric.value }), metric.note && _jsx("span", { className: "metric-note", children: metric.note })] }, metric.id))) }), sparkline && sparklineChart && (_jsxs("div", { className: "realtime-sparkline", children: [_jsxs("div", { className: "sparkline-meta", children: [_jsx("span", { className: "tiny", children: "Intensidad \u00FAltimas 24 h" }), _jsx("strong", { children: formatNumber(sparkline.latest, 1, 'mm/h') }), _jsxs("p", { className: "muted tiny", children: ["Pico reciente: ", formatNumber(sparkline.peak, 1, 'mm/h'), " \u00B7 ", sparkline.latestLabel] })] }), _jsx("div", { className: "sparkline-chart", children: _jsx(Line, { data: sparklineChart.data, options: sparklineChart.options, height: 60 }) })] }))] })) : (_jsx("div", { className: "empty-state", children: "Ajusta el rango o la ubicaci\u00F3n para ver datos en vivo." })), snapshot && (_jsxs("div", { className: "realtime-guide mt3", children: [_jsxs("div", { className: "help-header", children: [_jsx("strong", { children: "C\u00F3mo leer el monitoreo en vivo" }), _jsx("button", { type: "button", className: "btn small", onClick: () => setGuideOpen((prev) => !prev), children: guideOpen ? 'Ocultar guía' : 'Mostrar guía' })] }), guideOpen && (_jsx("ul", { className: "help-steps", children: LIVE_TIPS.map((tip) => (_jsxs("li", { children: [_jsxs("strong", { children: [tip.title, ":"] }), " ", tip.body] }, tip.title))) }))] }))] }));
+                                            : 'Sin proyección disponible' })] })] }), _jsx("div", { className: "realtime-metrics", children: snapshot.metrics.map((metric) => (_jsxs("div", { className: "realtime-metric", children: [_jsx("span", { className: "metric-label", children: metric.label }), _jsx("span", { className: "metric-value", children: metric.value }), metric.note && _jsx("span", { className: "metric-note", children: metric.note })] }, metric.id))) }), alerts.length > 0 && (_jsx("div", { className: "status-chips", children: alerts.map((alert) => (_jsxs("div", { className: `status-chip ${alert.tone}`, children: [_jsx("span", { className: "chip-title", children: alert.label }), _jsx("p", { children: alert.message })] }, alert.id))) })), _jsxs("div", { className: `latency-bar ${snapshot.isStale ? 'warn' : ''}`, children: [_jsxs("span", { className: "tiny", children: ["Latencia relativa (", _jsx("strong", { children: snapshot.relativeLabel }), ")"] }), _jsx("div", { className: "latency-track", children: _jsx("div", { className: "latency-fill", style: { width: `${latencyPercent}%` } }) }), _jsx("p", { className: "muted tiny", children: "0 min = actualizado, 60 min = umbral cr\u00EDtico" })] }), sparkline && sparklineChart && (_jsxs("div", { className: "realtime-sparkline", children: [_jsxs("div", { className: "sparkline-meta", children: [_jsx("span", { className: "tiny", children: "Intensidad \u00FAltimas 24 h" }), _jsx("strong", { children: formatNumber(sparkline.latest, 1, 'mm/h') }), _jsxs("p", { className: "muted tiny", children: ["Pico reciente: ", formatNumber(sparkline.peak, 1, 'mm/h'), " \u00B7 ", sparkline.latestLabel] })] }), _jsx("div", { className: "sparkline-chart", children: _jsx(Line, { data: sparklineChart.data, options: sparklineChart.options, height: 60 }) })] }))] })) : (_jsx("div", { className: "empty-state", children: "Ajusta el rango o la ubicaci\u00F3n para ver datos en vivo." })), snapshot && (_jsxs("div", { className: "realtime-guide mt3", children: [_jsxs("div", { className: "help-header", children: [_jsx("strong", { children: "C\u00F3mo leer el monitoreo en vivo" }), _jsx("button", { type: "button", className: "btn small", onClick: () => setGuideOpen((prev) => !prev), children: guideOpen ? 'Ocultar guía' : 'Mostrar guía' })] }), guideOpen && (_jsx("ul", { className: "help-steps", children: LIVE_TIPS.map((tip) => (_jsxs("li", { children: [_jsxs("strong", { children: [tip.title, ":"] }), " ", tip.body] }, tip.title))) }))] }))] }));
 }
 function buildSnapshot(series) {
     if (!series || !Array.isArray(series.hourly) || !series.hourly.length) {
@@ -97,10 +99,19 @@ function buildSnapshot(series) {
         lastDisplay: formatDateTime(lastStamp, series.meta?.tz),
         relativeLabel: relative.label,
         isStale: relative.isStale,
+        latencyMinutes: relative.minutes,
         metrics: buildMetrics(latest),
         forecastTotal: forecast.total,
         forecastPeak: forecast.peak,
         hasForecast: forecast.count > 0,
+        latest: {
+            rain: typeof latest.prcp === 'number' ? latest.prcp : undefined,
+            intensity: typeof latest.prcpRate === 'number' ? latest.prcpRate : undefined,
+            temp: typeof latest.temp === 'number' ? latest.temp : typeof latest.apparentTemp === 'number' ? latest.apparentTemp : undefined,
+            humidity: typeof latest.rh === 'number' ? latest.rh : undefined,
+            wind: typeof latest.wind === 'number' ? latest.wind : undefined,
+            pressure: typeof latest.pressure === 'number' ? latest.pressure : undefined,
+        },
     };
 }
 function buildSparkline(series) {
@@ -203,19 +214,19 @@ function formatDateTime(timestamp, tz) {
 }
 function formatRelativeLabel(timestamp, now) {
     if (!Number.isFinite(timestamp)) {
-        return { label: 'Fecha desconocida', isStale: true };
+        return { label: 'Fecha desconocida', isStale: true, minutes: 999 };
     }
     if (timestamp > now) {
         const minutesAhead = Math.round((timestamp - now) / 60000);
-        return { label: `Proximo dato en ${minutesAhead} min`, isStale: false };
+        return { label: `Próximo dato en ${minutesAhead} min`, isStale: false, minutes: 0 };
     }
     const minutesDiff = Math.max(0, Math.round((now - timestamp) / 60000));
     if (minutesDiff < 1)
-        return { label: 'Actualizado hace instantes', isStale: false };
+        return { label: 'Actualizado hace instantes', isStale: false, minutes: minutesDiff };
     if (minutesDiff < 60)
-        return { label: `Hace ${minutesDiff} min`, isStale: false };
+        return { label: `Hace ${minutesDiff} min`, isStale: false, minutes: minutesDiff };
     const hours = minutesDiff / 60;
-    return { label: `Hace ${hours.toFixed(1)} h`, isStale: minutesDiff > 180 };
+    return { label: `Hace ${hours.toFixed(1)} h`, isStale: minutesDiff > 180, minutes: minutesDiff };
 }
 function formatSparklineLabel(iso) {
     if (!iso)
@@ -248,5 +259,73 @@ function computeForecast(points, now) {
         count += 1;
     }
     return { total, peak, count };
+}
+function buildRealtimeAlerts(latest) {
+    if (!latest)
+        return [];
+    const alerts = [];
+    if (latest.rain != null && latest.rain >= 3) {
+        alerts.push({
+            id: 'rain',
+            label: latest.rain >= 10 ? 'Lluvia fuerte' : 'Lluvia útil',
+            tone: latest.rain >= 10 ? 'alert' : 'warn',
+            message: latest.rain >= 10
+                ? 'Considera pausar la entrada de maquinaria hasta que drene el lote.'
+                : 'Humedece el suelo; verifica escorrentía en zonas bajas.',
+        });
+    }
+    if (latest.intensity != null && latest.intensity >= 8) {
+        alerts.push({
+            id: 'intensity',
+            label: 'Pico de intensidad',
+            tone: 'alert',
+            message: 'Ráfagas >8 mm/h; evita labores de aspersión o riego superficial.',
+        });
+    }
+    if (latest.temp != null) {
+        if (latest.temp >= 32) {
+            alerts.push({
+                id: 'heat',
+                label: 'Calor elevado',
+                tone: 'warn',
+                message: 'Prioriza sombra e hidratación para personal y ganado.',
+            });
+        }
+        else if (latest.temp <= 16) {
+            alerts.push({
+                id: 'cool',
+                label: 'Mañana fría',
+                tone: 'calm',
+                message: 'Protege viveros y planifica riegos más tarde para evitar shock térmico.',
+            });
+        }
+    }
+    if (latest.humidity != null) {
+        if (latest.humidity >= 85) {
+            alerts.push({
+                id: 'humidity-high',
+                label: 'Humedad alta',
+                tone: 'warn',
+                message: 'Favorece hongos; ventila invernaderos y monitorea cultivos sensibles.',
+            });
+        }
+        else if (latest.humidity <= 40) {
+            alerts.push({
+                id: 'humidity-low',
+                label: 'Ambiente seco',
+                tone: 'warn',
+                message: 'Incrementa la demanda hídrica y la presencia de polvo.',
+            });
+        }
+    }
+    if (latest.wind != null && latest.wind >= 9) {
+        alerts.push({
+            id: 'wind',
+            label: 'Viento fuerte',
+            tone: 'alert',
+            message: 'Revisa estructuras ligeras y posterga aspersiones para evitar deriva.',
+        });
+    }
+    return alerts.slice(0, 3);
 }
 //# sourceMappingURL=RealtimePanel.js.map
