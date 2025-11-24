@@ -589,6 +589,17 @@ body {
   font-size: 13px;
 }
 
+.daily-mode-toggle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.daily-mode-toggle .btn {
+  flex: 1 1 140px;
+  min-width: 0;
+}
+
 .daily-heatmap-gridWrapper {
   overflow-x: auto;
   padding-bottom: 6px;
@@ -631,7 +642,70 @@ body {
   width: 18px;
   height: 18px;
   border-radius: 4px;
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  font-size: 0;
+}
+
+.daily-cell-icons {
+  font-size: 10px;
+  line-height: 1;
+  filter: drop-shadow(0 1px 2px rgba(2, 4, 9, 0.6));
+}
+
+.daily-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 18px;
+  overflow-x: auto;
+  padding: 8px 4px 12px;
+}
+
+.daily-bars-week {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 72px;
+}
+
+.daily-bars-column {
+  width: 36px;
+  height: 180px;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  background: rgba(12, 15, 24, 0.6);
+  padding: 6px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.daily-bars-stack {
+  width: 100%;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column-reverse;
+  overflow: hidden;
+  background: rgba(148, 163, 184, 0.15);
+}
+
+.daily-bar-segment {
+  width: 100%;
+}
+
+.daily-bars-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.daily-bars-total {
+  font-size: 11px;
+  color: var(--muted);
 }
 
 .skeleton {

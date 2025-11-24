@@ -11,7 +11,7 @@ import {
   type TrendPoint,
 } from './components/PrecipitationChart';
 import { HourlyHeatmap } from './components/HourlyHeatmap';
-import { DailyHeatmap } from './components/DailyHeatmap';
+import { DailyHeatmap, type DailyDatum } from './components/DailyHeatmap';
 import { RealtimePanel } from './components/RealtimePanel';
 import { AgroPanels } from './components/AgroPanels';
 import { DEPARTMENT_OPTIONS } from './data/locations';
@@ -206,6 +206,7 @@ export default function App() {
     metric,
     series.data,
   ]);
+  const dailyData = useMemo(() => buildDailyData(series.data), [series.data]);
 
   const trendPoints = useMemo(() => {
     if (!showTrend || isFutureRange || !aggregated.points.length) {
@@ -461,7 +462,7 @@ export default function App() {
         <PrecipitationChart points={aggregated.points} trend={trendPoints} metric={metric} />
 
         <div className="mt3">
-          <DailyHeatmap points={aggregated.points} metric={metric} />
+        <DailyHeatmap daily={dailyData} metric={metric} />
         </div>
 
         <div className="kpis mt3">
@@ -672,6 +673,58 @@ function aggregateSeries(series: Series | undefined, metric: Metric): ChartSumma
     firstDate: dates[0],
     lastDate: dates[count - 1],
   };
+}
+
+function buildDailyData(series: Series | undefined): DailyDatum[] {
+  if (!series || !Array.isArray(series.hourly)) return [];
+  const buckets = new Map<
+    string,
+    {
+      rain: number;
+      solar: number;
+      wind: number;
+      windCount: number;
+      apparent: number;
+      apparentCount: number;
+    }
+  >();
+
+  for (const point of series.hourly) {
+    const day = point.t?.slice(0, 10);
+    if (!day) continue;
+    const bucket =
+      buckets.get(day) ??
+      buckets.set(day, { rain: 0, solar: 0, wind: 0, windCount: 0, apparent: 0, apparentCount: 0 }).get(day)!;
+    if (typeof point.prcp === 'number') bucket.rain += point.prcp;
+    if (typeof point.rs === 'number') bucket.solar += point.rs;
+    if (typeof point.wind === 'number') {
+      bucket.wind += point.wind;
+      bucket.windCount += 1;
+    }
+    const apparent = typeof point.apparentTemp === 'number' ? point.apparentTemp : point.temp;
+    if (typeof apparent === 'number') {
+      bucket.apparent += apparent;
+      bucket.apparentCount += 1;
+    }
+  }
+
+  return Array.from(buckets.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([date, bucket]) => {
+      const solarKwh = bucket.solar / 1000;
+      const windMean = bucket.windCount ? bucket.wind / bucket.windCount : null;
+      const apparentMean = bucket.apparentCount ? bucket.apparent / bucket.apparentCount : null;
+      const icons: string[] = [];
+      if (solarKwh >= 6) icons.push('☀');
+      if (windMean != null && windMean >= 8) icons.push('💨');
+      if (apparentMean != null && apparentMean >= 32) icons.push('🔥');
+      return {
+        date,
+        label: formatDisplayDate(date),
+        value: Number(bucket.rain.toFixed(2)),
+        icons,
+      };
+    });
 }
 
 function computeTrend(points: AggregatedPoint[], window: number, trendType: TrendType): TrendPoint[] {

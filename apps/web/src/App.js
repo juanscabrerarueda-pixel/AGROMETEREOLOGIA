@@ -7,7 +7,9 @@ import { useInsights } from './hooks/useInsights';
 import { useThresholds } from './state/thresholds';
 import { PrecipitationChart, } from './components/PrecipitationChart';
 import { HourlyHeatmap } from './components/HourlyHeatmap';
+import { DailyHeatmap } from './components/DailyHeatmap';
 import { RealtimePanel } from './components/RealtimePanel';
+import { AgroPanels } from './components/AgroPanels';
 import { DEPARTMENT_OPTIONS } from './data/locations';
 const REFRESH_OPTIONS = [
     {
@@ -100,7 +102,24 @@ export default function App() {
         muni: selectedMuni || undefined,
         from: range.from,
         to: range.to,
-        fields: ['prcp', 'prcpRate', 'temp', 'rh', 'wind', 'rs', 'pressure'],
+        fields: [
+            'prcp',
+            'prcpRate',
+            'temp',
+            'rh',
+            'wind',
+            'rs',
+            'pressure',
+            'soilTemp0',
+            'soilTemp18',
+            'soilTemp54',
+            'soilMoist1',
+            'soilMoist3',
+            'soilMoist9',
+            'soilMoist27',
+            'evap',
+            'apparentTemp',
+        ],
     }), [range.from, range.to, selectedDept, selectedMuni]);
     const series = useSeries(seriesParams, {
         queryOptions: {
@@ -122,6 +141,7 @@ export default function App() {
         metric,
         series.data,
     ]);
+    const dailyData = useMemo(() => buildDailyData(series.data), [series.data]);
     const trendPoints = useMemo(() => {
         if (!showTrend || isFutureRange || !aggregated.points.length) {
             return null;
@@ -163,7 +183,7 @@ export default function App() {
         setRange((prev) => normalizeRange({ from: prev.from, to: value }));
     };
     const metricHelper = METRIC_OPTIONS.find((option) => option.id === metric)?.helper ?? '';
-    return (_jsxs("main", { className: "wrap", children: [_jsxs("header", { className: "mb4 intro", children: [_jsx("p", { className: "tagline", children: "Tendencias de lluvia en Colombia" }), _jsx("h1", { children: "Panel agrometeorol\u00F3gico" }), _jsx("p", { className: "muted", children: "Filtra por departamento y municipio, alterna entre acumulados o intensidad diaria y usa la l\u00EDnea de tendencia para resumir comportamientos. El mapa horario te ayuda a encontrar ventanas secas o picos concentrados." })] }), _jsxs("section", { className: "card help mb4", children: [_jsxs("div", { className: "help-header", children: [_jsx("strong", { children: "C\u00F3mo usar" }), _jsx("button", { type: "button", className: "btn small", onClick: () => setHelpHidden((prev) => !prev), children: helpHidden ? 'Mostrar guía' : 'Ocultar guía' })] }), !helpHidden && (_jsxs("ol", { className: "help-steps", children: [_jsx("li", { children: "Elige un departamento y opcionalmente un municipio para la serie local (por defecto usa la capital)." }), _jsx("li", { children: "Ajusta el rango r\u00E1pido (3 meses, 1 a\u00F1o, 5 a\u00F1os o 14 d\u00EDas de pron\u00F3stico). Tambi\u00E9n puedes fijar fechas manualmente." }), _jsx("li", { children: "Alterna entre acumulado diario o intensidad m\u00E1xima, y activa MA/EMA para suavizar la serie hist\u00F3rica." }), _jsx("li", { children: "Usa la distribuci\u00F3n horaria para detectar ventanas secas y revisa los insights autom\u00E1ticos para recomendaciones puntuales." })] }))] }), _jsxs("section", { className: "card controls mb4", children: [_jsxs("div", { className: "row", children: [_jsxs("label", { className: "field", children: [_jsx("span", { children: "Departamento" }), _jsx("select", { value: selectedDept, onChange: (event) => handleDeptChange(event.target.value), children: DEPARTMENT_OPTIONS.map((option) => (_jsx("option", { value: option.value, children: option.label }, option.value))) })] }), _jsxs("label", { className: "field", children: [_jsx("span", { children: "Municipio / ciudad" }), _jsx("select", { value: selectedMuni, onChange: (event) => handleMuniChange(event.target.value), children: municipalities.map((option) => (_jsx("option", { value: option.value, children: option.label }, option.value))) })] }), _jsxs("label", { className: "field", children: [_jsx("span", { children: "Desde" }), _jsx("input", { type: "date", value: range.from, onChange: (event) => handleFromChange(event.target.value) })] }), _jsxs("label", { className: "field", children: [_jsx("span", { children: "Hasta" }), _jsx("input", { type: "date", value: range.to, onChange: (event) => handleToChange(event.target.value) })] })] }), _jsxs("div", { className: "seg mt2", children: [RANGE_OPTIONS.map((option) => (_jsx("button", { type: "button", className: `btn ${rangeSelection === option.id ? 'active' : ''}`, onClick: () => handleRangePreset(option), children: option.label }, option.id))), _jsx("button", { type: "button", className: `btn small ${rangeSelection === 'custom' ? 'active' : ''}`, onClick: () => setRangeSelection('custom'), title: "Edita las fechas para definir tu rango personalizado.", children: "Personalizado" })] }), _jsx("div", { className: "seg mt2", children: METRIC_OPTIONS.map((option) => (_jsx("button", { type: "button", className: `btn ${metric === option.id ? 'active' : ''}`, onClick: () => setMetric(option.id), children: option.label }, option.id))) }), _jsxs("div", { className: "row gap mt2", children: [_jsx("button", { type: "button", className: "btn small", onClick: () => setShowTrend((prev) => !prev), disabled: isFutureRange, title: isFutureRange ? 'La tendencia no aplica a pronósticos futuros' : '', children: showTrend ? 'Ocultar tendencia' : 'Ver tendencia' }), _jsx("div", { className: "seg compact", children: TREND_OPTIONS.map((option) => (_jsx("button", { type: "button", className: `btn small ${trendType === option.id ? 'active' : ''}`, disabled: isFutureRange, onClick: () => setTrendType(option.id), title: option.helper, children: option.label }, option.id))) })] }), _jsxs("p", { className: "muted tiny mt2", children: [metricHelper, " ", activeRangeOption ? `- ${activeRangeOption.description}` : ''] }), _jsxs("div", { className: "refresh-controls mt2", children: [_jsx("span", { className: "tiny", children: "Actualizaci\u00F3n autom\u00E1tica" }), _jsx("div", { className: "seg compact", children: REFRESH_OPTIONS.map((option) => (_jsx("button", { type: "button", className: `btn small ${refreshRate === option.id ? 'active' : ''}`, onClick: () => setRefreshRate(option.id), children: option.label }, option.id))) }), _jsx("p", { className: "muted tiny", children: refreshConfig.description })] })] }), _jsx(RealtimePanel, { series: series.data, busy: series.isFetching }), _jsxs("section", { className: "card chart-card mb4", children: [_jsx("div", { className: `busy ${busy ? 'on' : ''}`, children: _jsxs("div", { className: "busy-pill", children: [_jsx("span", { className: "spin" }), _jsx("span", { children: "Actualizando datos..." })] }) }), _jsxs("div", { className: "section-header", children: [_jsxs("div", { children: [_jsx("h2", { children: "Serie diaria" }), _jsxs("p", { className: "muted tiny", children: [rangeSummary, " - ", metric === 'intensity' ? 'Intensidad maxima por dia' : 'Acumulado diario (mm)'] })] }), _jsxs("div", { className: "series-meta tiny", children: [series.data?.meta?.source && _jsxs("span", { children: ["Fuente: ", series.data.meta.source] }), series.data?.meta?.tz && _jsxs("span", { children: ["TZ: ", series.data.meta.tz] }), _jsxs("span", { children: ["Registros: ", aggregated.count.toLocaleString('es-CO')] })] })] }), series.error && (_jsxs("div", { className: "error-banner mb3", children: [_jsx("strong", { children: "No fue posible actualizar la serie." }), _jsx("p", { children: series.error.message || 'No pudimos contactar la API. Revisa tu conexión o intenta nuevamente.' })] })), _jsx(PrecipitationChart, { points: aggregated.points, trend: trendPoints, metric: metric }), _jsx("div", { className: "kpis mt3", children: kpis.map((item) => (_jsxs("div", { className: "kpi", children: [_jsx("span", { className: "kcap", children: item.label }), _jsx("span", { className: "kval", children: item.value }), item.note && _jsx("span", { className: "ksub", children: item.note })] }, item.id))) }), chartNarrative && _jsx("p", { className: "chart-narrative", children: chartNarrative })] }), _jsxs("section", { className: "card mb4", children: [_jsx("div", { className: "section-header", children: _jsxs("div", { children: [_jsx("h2", { children: "Distribuci\u00F3n horaria" }), _jsx("p", { className: "muted tiny", children: "Identifica horarios con lluvia o ventanas secas (intensidad en mm/h)." })] }) }), _jsx("div", { className: "hourlyWrap", children: _jsx(HourlyHeatmap, { series: series.data, variable: "prcpRate" }) })] }), _jsxs("section", { className: "card insights", children: [_jsx("div", { className: "section-header", children: _jsxs("div", { children: [_jsx("h2", { children: "Insights automatizados" }), _jsx("p", { className: "muted tiny", children: "Basados en umbrales de impacto y c\u00E1lculos del paquete insight-engine." })] }) }), insights.error ? (_jsxs("div", { className: "error-banner", children: [_jsx("strong", { children: "No fue posible generar insights." }), _jsx("p", { children: insights.error.message ||
+    return (_jsxs("main", { className: "wrap", children: [_jsxs("header", { className: "mb4 intro", children: [_jsx("p", { className: "tagline", children: "Tendencias de lluvia en Colombia" }), _jsx("h1", { children: "Panel agrometeorol\u00F3gico" }), _jsx("p", { className: "muted", children: "Filtra por departamento y municipio, alterna entre acumulados o intensidad diaria y usa la l\u00EDnea de tendencia para resumir comportamientos. El mapa horario te ayuda a encontrar ventanas secas o picos concentrados." })] }), _jsxs("section", { className: "card help mb4", children: [_jsxs("div", { className: "help-header", children: [_jsx("strong", { children: "C\u00F3mo usar" }), _jsx("button", { type: "button", className: "btn small", onClick: () => setHelpHidden((prev) => !prev), children: helpHidden ? 'Mostrar guía' : 'Ocultar guía' })] }), !helpHidden && (_jsxs("ol", { className: "help-steps", children: [_jsx("li", { children: "Elige un departamento y opcionalmente un municipio para la serie local (por defecto usa la capital)." }), _jsx("li", { children: "Ajusta el rango r\u00E1pido (3 meses, 1 a\u00F1o, 5 a\u00F1os o 14 d\u00EDas de pron\u00F3stico). Tambi\u00E9n puedes fijar fechas manualmente." }), _jsx("li", { children: "Alterna entre acumulado diario o intensidad m\u00E1xima, y activa MA/EMA para suavizar la serie hist\u00F3rica." }), _jsx("li", { children: "Usa la distribuci\u00F3n horaria para detectar ventanas secas y revisa los insights autom\u00E1ticos para recomendaciones puntuales." })] }))] }), _jsxs("section", { className: "card controls mb4", children: [_jsxs("div", { className: "row", children: [_jsxs("label", { className: "field", children: [_jsx("span", { children: "Departamento" }), _jsx("select", { value: selectedDept, onChange: (event) => handleDeptChange(event.target.value), children: DEPARTMENT_OPTIONS.map((option) => (_jsx("option", { value: option.value, children: option.label }, option.value))) })] }), _jsxs("label", { className: "field", children: [_jsx("span", { children: "Municipio / ciudad" }), _jsx("select", { value: selectedMuni, onChange: (event) => handleMuniChange(event.target.value), children: municipalities.map((option) => (_jsx("option", { value: option.value, children: option.label }, option.value))) })] }), _jsxs("label", { className: "field", children: [_jsx("span", { children: "Desde" }), _jsx("input", { type: "date", value: range.from, onChange: (event) => handleFromChange(event.target.value) })] }), _jsxs("label", { className: "field", children: [_jsx("span", { children: "Hasta" }), _jsx("input", { type: "date", value: range.to, onChange: (event) => handleToChange(event.target.value) })] })] }), _jsxs("div", { className: "seg mt2", children: [RANGE_OPTIONS.map((option) => (_jsx("button", { type: "button", className: `btn ${rangeSelection === option.id ? 'active' : ''}`, onClick: () => handleRangePreset(option), children: option.label }, option.id))), _jsx("button", { type: "button", className: `btn small ${rangeSelection === 'custom' ? 'active' : ''}`, onClick: () => setRangeSelection('custom'), title: "Edita las fechas para definir tu rango personalizado.", children: "Personalizado" })] }), _jsx("div", { className: "seg mt2", children: METRIC_OPTIONS.map((option) => (_jsx("button", { type: "button", className: `btn ${metric === option.id ? 'active' : ''}`, onClick: () => setMetric(option.id), children: option.label }, option.id))) }), _jsxs("div", { className: "row gap mt2", children: [_jsx("button", { type: "button", className: "btn small", onClick: () => setShowTrend((prev) => !prev), disabled: isFutureRange, title: isFutureRange ? 'La tendencia no aplica a pronósticos futuros' : '', children: showTrend ? 'Ocultar tendencia' : 'Ver tendencia' }), _jsx("div", { className: "seg compact", children: TREND_OPTIONS.map((option) => (_jsx("button", { type: "button", className: `btn small ${trendType === option.id ? 'active' : ''}`, disabled: isFutureRange, onClick: () => setTrendType(option.id), title: option.helper, children: option.label }, option.id))) })] }), _jsxs("p", { className: "muted tiny mt2", children: [metricHelper, " ", activeRangeOption ? `- ${activeRangeOption.description}` : ''] }), _jsxs("div", { className: "refresh-controls mt2", children: [_jsx("span", { className: "tiny", children: "Actualizaci\u00F3n autom\u00E1tica" }), _jsx("div", { className: "seg compact", children: REFRESH_OPTIONS.map((option) => (_jsx("button", { type: "button", className: `btn small ${refreshRate === option.id ? 'active' : ''}`, onClick: () => setRefreshRate(option.id), children: option.label }, option.id))) }), _jsx("p", { className: "muted tiny", children: refreshConfig.description })] })] }), _jsx(RealtimePanel, { series: series.data, busy: series.isFetching }), _jsxs("section", { className: "card chart-card mb4", children: [_jsx("div", { className: `busy ${busy ? 'on' : ''}`, children: _jsxs("div", { className: "busy-pill", children: [_jsx("span", { className: "spin" }), _jsx("span", { children: "Actualizando datos..." })] }) }), _jsxs("div", { className: "section-header", children: [_jsxs("div", { children: [_jsx("h2", { children: "Serie diaria" }), _jsxs("p", { className: "muted tiny", children: [rangeSummary, " - ", metric === 'intensity' ? 'Intensidad maxima por dia' : 'Acumulado diario (mm)'] })] }), _jsxs("div", { className: "series-meta tiny", children: [series.data?.meta?.source && _jsxs("span", { children: ["Fuente: ", series.data.meta.source] }), series.data?.meta?.tz && _jsxs("span", { children: ["TZ: ", series.data.meta.tz] }), _jsxs("span", { children: ["Registros: ", aggregated.count.toLocaleString('es-CO')] })] })] }), series.error && (_jsxs("div", { className: "error-banner mb3", children: [_jsx("strong", { children: "No fue posible actualizar la serie." }), _jsx("p", { children: series.error.message || 'No pudimos contactar la API. Revisa tu conexión o intenta nuevamente.' })] })), _jsx(PrecipitationChart, { points: aggregated.points, trend: trendPoints, metric: metric }), _jsx("div", { className: "mt3", children: _jsx(DailyHeatmap, { daily: dailyData, metric: metric }) }), _jsx("div", { className: "kpis mt3", children: kpis.map((item) => (_jsxs("div", { className: "kpi", children: [_jsx("span", { className: "kcap", children: item.label }), _jsx("span", { className: "kval", children: item.value }), item.note && _jsx("span", { className: "ksub", children: item.note })] }, item.id))) }), chartNarrative && _jsx("p", { className: "chart-narrative", children: chartNarrative })] }), _jsxs("section", { className: "card mb4", children: [_jsx("div", { className: "section-header", children: _jsxs("div", { children: [_jsx("h2", { children: "Condiciones agroenergeticas" }), _jsx("p", { className: "muted tiny", children: "Temperatura y humedad del suelo, ET0, radiacion y viento para apoyar ganaderos, agricultores y generacion renovable." })] }) }), _jsx(AgroPanels, { series: series.data })] }), _jsxs("section", { className: "card mb4", children: [_jsx("div", { className: "section-header", children: _jsxs("div", { children: [_jsx("h2", { children: "Distribuci\u00F3n horaria" }), _jsx("p", { className: "muted tiny", children: "Identifica horarios con lluvia o ventanas secas (intensidad en mm/h)." })] }) }), _jsx("div", { className: "hourlyWrap", children: _jsx(HourlyHeatmap, { series: series.data, variable: "prcpRate" }) })] }), _jsxs("section", { className: "card insights", children: [_jsx("div", { className: "section-header", children: _jsxs("div", { children: [_jsx("h2", { children: "Insights automatizados" }), _jsx("p", { className: "muted tiny", children: "Basados en umbrales de impacto y c\u00E1lculos del paquete insight-engine." })] }) }), insights.error ? (_jsxs("div", { className: "error-banner", children: [_jsx("strong", { children: "No fue posible generar insights." }), _jsx("p", { children: insights.error.message ||
                                     'No logramos conectar con la API de insights. Vuelve a intentarlo cuando tengas conexión estable.' })] })) : insights.data ? (insights.data.insights.length ? (_jsx("ul", { className: "insights-list", children: insights.data.insights.map((insight) => (_jsxs("li", { className: "insight-item", children: [_jsx("strong", { children: insight.kind }), _jsx("p", { children: insight.text })] }, insight.id))) })) : (_jsx("div", { className: "empty-state", children: "Sin hallazgos relevantes con los umbrales actuales. Aj\u00FAstalos para m\u00E1s sensibilidad." }))) : (_jsxs("div", { className: "skeleton", children: [_jsx("div", { className: "skeleton-bar" }), _jsx("div", { className: "skeleton-bar" }), _jsx("div", { className: "skeleton-bar" })] }))] })] }));
 }
 function buildRange(option) {
@@ -278,6 +298,51 @@ function aggregateSeries(series, metric) {
         firstDate: dates[0],
         lastDate: dates[count - 1],
     };
+}
+function buildDailyData(series) {
+    if (!series || !Array.isArray(series.hourly))
+        return [];
+    const buckets = new Map();
+    for (const point of series.hourly) {
+        const day = point.t?.slice(0, 10);
+        if (!day)
+            continue;
+        const bucket = buckets.get(day) ??
+            buckets.set(day, { rain: 0, solar: 0, wind: 0, windCount: 0, apparent: 0, apparentCount: 0 }).get(day);
+        if (typeof point.prcp === 'number')
+            bucket.rain += point.prcp;
+        if (typeof point.rs === 'number')
+            bucket.solar += point.rs;
+        if (typeof point.wind === 'number') {
+            bucket.wind += point.wind;
+            bucket.windCount += 1;
+        }
+        const apparent = typeof point.apparentTemp === 'number' ? point.apparentTemp : point.temp;
+        if (typeof apparent === 'number') {
+            bucket.apparent += apparent;
+            bucket.apparentCount += 1;
+        }
+    }
+    return Array.from(buckets.entries())
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([date, bucket]) => {
+        const solarKwh = bucket.solar / 1000;
+        const windMean = bucket.windCount ? bucket.wind / bucket.windCount : null;
+        const apparentMean = bucket.apparentCount ? bucket.apparent / bucket.apparentCount : null;
+        const icons = [];
+        if (solarKwh >= 6)
+            icons.push('☀');
+        if (windMean != null && windMean >= 8)
+            icons.push('💨');
+        if (apparentMean != null && apparentMean >= 32)
+            icons.push('🔥');
+        return {
+            date,
+            label: formatDisplayDate(date),
+            value: Number(bucket.rain.toFixed(2)),
+            icons,
+        };
+    });
 }
 function computeTrend(points, window, trendType) {
     if (!points.length || window <= 1)

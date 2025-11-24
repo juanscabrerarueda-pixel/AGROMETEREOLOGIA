@@ -75,6 +75,39 @@ export function insightsFromSeries(series, thresholds) {
             data: { maxThi, band, points: thiCandidates },
         });
     }
+    const rootMoist = averageField(hourly, 'soilMoist9', 48);
+    if (rootMoist != null) {
+        if (rootMoist < 0.18) {
+            insights.push({
+                id: 'root-moisture-low',
+                kind: 'advice',
+                text: `El perfil 10-30 cm muestra humedad baja (${(rootMoist * 100).toFixed(0)}%). Planea riego o rota el ganado para proteger las pasturas.`,
+            });
+        }
+        else if (rootMoist > 0.45) {
+            insights.push({
+                id: 'root-moisture-high',
+                kind: 'advice',
+                text: `Suelo muy h�medo (${(rootMoist * 100).toFixed(0)}%). Evita labores pesadas para no compactar ni dañar cultivos.`,
+            });
+        }
+    }
+    const evapDemand = sumField(hourly, 'evap', 24);
+    if (evapDemand != null && evapDemand > 5) {
+        insights.push({
+            id: 'et0-demand',
+            kind: 'advice',
+            text: `La ET� alcanz� ${evapDemand.toFixed(1)} mm en las �ltimas 24 h. Refuerza hidrataci�n animal o riego.`,
+        });
+    }
+    const solarAvg = averageField(hourly, 'rs', 24);
+    if (solarAvg != null && solarAvg > 650) {
+        insights.push({
+            id: 'solar-window',
+            kind: 'event',
+            text: 'Alta radiaci�n solar: condiciones favorables para secado de forrajes y generaci�n fotovoltaica.',
+        });
+    }
     return insights;
 }
 function summarizeDaily(series) {
@@ -156,5 +189,34 @@ function addDaysToIso(startIso, days) {
         return startIso;
     date.setUTCDate(date.getUTCDate() + days);
     return date.toISOString().slice(0, 10);
+}
+const MS_PER_HOUR = 60 * 60 * 1000;
+function sliceRecent(hourly, hours) {
+    if (!hourly.length)
+        return [];
+    const last = new Date(hourly[hourly.length - 1].t ?? 0).getTime();
+    const threshold = last - hours * MS_PER_HOUR;
+    return hourly.filter((point) => {
+        const t = new Date(point.t ?? 0).getTime();
+        return Number.isFinite(t) && t >= threshold;
+    });
+}
+function averageField(hourly, key, hours) {
+    const slice = sliceRecent(hourly, hours);
+    const values = slice
+        .map((point) => (typeof point[key] === 'number' ? point[key] : null))
+        .filter((value) => value !== null);
+    if (!values.length)
+        return null;
+    return values.reduce((sum, value) => sum + value, 0) / values.length;
+}
+function sumField(hourly, key, hours) {
+    const slice = sliceRecent(hourly, hours);
+    const values = slice
+        .map((point) => (typeof point[key] === 'number' ? point[key] : null))
+        .filter((value) => value !== null);
+    if (!values.length)
+        return null;
+    return values.reduce((sum, value) => sum + value, 0);
 }
 //# sourceMappingURL=generate.js.map

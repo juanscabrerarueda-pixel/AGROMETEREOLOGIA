@@ -1,3 +1,2 @@
-export * from './types';
-export * from './schemas';
+export * from './schemas.js';
 //# sourceMappingURL=index.js.map
