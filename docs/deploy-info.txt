@@ -1,1 +1,1 @@
-Manual deploy: visual live panel 2025-11-24T19:12:31.2990926Z
+Manual deploy: fix accents 2025-11-24T19:18:04.3544320Z
