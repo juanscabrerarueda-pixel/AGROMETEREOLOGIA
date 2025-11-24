@@ -15,6 +15,16 @@ export interface HourlyPoint {
     wind?: number;
     rs?: number;
     pressure?: number;
+    soilTemp0?: number;
+    soilTemp6?: number;
+    soilTemp18?: number;
+    soilTemp54?: number;
+    soilMoist1?: number;
+    soilMoist3?: number;
+    soilMoist9?: number;
+    soilMoist27?: number;
+    evap?: number;
+    apparentTemp?: number;
     [extra: string]: unknown;
 }
 export interface SeriesMeta {

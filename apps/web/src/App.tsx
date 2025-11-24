@@ -13,6 +13,7 @@ import {
 import { HourlyHeatmap } from './components/HourlyHeatmap';
 import { DailyHeatmap } from './components/DailyHeatmap';
 import { RealtimePanel } from './components/RealtimePanel';
+import { AgroPanels } from './components/AgroPanels';
 import { DEPARTMENT_OPTIONS } from './data/locations';
 
 type Metric = 'accumulated' | 'intensity';
@@ -162,7 +163,24 @@ export default function App() {
       muni: selectedMuni || undefined,
       from: range.from,
       to: range.to,
-      fields: ['prcp', 'prcpRate', 'temp', 'rh', 'wind', 'rs', 'pressure'],
+      fields: [
+        'prcp',
+        'prcpRate',
+        'temp',
+        'rh',
+        'wind',
+        'rs',
+        'pressure',
+        'soilTemp0',
+        'soilTemp18',
+        'soilTemp54',
+        'soilMoist1',
+        'soilMoist3',
+        'soilMoist9',
+        'soilMoist27',
+        'evap',
+        'apparentTemp',
+      ],
     }),
     [range.from, range.to, selectedDept, selectedMuni]
   );
@@ -456,6 +474,19 @@ export default function App() {
           ))}
         </div>
         {chartNarrative && <p className="chart-narrative">{chartNarrative}</p>}
+      </section>
+
+      <section className="card mb4">
+        <div className="section-header">
+          <div>
+            <h2>Condiciones agroenergeticas</h2>
+            <p className="muted tiny">
+              Temperatura y humedad del suelo, ET0, radiacion y viento para apoyar ganaderos,
+              agricultores y generacion renovable.
+            </p>
+          </div>
+        </div>
+        <AgroPanels series={series.data} />
       </section>
 
       <section className="card mb4">

@@ -10,13 +10,23 @@ export type TimeRange = {
 
 export interface HourlyPoint {
   t: string; // ISO timestamp
-  prcp?: number; // precipitación (mm)
+  prcp?: number; // precipitacion (mm)
   prcpRate?: number; // intensidad (mm/h)
-  temp?: number; // temperatura (°C)
+  temp?: number; // temperatura (C)
   rh?: number; // humedad relativa (%)
   wind?: number; // velocidad viento m/s (ajustada a 2 m)
-  rs?: number; // radiación solar MJ/m2/d o W/m2 (normalizada)
-  pressure?: number; // presión atmosférica kPa
+  rs?: number; // radiacion solar MJ/m2/d o W/m2 (normalizada)
+  pressure?: number; // presion atmosferica kPa
+  soilTemp0?: number;
+  soilTemp6?: number;
+  soilTemp18?: number;
+  soilTemp54?: number;
+  soilMoist1?: number;
+  soilMoist3?: number;
+  soilMoist9?: number;
+  soilMoist27?: number;
+  evap?: number; // evapotranspiracion de referencia
+  apparentTemp?: number;
   [extra: string]: unknown;
 }
 

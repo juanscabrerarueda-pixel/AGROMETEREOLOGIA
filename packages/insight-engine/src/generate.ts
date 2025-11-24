@@ -1,4 +1,4 @@
-import { Series, Thresholds } from '@pkg/core';
+Ôªøimport { Series, Thresholds } from '@pkg/core';
 import { peaksIntensity, thiBand, thiC } from '@pkg/meteo-calcs';
 import { Insight } from './types.js';
 
@@ -33,15 +33,15 @@ export function insightsFromSeries(series: Series, thresholds: Thresholds): Insi
   if (daily.totalDays > 0) {
     const rainSentence =
       daily.totalRain > 0
-        ? `Entre ${rangeText} se acumularon ${formatNumber(daily.totalRain)} mm repartidos en ${daily.totalDays} dÌas con registro.`
-        : `Entre ${rangeText} no se registrÛ lluvia medible.`;
+        ? `Entre ${rangeText} se acumularon ${formatNumber(daily.totalRain)} mm repartidos en ${daily.totalDays} d√≠as con registro.`
+        : `Entre ${rangeText} no se registr√≥ lluvia medible.`;
     const maxSentence =
       daily.maxRainDate && daily.maxRain > 0
-        ? `El dÌa m·s lluvioso fue ${formatDate(daily.maxRainDate)} con ${formatNumber(daily.maxRain)} mm.`
+        ? `El d√≠a m√°s lluvioso fue ${formatDate(daily.maxRainDate)} con ${formatNumber(daily.maxRain)} mm.`
         : '';
     const lastSentence =
       daily.lastRainDate && daily.lastRainValue != null
-        ? `El ˙ltimo dÌa con lluvia fue ${formatDate(daily.lastRainDate)}, cuando cayeron ${formatNumber(daily.lastRainValue)} mm.`
+        ? `El √∫ltimo d√≠a con lluvia fue ${formatDate(daily.lastRainDate)}, cuando cayeron ${formatNumber(daily.lastRainValue)} mm.`
         : '';
 
     insights.push({
@@ -57,7 +57,7 @@ export function insightsFromSeries(series: Series, thresholds: Thresholds): Insi
     insights.push({
       id: 'dry-spell',
       kind: 'advice',
-      text: `Se presentÛ una sequÌa de ${dry.length} dÌas entre ${formatDate(dry.from)} y ${formatDate(dry.to)}. Considera riego suplementario o proteger los cultivos sensibles.`,
+      text: `Se present√≥ una sequ√≠a de ${dry.length} d√≠as entre ${formatDate(dry.from)} y ${formatDate(dry.to)}. Considera riego suplementario o proteger los cultivos sensibles.`,
       data: dry,
     });
   }
@@ -68,7 +68,7 @@ export function insightsFromSeries(series: Series, thresholds: Thresholds): Insi
     insights.push({
       id: 'intensity-peaks',
       kind: 'event',
-      text: `Detectamos ${peaks.length} episodios con intensidades superiores a ${(thresholds?.intensityMmHr ?? 6).toFixed(1)} mm/h. El m·s intenso alcanzÛ ${formatNumber(highest.value)} mm/h el ${formatDate(highest.from)}.`,
+      text: `Detectamos ${peaks.length} episodios con intensidades superiores a ${(thresholds?.intensityMmHr ?? 6).toFixed(1)} mm/h. El m√°s intenso alcanz√≥ ${formatNumber(highest.value)} mm/h el ${formatDate(highest.from)}.`,
       data: { peaks },
     });
   }
@@ -85,8 +85,49 @@ export function insightsFromSeries(series: Series, thresholds: Thresholds): Insi
     insights.push({
       id: 'thi-tomorrow',
       kind: 'advice',
-      text: `Para maÒana se proyecta un THI m·ximo de ${maxThi.toFixed(1)} (${band}). Ajusta ventilaciÛn, sombra o hidrataciÛn si observas estrÈs tÈrmico.`,
+      text: `Para ma√±ana se proyecta un THI m√°ximo de ${maxThi.toFixed(1)} (${band}). Ajusta ventilaci√≥n, sombra o hidrataci√≥n si observas estr√©s t√©rmico.`,
       data: { maxThi, band, points: thiCandidates },
+    });
+  }
+
+  const rootMoist = averageField(hourly, 'soilMoist9', 48);
+  if (rootMoist != null) {
+    if (rootMoist < 0.18) {
+      insights.push({
+        id: 'root-moisture-low',
+        kind: 'advice',
+        text: `El perfil 10-30 cm muestra humedad baja (${(rootMoist * 100).toFixed(
+          0
+        )}%). Planea riego o rota el ganado para proteger las pasturas.`,
+      });
+    } else if (rootMoist > 0.45) {
+      insights.push({
+        id: 'root-moisture-high',
+        kind: 'advice',
+        text: `Suelo muy hÔøΩmedo (${(rootMoist * 100).toFixed(
+          0
+        )}%). Evita labores pesadas para no compactar ni da√±ar cultivos.`,
+      });
+    }
+  }
+
+  const evapDemand = sumField(hourly, 'evap', 24);
+  if (evapDemand != null && evapDemand > 5) {
+    insights.push({
+      id: 'et0-demand',
+      kind: 'advice',
+      text: `La ETÔøΩ alcanzÔøΩ ${evapDemand.toFixed(
+        1
+      )} mm en las ÔøΩltimas 24 h. Refuerza hidrataciÔøΩn animal o riego.`,
+    });
+  }
+
+  const solarAvg = averageField(hourly, 'rs', 24);
+  if (solarAvg != null && solarAvg > 650) {
+    insights.push({
+      id: 'solar-window',
+      kind: 'event',
+      text: 'Alta radiaciÔøΩn solar: condiciones favorables para secado de forrajes y generaciÔøΩn fotovoltaica.',
     });
   }
 
@@ -184,3 +225,34 @@ function addDaysToIso(startIso: string, days: number): string {
   date.setUTCDate(date.getUTCDate() + days);
   return date.toISOString().slice(0, 10);
 }
+
+const MS_PER_HOUR = 60 * 60 * 1000;
+
+function sliceRecent(hourly: Series['hourly'], hours: number): Series['hourly'] {
+  if (!hourly.length) return [];
+  const last = new Date(hourly[hourly.length - 1].t ?? 0).getTime();
+  const threshold = last - hours * MS_PER_HOUR;
+  return hourly.filter((point) => {
+    const t = new Date(point.t ?? 0).getTime();
+    return Number.isFinite(t) && t >= threshold;
+  });
+}
+
+function averageField(hourly: Series['hourly'], key: keyof Series['hourly'][number], hours: number) {
+  const slice = sliceRecent(hourly, hours);
+  const values = slice
+    .map((point) => (typeof point[key] === 'number' ? (point[key] as number) : null))
+    .filter((value): value is number => value !== null);
+  if (!values.length) return null;
+  return values.reduce((sum, value) => sum + value, 0) / values.length;
+}
+
+function sumField(hourly: Series['hourly'], key: keyof Series['hourly'][number], hours: number) {
+  const slice = sliceRecent(hourly, hours);
+  const values = slice
+    .map((point) => (typeof point[key] === 'number' ? (point[key] as number) : null))
+    .filter((value): value is number => value !== null);
+  if (!values.length) return null;
+  return values.reduce((sum, value) => sum + value, 0);
+}
+

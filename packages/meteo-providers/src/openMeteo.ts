@@ -3,11 +3,11 @@ import { Series, MuniKey, TimeRange } from '@pkg/core';
 import { WeatherProvider } from './provider.js';
 import { resolveCoordinates, ResolvedCoords } from './utils.js';
 
-type SupportedField = 'prcp' | 'prcpRate' | 'temp' | 'rh' | 'wind' | 'rs' | 'pressure';
+type SupportedField = 'prcp' | 'prcpRate' | 'temp' | 'rh' | 'wind' | 'rs' | 'pressure' | 'soilTemp0' | 'soilTemp6' | 'soilTemp18' | 'soilTemp54' | 'soilMoist1' | 'soilMoist3' | 'soilMoist9' | 'soilMoist27' | 'evap' | 'apparentTemp';
 
 type HourlyPoint = import('@pkg/core').HourlyPoint;
 
-const DEFAULT_FIELDS: SupportedField[] = ['prcp', 'prcpRate', 'temp', 'rh', 'wind', 'rs', 'pressure'];
+const DEFAULT_FIELDS: SupportedField[] = ['prcp', 'prcpRate', 'temp', 'rh', 'wind', 'rs', 'pressure', 'soilTemp0', 'soilTemp18', 'soilMoist1'];
 
 const FIELD_CONFIG: Record<
   SupportedField,
@@ -42,7 +42,47 @@ const FIELD_CONFIG: Record<
   },
   pressure: {
     param: 'surface_pressure',
-    map: (value) => round(value * 0.1, 2), // hPa → kPa
+    map: (value) => round(value * 0.1, 2), // hPa -> kPa
+  },
+  soilTemp0: {
+    param: 'soil_temperature_0cm',
+    map: (value) => round(value, 2),
+  },
+  soilTemp6: {
+    param: 'soil_temperature_6cm',
+    map: (value) => round(value, 2),
+  },
+  soilTemp18: {
+    param: 'soil_temperature_18cm',
+    map: (value) => round(value, 2),
+  },
+  soilTemp54: {
+    param: 'soil_temperature_54cm',
+    map: (value) => round(value, 2),
+  },
+  soilMoist1: {
+    param: 'soil_moisture_0_1cm',
+    map: (value) => round(value, 3),
+  },
+  soilMoist3: {
+    param: 'soil_moisture_1_3cm',
+    map: (value) => round(value, 3),
+  },
+  soilMoist9: {
+    param: 'soil_moisture_3_9cm',
+    map: (value) => round(value, 3),
+  },
+  soilMoist27: {
+    param: 'soil_moisture_9_27cm',
+    map: (value) => round(value, 3),
+  },
+  evap: {
+    param: 'et0_fao_evapotranspiration',
+    map: (value) => round(Math.max(0, value), 2),
+  },
+  apparentTemp: {
+    param: 'apparent_temperature',
+    map: (value) => round(value, 2),
   },
 };
 
@@ -222,6 +262,36 @@ function mergeHourly(responses: OpenMeteoResponse[], fields: SupportedField[]): 
           case 'pressure':
             point.pressure = mapped;
             break;
+          case 'soilTemp0':
+            point.soilTemp0 = mapped;
+            break;
+          case 'soilTemp6':
+            point.soilTemp6 = mapped;
+            break;
+          case 'soilTemp18':
+            point.soilTemp18 = mapped;
+            break;
+          case 'soilTemp54':
+            point.soilTemp54 = mapped;
+            break;
+          case 'soilMoist1':
+            point.soilMoist1 = mapped;
+            break;
+          case 'soilMoist3':
+            point.soilMoist3 = mapped;
+            break;
+          case 'soilMoist9':
+            point.soilMoist9 = mapped;
+            break;
+          case 'soilMoist27':
+            point.soilMoist27 = mapped;
+            break;
+          case 'evap':
+            point.evap = mapped;
+            break;
+          case 'apparentTemp':
+            point.apparentTemp = mapped;
+            break;
           default:
             break;
         }
@@ -278,3 +348,6 @@ function toIsoUtc(value: string): string {
   const date = new Date(hasZone ? value : `${value}Z`);
   return date.toISOString();
 }
+
+
+

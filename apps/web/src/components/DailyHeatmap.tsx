@@ -1,7 +1,7 @@
-import { Fragment, useMemo } from 'react';
+﻿import { Fragment, useMemo } from 'react';
 import type { AggregatedPoint } from './PrecipitationChart';
 
-const DAY_LABELS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+const DAY_LABELS = ['Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab', 'Dom'];
 
 type DailyHeatmapProps = {
   points: AggregatedPoint[];
@@ -16,8 +16,8 @@ type HeatmapCell = {
 
 function startOfWeek(date: Date): Date {
   const clone = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
-  const day = clone.getUTCDay(); // 0 = domingo
-  const diff = day === 0 ? -6 : 1 - day; // llevar a lunes
+  const day = clone.getUTCDay();
+  const diff = day === 0 ? -6 : 1 - day;
   clone.setUTCDate(clone.getUTCDate() + diff);
   return clone;
 }
@@ -56,7 +56,7 @@ function getDailyColor(normalized: number): string {
   const upperIndex = DAILY_HEAT_COLORS.findIndex((entry) => entry.stop >= clamped);
   if (upperIndex <= 0) {
     const [r, g, b] = DAILY_HEAT_COLORS[Math.max(upperIndex, 0)].color;
-    return `rgba(${r}, ${g}, ${b}, ${0.9})`;
+    return `rgba(${r}, ${g}, ${b}, ${0.95})`;
   }
   const lowerIndex = upperIndex - 1;
   const lower = DAILY_HEAT_COLORS[lowerIndex];
@@ -122,18 +122,40 @@ export function DailyHeatmap({ points, metric }: DailyHeatmapProps) {
     return <div className="empty-state">Sin datos suficientes para generar el mapa de calor.</div>;
   }
 
-  const columns = weeks.length;
+  const columns = weeks.length * 7;
   const unit = metric === 'intensity' ? 'mm/h' : 'mm';
+  const weekLabels = weeks.map((week, index) => {
+    const start = week[0]?.date;
+    const end = week[week.length - 1]?.date;
+    return {
+      id: `week-${index}`,
+      label: `Sem ${index + 1}`,
+      title: start && end ? `${formatDisplayDate(start)} -> ${formatDisplayDate(end)}` : undefined,
+    };
+  });
 
   return (
     <div className="daily-heatmap">
       <div className="daily-heatmap-headline">
-        <h3>Distribuci&oacute;n diaria</h3>
+        <h3>Distribucion diaria</h3>
         <p>
-          Concentra los d&iacute;as m&aacute;s h&uacute;medos para planear riego, cosecha,
-          disponibilidad de pasturas y generaci&oacute;n solar. Pico observado:{' '}
-          <strong>{max.toFixed(2)}</strong> {unit}.
+          Concentra los dias mas humedos para planear riego, cosecha, disponibilidad de pasturas y
+          generacion solar. Pico observado: <strong>{max.toFixed(2)}</strong> {unit}.
         </p>
+      </div>
+
+      <div className="daily-week-row" style={{ gridTemplateColumns: `56px repeat(${columns}, 18px)` }}>
+        <span className="daily-week-placeholder">Semana</span>
+        {weekLabels.map((week) => (
+          <span
+            key={week.id}
+            className="daily-week-label"
+            style={{ gridColumn: 'span 7' }}
+            title={week.title}
+          >
+            {week.label}
+          </span>
+        ))}
       </div>
 
       <div className="daily-heatmap-gridWrapper">
@@ -148,14 +170,13 @@ export function DailyHeatmap({ points, metric }: DailyHeatmapProps) {
                 const cell = week[dayIndex];
                 const value = cell?.value ?? 0;
                 const normalized = cell?.normalized ?? 0;
-                const background =
-                  value > 0 ? getDailyColor(normalized) : 'rgba(148, 163, 184, 0.14)';
+                const background = value > 0 ? getDailyColor(normalized) : 'rgba(148, 163, 184, 0.14)';
                 return (
                   <span
                     key={`${weekIndex}-${dayIndex}`}
                     className="daily-heatmap-cell"
                     style={{ backgroundColor: background }}
-                    title={`${formatDisplayDate(cell?.date ?? '')} → ${value.toFixed(2)} ${unit}`}
+                    title={`${formatDisplayDate(cell?.date ?? '')} -> ${value.toFixed(2)} ${unit}`}
                   />
                 );
               })}
