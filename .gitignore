@@ -4,3 +4,5 @@ dist/
 .pnpm-store/
 *.zip
 *.log
+.env.production
+backups_restore.temp

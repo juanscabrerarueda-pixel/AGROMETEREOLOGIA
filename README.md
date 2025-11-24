@@ -1,24 +1,40 @@
 # Tendencia de Lluvias
 
-La version principal de la app vive en `apps/web` y se ejecuta igual que el script `start-demo.cmd`
-(inicia la API y levanta la build de Vite). La iteracion antigua basada en `preview_tendencias.cmd`
-y los archivos `index.html`, `app.html` y `theme.html` del directorio raiz fueron removidos para
+La versión principal de la app vive en `apps/web` y se ejecuta igual que el script `start-demo.cmd`
+(inicia la API y levanta la build de Vite). La iteración antigua basada en `preview_tendencias.cmd`
+y los archivos `index.html`, `app.html` y `theme.html` del directorio raíz fueron removidos para
 evitar confusiones: todo el desarrollo y despliegue debe hacerse desde `apps/web`.
 
-## Como trabajar en local
+## Requisitos
 
-1. Instala dependencias una vez: `pnpm install`.
-2. Corre `start-demo.cmd` para lanzar la API (`pnpm --filter api dev`) y el preview de la web
-   (`pnpm --filter web preview`). Al terminar se abre `http://localhost:4173/` con la interfaz nueva.
+- Node.js 20.x
+- pnpm 9.x
+
+## Scripts útiles
+
+- `pnpm install`: instala dependencias del monorepo.
+- `pnpm --filter api dev`: inicia la API local.
+- `pnpm --filter web preview`: levanta el preview de la web (Vite) y abre `http://localhost:4173/`.
+- `pnpm --filter web build`: genera la build de producción en `apps/web/dist`.
+- `pnpm build`: ejecuta los builds declarados en los paquetes del workspace.
+
+El script `start-demo.cmd` combina los comandos de API + preview para Windows; considera un script equivalente en *nix si lo necesitas.
+
+## Variables de entorno
+
+Usa `.env.example` como base. Mantiene el formato y los nombres esperados por la app.
 
 ## Deploy en GitHub Pages
 
-- Ejecuta `pnpm --filter web build` cuando quieras publicar la version actual.
-- Copia la carpeta generada en `apps/web/dist` a `docs/` (el repo ya incluye la ultima copia publicada).
-- En la configuracion de GitHub Pages usa `Branch: main` y `Folder: /docs` para que el sitio
-  sirva la misma build que ves con `start-demo`.
-- No hay workflows de GitHub Actions activos: el despliegue se hace **solo** subiendo los archivos
-  actualizados a `docs/` y haciendo `git push`.
+- El branch `main` publica la carpeta `docs/`. Un workflow (`.github/workflows/deploy-pages.yml`) construye `apps/web/dist` y copia los artefactos a `docs/` en cada push a `main`.
+- Si necesitas publicarlo manualmente: `pnpm --filter web build` y copia `apps/web/dist` a `docs/` antes de hacer push.
 
-Para otros proveedores (Netlify, etc.) puedes usar el mismo comando de build (`pnpm --filter web build`)
-con directorio de publicacion `apps/web/dist`.
+Para otros proveedores (Netlify, etc.) usa el mismo comando de build (`pnpm --filter web build`)
+con directorio de publicación `apps/web/dist`.
+
+## Licencias y uso
+
+- Código: Business Source License 1.1 (cambia a Apache-2.0 el 2028-01-01). Producción/comercial requiere acuerdo comercial. Ver `LICENSE` y `NOTICE`.
+- Datos: CC BY-NC 4.0 (`DATA_LICENSE`).
+- Documentación: CC BY 4.0 (`DOCS_LICENSE`).
+- Marcas: ver `TRADEMARKS.md`. Términos de uso y descargo de responsabilidad en `TERMS.md`.
