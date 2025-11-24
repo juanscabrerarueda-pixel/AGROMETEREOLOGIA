@@ -26,15 +26,17 @@ export function insightsFromSeries(series, thresholds) {
     const hourly = series.hourly;
     const daily = summarizeDaily(series);
     const rangeText = buildRangeLabel(series);
+    const mode = inferTemporalMode(series);
+    const isFuture = mode === 'future';
     if (daily.totalDays > 0) {
         const rainSentence = daily.totalRain > 0
-            ? `Entre ${rangeText} se acumularon ${formatNumber(daily.totalRain)} mm repartidos en ${daily.totalDays} dias con registro.`
-            : `Entre ${rangeText} no se registro lluvia medible.`;
+            ? `Entre ${rangeText} ${isFuture ? 'se proyectan' : 'se acumularon'} ${formatNumber(daily.totalRain)} mm repartidos en ${daily.totalDays} dÃ­as con registro.`
+            : `Entre ${rangeText} ${isFuture ? 'no se proyecta' : 'no se registrÃ³'} lluvia medible.`;
         const maxSentence = daily.maxRainDate && daily.maxRain > 0
-            ? `El dia mas lluvioso fue ${formatDate(daily.maxRainDate)} con ${formatNumber(daily.maxRain)} mm.`
+            ? `El dÃ­a mÃ¡s lluvioso ${isFuture ? 'proyectado serÃ­a' : 'fue'} ${formatDate(daily.maxRainDate)} con ${formatNumber(daily.maxRain)} mm.`
             : '';
         const lastSentence = daily.lastRainDate && daily.lastRainValue != null
-            ? `El ultimo dia con lluvia fue ${formatDate(daily.lastRainDate)}, cuando cayeron ${formatNumber(daily.lastRainValue)} mm.`
+            ? `El Ãºltimo dÃ­a con lluvia ${isFuture ? 'proyectada serÃ­a' : 'fue'} ${formatDate(daily.lastRainDate)}, con ${formatNumber(daily.lastRainValue)} mm.`
             : '';
         insights.push({
             id: 'daily-summary',
@@ -48,7 +50,7 @@ export function insightsFromSeries(series, thresholds) {
         insights.push({
             id: 'dry-spell',
             kind: 'advice',
-            text: `Se presento una sequia de ${dry.length} dias entre ${formatDate(dry.from)} y ${formatDate(dry.to)}. Considera riego suplementario o proteger los cultivos sensibles.`,
+            text: `${isFuture ? 'Se proyecta' : 'Se presentÃ³'} una sequÃ­a de ${dry.length} dÃ­as entre ${formatDate(dry.from)} y ${formatDate(dry.to)}. Considera riego suplementario o proteger los cultivos sensibles.`,
             data: dry,
         });
     }
@@ -58,7 +60,7 @@ export function insightsFromSeries(series, thresholds) {
         insights.push({
             id: 'intensity-peaks',
             kind: 'event',
-            text: `Detectamos ${peaks.length} episodios con intensidades superiores a ${(thresholds?.intensityMmHr ?? 6).toFixed(1)} mm/h. El mas intenso alcanzo ${formatNumber(highest.value)} mm/h el ${formatDate(highest.from)}.`,
+            text: `${isFuture ? 'Se proyectan' : 'Se detectaron'} ${peaks.length} episodios con intensidades superiores a ${(thresholds?.intensityMmHr ?? 6).toFixed(1)} mm/h. El mÃ¡s intenso ${isFuture ? 'alcanzarÃ­a' : 'alcanzÃ³'} ${formatNumber(highest.value)} mm/h el ${formatDate(highest.from)}.`,
             data: { peaks },
         });
     }
@@ -81,14 +83,14 @@ export function insightsFromSeries(series, thresholds) {
             insights.push({
                 id: 'root-moisture-low',
                 kind: 'advice',
-                text: `El perfil 10-30 cm muestra humedad baja (${(rootMoist * 100).toFixed(0)}%). Planea riego o rota el ganado para proteger las pasturas.`,
+                text: `El perfil 10-30 cm ${isFuture ? 'mostrarÃ­a' : 'mostrÃ³'} humedad baja (${(rootMoist * 100).toFixed(0)}%). Planea riego o rota el ganado para proteger las pasturas.`,
             });
         }
         else if (rootMoist > 0.45) {
             insights.push({
                 id: 'root-moisture-high',
                 kind: 'advice',
-                text: `Suelo muy humedo (${(rootMoist * 100).toFixed(0)}%). Evita labores pesadas para no compactar ni danar cultivos.`,
+                text: `Suelo muy hÃºmedo (${(rootMoist * 100).toFixed(0)}%) ${isFuture ? 'podrÃ­a' : 'pudo'} compactar cultivos con maquinaria pesada.`,
             });
         }
     }
@@ -97,7 +99,7 @@ export function insightsFromSeries(series, thresholds) {
         insights.push({
             id: 'et0-demand',
             kind: 'advice',
-            text: `La ET0 alcanzo ${evapDemand.toFixed(1)} mm en las ultimas 24 h. Refuerza hidratacion animal o riego.`,
+            text: `La ET0 ${isFuture ? 'alcanzarÃ­a' : 'alcanzÃ³'} ${evapDemand.toFixed(1)} mm en 24 h. Refuerza hidrataciÃ³n animal o riego.`,
         });
     }
     const solarAvg = averageField(hourly, 'rs', 24);
@@ -105,7 +107,7 @@ export function insightsFromSeries(series, thresholds) {
         insights.push({
             id: 'solar-window',
             kind: 'event',
-            text: 'Alta radiacion solar: condiciones favorables para secado de forrajes y generacion fotovoltaica.',
+            text: `${isFuture ? 'Se proyecta' : 'Hubo'} alta radiaciÃ³n solar: condiciones favorables para secado de forrajes y generaciÃ³n fotovoltaica.`,
         });
     }
     return insights;
@@ -171,6 +173,15 @@ function buildRangeLabel(series) {
     const from = series.range?.from ?? '';
     const to = series.range?.to ?? '';
     return `${formatDate(from)} - ${formatDate(to)}`;
+}
+function inferTemporalMode(series) {
+    const to = Date.parse(series.range?.to ?? '');
+    if (Number.isFinite(to)) {
+        const now = Date.now();
+        if (to - now > 12 * 60 * 60 * 1000)
+            return 'future';
+    }
+    return 'past';
 }
 function formatNumber(value) {
     return value.toLocaleString('es-CO', { maximumFractionDigits: 1 });

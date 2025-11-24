@@ -2,7 +2,7 @@ import type { Series } from '@pkg/core';
 type HourlyHeatmapProps = {
     series: Series | null | undefined;
     variable?: 'prcp' | 'prcpRate';
-    maxRows?: number;
+    maxColumns?: number;
 };
-export declare function HourlyHeatmap({ series, variable, maxRows }: HourlyHeatmapProps): import("react/jsx-runtime").JSX.Element;
+export declare function HourlyHeatmap({ series, variable, maxColumns }: HourlyHeatmapProps): import("react/jsx-runtime").JSX.Element;
 export {};

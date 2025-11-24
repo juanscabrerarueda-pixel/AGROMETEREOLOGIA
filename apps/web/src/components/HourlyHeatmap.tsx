@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { Fragment, useMemo, useState } from 'react';
 import type { CSSProperties } from 'react';
 import type { Series } from '@pkg/core';
 
@@ -31,12 +31,13 @@ function getHeatColor(value: number): string {
 type HourlyHeatmapProps = {
   series: Series | null | undefined;
   variable?: 'prcp' | 'prcpRate';
-  maxRows?: number;
+  maxColumns?: number;
 };
 
-type HeatmapRow = {
+type HeatmapColumn = {
   date: string;
-  display: string;
+  label: string;
+  tooltip: string;
   values: Array<{
     value: number | null;
     hour: number;
@@ -44,19 +45,26 @@ type HeatmapRow = {
   }>;
 };
 
-function formatDayLabel(day: string): string {
+function formatDayLabel(day: string): { label: string; tooltip: string } {
   const date = new Date(`${day}T00:00:00Z`);
-  if (Number.isNaN(date.getTime())) return day;
-  return date.toLocaleDateString('es-CO', {
-    weekday: 'short',
-    month: 'short',
+  if (Number.isNaN(date.getTime())) {
+    return { label: day, tooltip: day };
+  }
+  const shortLabel = date
+    .toLocaleDateString('es-CO', { day: '2-digit', month: 'short' })
+    .replace('.', '');
+  const longLabel = date.toLocaleDateString('es-CO', {
+    weekday: 'long',
     day: 'numeric',
+    month: 'long',
+    year: 'numeric',
   });
+  return { label: shortLabel, tooltip: longLabel };
 }
 
-function buildMatrix(series: Series | null | undefined, variable: 'prcp' | 'prcpRate') {
+function buildColumns(series: Series | null | undefined, variable: 'prcp' | 'prcpRate') {
   const hourly = series?.hourly ?? [];
-  if (!hourly.length) return { rows: [] as HeatmapRow[], max: 0 };
+  if (!hourly.length) return { columns: [] as HeatmapColumn[], max: 0 };
 
   const buckets = new Map<string, Array<number | null>>();
   let max = 0;
@@ -83,36 +91,44 @@ function buildMatrix(series: Series | null | undefined, variable: 'prcp' | 'prcp
     }
   }
 
-  const rows: HeatmapRow[] = Array.from(buckets.entries())
+  const columns: HeatmapColumn[] = Array.from(buckets.entries())
     .sort(([a], [b]) => a.localeCompare(b))
-    .map(([date, values]) => ({
-      date,
-      display: formatDayLabel(date),
-      values: values.map((value, hour) => ({
-        value,
-        hour,
-        normalized: max > 0 && typeof value === 'number' ? Math.min(value / max, 1) : 0,
-      })),
-    }));
+    .map(([date, values]) => {
+      const { label, tooltip } = formatDayLabel(date);
+      return {
+        date,
+        label,
+        tooltip,
+        values: HOURS.map((hour) => {
+          const value = values[hour];
+          return {
+            value,
+            hour,
+            normalized: max > 0 && typeof value === 'number' ? Math.min(value / max, 1) : 0,
+          };
+        }),
+      };
+    });
 
-  return { rows, max };
+  return { columns, max };
 }
 
-export function HourlyHeatmap({ series, variable = 'prcp', maxRows = 35 }: HourlyHeatmapProps) {
-  const { rows, max } = useMemo(() => buildMatrix(series, variable), [series, variable]);
+export function HourlyHeatmap({ series, variable = 'prcp', maxColumns = 14 }: HourlyHeatmapProps) {
+  const { columns, max } = useMemo(() => buildColumns(series, variable), [series, variable]);
   const [expanded, setExpanded] = useState(false);
 
-  if (!rows.length) {
+  if (!columns.length) {
     return <div className="empty-state">Sin datos suficientes para generar el mapa de calor.</div>;
   }
 
-  const visibleRows =
-    expanded || !maxRows || rows.length <= maxRows
-      ? rows
-      : rows.slice(Math.max(rows.length - maxRows, 0));
-  const canToggle = maxRows && rows.length > maxRows;
+  const visibleColumns =
+    expanded || !maxColumns || columns.length <= maxColumns
+      ? columns
+      : columns.slice(Math.max(columns.length - maxColumns, 0));
+  const canToggle = maxColumns && columns.length > maxColumns;
 
-  const gridMinWidth = Math.max(visibleRows.length * 32 + 360, 520);
+  const gridTemplateColumns = `80px repeat(${visibleColumns.length}, minmax(32px, 1fr))`;
+  const gridMinWidth = 80 + visibleColumns.length * 38;
 
   return (
     <div className="heatmap">
@@ -125,49 +141,46 @@ export function HourlyHeatmap({ series, variable = 'prcp', maxRows = 35 }: Hourl
       </div>
 
       <div className="heatmap-scroll">
-        <div className="heatmap-grid" style={{ minWidth: `${gridMinWidth}px` }}>
-          <div className="heatmap-hours">
-            <span className="heatmap-hours-label">Hora</span>
-            <div className="heatmap-hours-cells">
-              {HOURS.map((hour) => (
-                <span key={hour} className="heatmap-hour">
-                  {hour.toString().padStart(2, '0')}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          {visibleRows.map((row) => (
-            <div key={row.date} className="heatmap-row">
-              <span className="heatmap-day">{row.display}</span>
-              <div className="heatmap-cells">
-                {row.values.map((item) => {
-                  const background =
-                    item.value === null
-                      ? 'rgba(148, 163, 184, 0.12)'
-                      : getHeatColor(item.normalized);
-                  return (
-                    <span
-                      key={item.hour}
-                      className="heatmap-cell"
-                      style={{ backgroundColor: background } as CSSProperties}
-                      title={`${row.date} ${item.hour.toString().padStart(2, '0')}:00 -> ${
-                        item.value !== null
-                          ? `${item.value.toFixed(2)} ${variable === 'prcpRate' ? 'mm/h' : 'mm'}`
-                          : 'sin dato'
-                      }`}
-                    />
-                  );
-                })}
-              </div>
-            </div>
+        <div
+          className="heatmap-matrix"
+          style={{ gridTemplateColumns, minWidth: `${gridMinWidth}px` }}
+        >
+          <span className="heatmap-corner">Hora</span>
+          {visibleColumns.map((column) => (
+            <span key={column.date} className="heatmap-date" title={column.tooltip}>
+              {column.label}
+            </span>
+          ))}
+          {HOURS.map((hour) => (
+            <Fragment key={hour}>
+              <span className="heatmap-hour-label">{hour.toString().padStart(2, '0')}h</span>
+              {visibleColumns.map((column) => {
+                const item = column.values[hour];
+                const background =
+                  item.value === null
+                    ? 'rgba(148, 163, 184, 0.12)'
+                    : getHeatColor(item.normalized);
+                return (
+                  <span
+                    key={`${column.date}-${hour}`}
+                    className="heatmap-cell"
+                    style={{ backgroundColor: background } as CSSProperties}
+                    title={`${column.tooltip} ${hour.toString().padStart(2, '0')}:00 -> ${
+                      item.value !== null
+                        ? `${item.value.toFixed(2)} ${variable === 'prcpRate' ? 'mm/h' : 'mm'}`
+                        : 'sin dato'
+                    }`}
+                  />
+                );
+              })}
+            </Fragment>
           ))}
         </div>
       </div>
 
       <div className="heatmap-meta">
         <span>
-          Mostrando {visibleRows.length} de {rows.length} d&iacute;as
+          Mostrando {visibleColumns.length} de {columns.length} d&iacute;as
         </span>
         {canToggle && (
           <button className="heatmap-toggle" onClick={() => setExpanded((value) => !value)}>

@@ -1,5 +1,5 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
-import { useMemo, useState } from 'react';
+import { Fragment, useMemo, useState } from 'react';
 const HOURS = Array.from({ length: 24 }, (_, index) => index);
 const HEAT_COLORS = [
     { stop: 0, color: [37, 99, 235] }, // azul
@@ -25,18 +25,24 @@ function getHeatColor(value) {
 }
 function formatDayLabel(day) {
     const date = new Date(`${day}T00:00:00Z`);
-    if (Number.isNaN(date.getTime()))
-        return day;
-    return date.toLocaleDateString('es-CO', {
-        weekday: 'short',
-        month: 'short',
+    if (Number.isNaN(date.getTime())) {
+        return { label: day, tooltip: day };
+    }
+    const shortLabel = date
+        .toLocaleDateString('es-CO', { day: '2-digit', month: 'short' })
+        .replace('.', '');
+    const longLabel = date.toLocaleDateString('es-CO', {
+        weekday: 'long',
         day: 'numeric',
+        month: 'long',
+        year: 'numeric',
     });
+    return { label: shortLabel, tooltip: longLabel };
 }
-function buildMatrix(series, variable) {
+function buildColumns(series, variable) {
     const hourly = series?.hourly ?? [];
     if (!hourly.length)
-        return { rows: [], max: 0 };
+        return { columns: [], max: 0 };
     const buckets = new Map();
     let max = 0;
     for (const point of hourly) {
@@ -60,37 +66,46 @@ function buildMatrix(series, variable) {
             }
         }
     }
-    const rows = Array.from(buckets.entries())
+    const columns = Array.from(buckets.entries())
         .sort(([a], [b]) => a.localeCompare(b))
-        .map(([date, values]) => ({
-        date,
-        display: formatDayLabel(date),
-        values: values.map((value, hour) => ({
-            value,
-            hour,
-            normalized: max > 0 && typeof value === 'number' ? Math.min(value / max, 1) : 0,
-        })),
-    }));
-    return { rows, max };
+        .map(([date, values]) => {
+        const { label, tooltip } = formatDayLabel(date);
+        return {
+            date,
+            label,
+            tooltip,
+            values: HOURS.map((hour) => {
+                const value = values[hour];
+                return {
+                    value,
+                    hour,
+                    normalized: max > 0 && typeof value === 'number' ? Math.min(value / max, 1) : 0,
+                };
+            }),
+        };
+    });
+    return { columns, max };
 }
-export function HourlyHeatmap({ series, variable = 'prcp', maxRows = 35 }) {
-    const { rows, max } = useMemo(() => buildMatrix(series, variable), [series, variable]);
+export function HourlyHeatmap({ series, variable = 'prcp', maxColumns = 14 }) {
+    const { columns, max } = useMemo(() => buildColumns(series, variable), [series, variable]);
     const [expanded, setExpanded] = useState(false);
-    if (!rows.length) {
+    if (!columns.length) {
         return _jsx("div", { className: "empty-state", children: "Sin datos suficientes para generar el mapa de calor." });
     }
-    const visibleRows = expanded || !maxRows || rows.length <= maxRows
-        ? rows
-        : rows.slice(Math.max(rows.length - maxRows, 0));
-    const canToggle = maxRows && rows.length > maxRows;
-    const gridMinWidth = Math.max(visibleRows.length * 32 + 360, 520);
-    return (_jsxs("div", { className: "heatmap", children: [_jsxs("div", { className: "heatmap-headline", children: [_jsx("h3", { children: "Mapa de calor horario" }), _jsxs("p", { children: ["Intensidad relativa por hora. Pico maximo observado: ", _jsx("strong", { children: max.toFixed(2) }), ' ', variable === 'prcpRate' ? 'mm/h' : 'mm', "."] })] }), _jsx("div", { className: "heatmap-scroll", children: _jsxs("div", { className: "heatmap-grid", style: { minWidth: `${gridMinWidth}px` }, children: [_jsxs("div", { className: "heatmap-hours", children: [_jsx("span", { className: "heatmap-hours-label", children: "Hora" }), _jsx("div", { className: "heatmap-hours-cells", children: HOURS.map((hour) => (_jsx("span", { className: "heatmap-hour", children: hour.toString().padStart(2, '0') }, hour))) })] }), visibleRows.map((row) => (_jsxs("div", { className: "heatmap-row", children: [_jsx("span", { className: "heatmap-day", children: row.display }), _jsx("div", { className: "heatmap-cells", children: row.values.map((item) => {
-                                        const background = item.value === null
-                                            ? 'rgba(148, 163, 184, 0.12)'
-                                            : getHeatColor(item.normalized);
-                                        return (_jsx("span", { className: "heatmap-cell", style: { backgroundColor: background }, title: `${row.date} ${item.hour.toString().padStart(2, '0')}:00 -> ${item.value !== null
-                                                ? `${item.value.toFixed(2)} ${variable === 'prcpRate' ? 'mm/h' : 'mm'}`
-                                                : 'sin dato'}` }, item.hour));
-                                    }) })] }, row.date)))] }) }), _jsxs("div", { className: "heatmap-meta", children: [_jsxs("span", { children: ["Mostrando ", visibleRows.length, " de ", rows.length, " d\u00EDas"] }), canToggle && (_jsx("button", { className: "heatmap-toggle", onClick: () => setExpanded((value) => !value), children: expanded ? 'Mostrar menos' : 'Ver todos' }))] }), _jsxs("div", { className: "heatmap-scale", children: [_jsx("span", { children: "Seco" }), _jsx("div", { className: "heatmap-scale-bar" }), _jsx("span", { children: "Max" })] })] }));
+    const visibleColumns = expanded || !maxColumns || columns.length <= maxColumns
+        ? columns
+        : columns.slice(Math.max(columns.length - maxColumns, 0));
+    const canToggle = maxColumns && columns.length > maxColumns;
+    const gridTemplateColumns = `80px repeat(${visibleColumns.length}, minmax(32px, 1fr))`;
+    const gridMinWidth = 80 + visibleColumns.length * 38;
+    return (_jsxs("div", { className: "heatmap", children: [_jsxs("div", { className: "heatmap-headline", children: [_jsx("h3", { children: "Mapa de calor horario" }), _jsxs("p", { children: ["Intensidad relativa por hora. Pico maximo observado: ", _jsx("strong", { children: max.toFixed(2) }), ' ', variable === 'prcpRate' ? 'mm/h' : 'mm', "."] })] }), _jsx("div", { className: "heatmap-scroll", children: _jsxs("div", { className: "heatmap-matrix", style: { gridTemplateColumns, minWidth: `${gridMinWidth}px` }, children: [_jsx("span", { className: "heatmap-corner", children: "Hora" }), visibleColumns.map((column) => (_jsx("span", { className: "heatmap-date", title: column.tooltip, children: column.label }, column.date))), HOURS.map((hour) => (_jsxs(Fragment, { children: [_jsxs("span", { className: "heatmap-hour-label", children: [hour.toString().padStart(2, '0'), "h"] }), visibleColumns.map((column) => {
+                                    const item = column.values[hour];
+                                    const background = item.value === null
+                                        ? 'rgba(148, 163, 184, 0.12)'
+                                        : getHeatColor(item.normalized);
+                                    return (_jsx("span", { className: "heatmap-cell", style: { backgroundColor: background }, title: `${column.tooltip} ${hour.toString().padStart(2, '0')}:00 -> ${item.value !== null
+                                            ? `${item.value.toFixed(2)} ${variable === 'prcpRate' ? 'mm/h' : 'mm'}`
+                                            : 'sin dato'}` }, `${column.date}-${hour}`));
+                                })] }, hour)))] }) }), _jsxs("div", { className: "heatmap-meta", children: [_jsxs("span", { children: ["Mostrando ", visibleColumns.length, " de ", columns.length, " d\u00EDas"] }), canToggle && (_jsx("button", { className: "heatmap-toggle", onClick: () => setExpanded((value) => !value), children: expanded ? 'Mostrar menos' : 'Ver todos' }))] }), _jsxs("div", { className: "heatmap-scale", children: [_jsx("span", { children: "Seco" }), _jsx("div", { className: "heatmap-scale-bar" }), _jsx("span", { children: "Max" })] })] }));
 }
 //# sourceMappingURL=HourlyHeatmap.js.map
