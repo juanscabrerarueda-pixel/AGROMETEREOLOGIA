@@ -46,10 +46,10 @@ export function DailyHeatmap({ daily, metric }: DailyHeatmapProps) {
   return (
     <div className="daily-heatmap">
       <div className="daily-heatmap-headline">
-        <h3>Distribucion diaria</h3>
+        <h3>Distribución diaria</h3>
         <p>
-          Concentra los dias mas humedos para planear riego, cosecha, disponibilidad de pasturas y
-          generacion solar. Pico observado: <strong>{max.toFixed(2)}</strong> {unit}.
+          Concentra los días más húmedos para planear riego, cosecha, disponibilidad de pasturas y
+          generación solar. Pico observado: <strong>{max.toFixed(2)}</strong> {unit}.
         </p>
       </div>
 

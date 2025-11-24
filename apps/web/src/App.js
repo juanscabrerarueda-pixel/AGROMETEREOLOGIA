@@ -34,37 +34,37 @@ const REFRESH_OPTIONS = [
 const RANGE_OPTIONS = [
     {
         id: 'threeMonths',
-        label: 'Ultimos 3 meses',
+        label: 'Últimos 3 meses',
         days: 90,
-        description: 'Observa la evolucion reciente (aprox. Ultimo trimestre).',
+        description: 'Observa la evolución reciente (aprox. último trimestre).',
     },
     {
         id: 'oneYear',
-        label: 'Ultimo ano',
+        label: 'Último año',
         days: 365,
-        description: 'Analiza como cerro el Ultimo ano hidrico completo.',
+        description: 'Analiza cómo cerró el último año hídrico completo.',
     },
     {
         id: 'fiveYears',
-        label: 'Ultimos 5 anos',
+        label: 'Últimos 5 años',
         days: 365 * 5,
         description: 'Identifica tendencias multianuales y cambios estructurales.',
     },
     {
         id: 'future',
-        label: 'Prox. 14 dias',
+        label: 'Próx. 14 días',
         days: 14,
         future: true,
-        description: 'Pronostico inmediato (sin linea de tendencia).',
+        description: 'Pronóstico inmediato (sin línea de tendencia).',
     },
 ];
 const METRIC_OPTIONS = [
-    { id: 'accumulated', label: 'Acumulado diario', helper: 'Suma mm por dia (precipitacion acumulada).' },
+    { id: 'accumulated', label: 'Acumulado diario', helper: 'Suma mm por día (precipitación acumulada).' },
     { id: 'intensity', label: 'Intensidad (mm/h)', helper: 'Pico horario diario (mm/h) como proxy de intensidad.' },
 ];
 const TREND_OPTIONS = [
-    { id: 'MA', label: 'MA', helper: 'Media movil con ventana fija.' },
-    { id: 'EMA', label: 'EMA', helper: 'Media movil exponencial (pondera lo reciente).' },
+    { id: 'MA', label: 'MA', helper: 'Media móvil con ventana fija.' },
+    { id: 'EMA', label: 'EMA', helper: 'Media móvil exponencial (pondera lo reciente).' },
 ];
 const DEFAULT_DEPARTMENT = DEPARTMENT_OPTIONS[0];
 const DEFAULT_DEPARTMENT_VALUE = DEFAULT_DEPARTMENT?.value ?? '';
@@ -77,7 +77,7 @@ const WINDOW_BY_RANGE = {
 };
 export default function App() {
     if (!FEATURE_AGROMETEO) {
-        return (_jsx("main", { className: "wrap", children: _jsxs("section", { className: "card", children: [_jsx("h1", { children: "Panel agrometeorologico" }), _jsx("p", { children: "Activa la variable VITE_FEATURE_AGROMETEO para visualizar este tablero." })] }) }));
+        return (_jsx("main", { className: "wrap", children: _jsxs("section", { className: "card", children: [_jsx("h1", { children: "Panel agrometeorol\u00F3gico" }), _jsx("p", { children: "Activa la variable VITE_FEATURE_AGROMETEO para visualizar este tablero." })] }) }));
     }
     const { thresholds } = useThresholds();
     const [selectedDept, setSelectedDept] = useState(DEFAULT_DEPARTMENT_VALUE);
@@ -95,6 +95,7 @@ export default function App() {
         ? undefined
         : RANGE_OPTIONS.find((option) => option.id === rangeSelection);
     const isFutureRange = activeRangeOption?.future ?? false;
+    const tense = isFutureRange ? 'future' : 'past';
     const refreshConfig = REFRESH_OPTIONS.find((item) => item.id === refreshRate) ?? REFRESH_OPTIONS[0];
     const refetchInterval = refreshConfig.intervalMs;
     const seriesParams = useMemo(() => ({
@@ -143,10 +144,10 @@ export default function App() {
     ]);
     const dailyData = useMemo(() => buildDailyData(series.data), [series.data]);
     const metaSummary = useMemo(() => buildMetaSummary(series.data, metric, currentDepartment, selectedMuni), [series.data, metric, currentDepartment, selectedMuni]);
-    const quickImpact = useMemo(() => buildImpactNarrative(aggregated, metric), [aggregated, metric]);
-    const sectorNarratives = useMemo(() => buildSectorNarratives(aggregated, series.data, metric), [aggregated, series.data, metric]);
-    const agroNarrative = useMemo(() => buildAgroNarrative(series.data), [series.data]);
-    const hourlyNarrative = useMemo(() => buildHourlyNarrative(series.data), [series.data]);
+    const quickImpact = useMemo(() => buildImpactNarrative(aggregated, metric, tense), [aggregated, metric, tense]);
+    const sectorNarratives = useMemo(() => buildSectorNarratives(aggregated, series.data, metric, tense), [aggregated, series.data, metric, tense]);
+    const agroNarrative = useMemo(() => buildAgroNarrative(series.data, tense), [series.data, tense]);
+    const hourlyNarrative = useMemo(() => buildHourlyNarrative(series.data, tense), [series.data, tense]);
     const trendPoints = useMemo(() => {
         if (!showTrend || isFutureRange || !aggregated.points.length) {
             return null;
@@ -159,7 +160,7 @@ export default function App() {
     const trendInfo = useMemo(() => summarizeTrend(trendPoints), [trendPoints]);
     const kpis = useMemo(() => buildKpis(aggregated, metric, trendPoints, range, rangeSelection, activeRangeOption, trendInfo), [activeRangeOption, aggregated, metric, range, rangeSelection, trendInfo, trendPoints]);
     const rangeSummary = formatRangeSummary(range);
-    const chartNarrative = useMemo(() => buildChartNarrative(aggregated, metric, rangeSummary, series.data, trendInfo), [aggregated, metric, rangeSummary, series.data, trendInfo]);
+    const chartNarrative = useMemo(() => buildChartNarrative(aggregated, metric, rangeSummary, series.data, trendInfo, tense), [aggregated, metric, rangeSummary, series.data, trendInfo, tense]);
     const handleRangePreset = (option) => {
         setRangeSelection(option.id);
         setRange(buildRange(option));
@@ -188,8 +189,8 @@ export default function App() {
         setRange((prev) => normalizeRange({ from: prev.from, to: value }));
     };
     const metricHelper = METRIC_OPTIONS.find((option) => option.id === metric)?.helper ?? '';
-    return (_jsxs("main", { className: "wrap", children: [_jsx("header", { className: "mb4 intro", children: _jsxs("div", { className: "hero-brand", children: [_jsxs("div", { className: "brand-icon", "aria-hidden": "true", children: [_jsx("span", { className: "brand-sun" }), _jsx("span", { className: "brand-cloud" }), _jsx("span", { className: "brand-leaf left" }), _jsx("span", { className: "brand-leaf right" }), _jsx("span", { className: "brand-grid" }), _jsx("span", { className: "brand-drops" })] }), _jsxs("div", { children: [_jsx("p", { className: "tagline", children: "Tendencias de lluvia en Colombia" }), _jsx("h1", { children: "Panel agrometeorologico" }), _jsx("p", { className: "muted", children: "Filtra por departamento y municipio, alterna entre acumulados o intensidad diaria y usa la linea de tendencia para resumir comportamientos. El mapa horario te ayuda a encontrar ventanas secas o picos concentrados." })] })] }) }), _jsxs("section", { className: "card help mb4", children: [_jsxs("div", { className: "help-header", children: [_jsx("strong", { children: "Como usar" }), _jsx("button", { type: "button", className: "btn small", onClick: () => setHelpHidden((prev) => !prev), children: helpHidden ? 'Mostrar guia' : 'Ocultar guia' })] }), !helpHidden && (_jsxs("ol", { className: "help-steps", children: [_jsx("li", { children: "Elige un departamento y opcionalmente un municipio para la serie local (por defecto usa la capital)." }), _jsx("li", { children: "Ajusta el rango rapido (3 meses, 1 ano, 5 anos o 14 dias de pronostico). Tambien puedes fijar fechas manualmente." }), _jsx("li", { children: "Alterna entre acumulado diario o intensidad maxima, y activa MA/EMA para suavizar la serie historica." }), _jsx("li", { children: "Usa la distribucion horaria para detectar ventanas secas y revisa los insights automaticos para recomendaciones puntuales." })] }))] }), _jsxs("section", { className: "card controls mb4", children: [_jsxs("div", { className: "row", children: [_jsxs("label", { className: "field", children: [_jsx("span", { children: "Departamento" }), _jsx("select", { value: selectedDept, onChange: (event) => handleDeptChange(event.target.value), children: DEPARTMENT_OPTIONS.map((option) => (_jsx("option", { value: option.value, children: option.label }, option.value))) })] }), _jsxs("label", { className: "field", children: [_jsx("span", { children: "Municipio / ciudad" }), _jsx("select", { value: selectedMuni, onChange: (event) => handleMuniChange(event.target.value), children: municipalities.map((option) => (_jsx("option", { value: option.value, children: option.label }, option.value))) })] }), _jsxs("label", { className: "field", children: [_jsx("span", { children: "Desde" }), _jsx("input", { type: "date", value: range.from, onChange: (event) => handleFromChange(event.target.value) })] }), _jsxs("label", { className: "field", children: [_jsx("span", { children: "Hasta" }), _jsx("input", { type: "date", value: range.to, onChange: (event) => handleToChange(event.target.value) })] })] }), _jsxs("div", { className: "seg mt2", children: [RANGE_OPTIONS.map((option) => (_jsx("button", { type: "button", className: `btn ${rangeSelection === option.id ? 'active' : ''}`, onClick: () => handleRangePreset(option), children: option.label }, option.id))), _jsx("button", { type: "button", className: `btn small ${rangeSelection === 'custom' ? 'active' : ''}`, onClick: () => setRangeSelection('custom'), title: "Edita las fechas para definir tu rango personalizado.", children: "Personalizado" })] }), _jsx("div", { className: "seg mt2", children: METRIC_OPTIONS.map((option) => (_jsx("button", { type: "button", className: `btn ${metric === option.id ? 'active' : ''}`, onClick: () => setMetric(option.id), children: option.label }, option.id))) }), _jsxs("div", { className: "row gap mt2", children: [_jsx("button", { type: "button", className: "btn small", onClick: () => setShowTrend((prev) => !prev), disabled: isFutureRange, title: isFutureRange ? 'La tendencia no aplica a pronosticos futuros' : '', children: showTrend ? 'Ocultar tendencia' : 'Ver tendencia' }), _jsx("div", { className: "seg compact", children: TREND_OPTIONS.map((option) => (_jsx("button", { type: "button", className: `btn small ${trendType === option.id ? 'active' : ''}`, disabled: isFutureRange, onClick: () => setTrendType(option.id), title: option.helper, children: option.label }, option.id))) })] }), _jsxs("p", { className: "muted tiny mt2", children: [metricHelper, " ", activeRangeOption ? `- ${activeRangeOption.description}` : ''] }), _jsxs("div", { className: "refresh-controls mt2", children: [_jsx("span", { className: "tiny", children: "Actualizacion automatica" }), _jsx("div", { className: "seg compact", children: REFRESH_OPTIONS.map((option) => (_jsx("button", { type: "button", className: `btn small ${refreshRate === option.id ? 'active' : ''}`, onClick: () => setRefreshRate(option.id), children: option.label }, option.id))) }), _jsx("p", { className: "muted tiny", children: refreshConfig.description })] })] }), _jsx(RealtimePanel, { series: series.data, busy: series.isFetching }), _jsxs("section", { className: "card chart-card mb4", children: [_jsx("div", { className: `busy ${busy ? 'on' : ''}`, children: _jsxs("div", { className: "busy-pill", children: [_jsx("span", { className: "spin" }), _jsx("span", { children: "Actualizando datos..." })] }) }), _jsxs("div", { className: "section-header", children: [_jsxs("div", { children: [_jsx("h2", { children: "Serie diaria" }), _jsxs("p", { className: "muted tiny", children: [rangeSummary, " - ", metric === 'intensity' ? 'Intensidad maxima por dia' : 'Acumulado diario (mm)'] })] }), _jsxs("div", { className: "series-meta tiny", children: [series.data?.meta?.source && _jsxs("span", { children: ["Fuente: ", series.data.meta.source] }), series.data?.meta?.tz && _jsxs("span", { children: ["TZ: ", series.data.meta.tz] }), _jsxs("span", { children: ["Registros: ", aggregated.count.toLocaleString('es-CO')] })] })] }), series.error && (_jsxs("div", { className: "error-banner mb3", children: [_jsx("strong", { children: "No fue posible actualizar la serie." }), _jsx("p", { children: series.error.message || 'No pudimos contactar la API. Revisa tu conexion o intenta nuevamente.' })] })), metaSummary && (_jsxs("div", { className: "meta-panel", children: [_jsxs("div", { className: "meta-item", children: [_jsx("strong", { children: "Ultima actualizacion" }), _jsx("span", { children: metaSummary.updated })] }), _jsxs("div", { className: "meta-item", children: [_jsx("strong", { children: "Ubicacion" }), _jsx("span", { children: metaSummary.location })] }), _jsxs("div", { className: "meta-item", children: [_jsx("strong", { children: "Fuente" }), _jsx("span", { children: metaSummary.source })] }), _jsxs("div", { className: "meta-item", children: [_jsx("strong", { children: "Unidad" }), _jsx("span", { children: metaSummary.unit })] })] })), _jsx(PrecipitationChart, { points: aggregated.points, trend: trendPoints, metric: metric }), _jsxs("div", { className: "mt3", children: [_jsx(DailyHeatmap, { daily: dailyData, metric: metric }), _jsxs("details", { className: "glossary", children: [_jsx("summary", { children: "Como leer la intensidad" }), _jsxs("ul", { children: [_jsx("li", { children: "0-5 mm: Llovizna ligera, humedece sin generar escorrentia." }), _jsx("li", { children: "5-20 mm: Lluvia moderada, posible pausa corta en labores." }), _jsx("li", { children: "20-60 mm: Temporal, suelos saturados y riesgo de charcos." }), _jsxs("li", { children: ['> 60', " mm: Evento fuerte, probables anegamientos y retrasos."] })] })] })] }), _jsx("div", { className: "kpis mt3", children: kpis.map((item) => (_jsxs("div", { className: "kpi", children: [_jsx("span", { className: "kcap", children: item.label }), _jsxs("span", { className: "kval", children: [item.value, item.badge && (_jsx("span", { className: `badge ${item.badge.tone ?? ''}`.trim(), children: item.badge.label }))] }), item.note && _jsx("span", { className: "ksub", children: item.note })] }, item.id))) }), (chartNarrative || quickImpact) && (_jsxs("div", { className: "narrative-card", children: [quickImpact && (_jsxs("p", { children: [_jsx("strong", { children: "Lectura rapida:" }), " ", quickImpact] })), chartNarrative && _jsx("p", { className: "chart-narrative", children: chartNarrative })] }))] }), _jsxs("section", { className: "card mb4", children: [_jsx("div", { className: "section-header", children: _jsxs("div", { children: [_jsx("h2", { children: "Condiciones agroenergeticas" }), _jsx("p", { className: "muted tiny", children: "Temperatura y humedad del suelo, ET0, radiacion y viento para apoyar ganaderos, agricultores y generacion renovable." })] }) }), _jsx(AgroPanels, { series: series.data }), agroNarrative && (_jsx("div", { className: "narrative-card slim mt2", children: _jsx("p", { children: agroNarrative }) })), _jsxs("details", { className: "glossary mt2", children: [_jsx("summary", { children: "Como leer estas variables" }), _jsxs("ul", { children: [_jsx("li", { children: "Temp. ambiente 18-32 C: confortable. <15 C implica amaneceres frios y >32 C demanda sombra e hidratacion." }), _jsx("li", { children: "Sensacion termica >35 C: riesgo de estres para personal y ganado." }), _jsx("li", { children: "Humedad relativa <40 %: ambiente seco, incrementa demanda hidrica; >85 % favorece hongos." }), _jsx("li", { children: "Lluvia 24h: <5 mm se absorbe rapido; >30 mm provoca charcos y compactacion." }), _jsx("li", { children: "ET0 >4 mm indica alta demanda de riego. Radiacion >4 kWh/m2 favorece la generacion solar." })] })] })] }), _jsxs("section", { className: "card mb4", children: [_jsx("div", { className: "section-header", children: _jsxs("div", { children: [_jsx("h2", { children: "Distribucion horaria" }), _jsx("p", { className: "muted tiny", children: "Identifica horarios con lluvia o ventanas secas (intensidad en mm/h)." })] }) }), _jsx("div", { className: "hourlyWrap", children: _jsx(HourlyHeatmap, { series: series.data, variable: "prcpRate" }) }), hourlyNarrative && (_jsx("div", { className: "narrative-card slim mt2", children: _jsx("p", { children: hourlyNarrative }) })), _jsxs("details", { className: "glossary mt2", children: [_jsx("summary", { children: "Como leer la distribucion" }), _jsxs("ul", { children: [_jsx("li", { children: "Bandas intensas al amanecer indican suelos saturados: retrasa la entrada de maquinaria." }), _jsx("li", { children: "Bloques continuos >60 % senalan varios dias lluviosos. Busca ventanas palidas (<30 %) para labores criticas." }), _jsx("li", { children: "Celdas claras aisladas equivalen a horas de baja probabilidad, ideales para riego o mantenimiento." })] })] })] }), _jsxs("section", { className: "card insights", children: [_jsx("div", { className: "section-header", children: _jsxs("div", { children: [_jsx("h2", { children: "Insights automatizados" }), _jsx("p", { className: "muted tiny", children: "Basados en umbrales de impacto y calculos del paquete insight-engine." })] }) }), sectorNarratives && (_jsxs("div", { className: "sector-insights", children: [_jsxs("div", { children: [_jsx("strong", { children: "Agricultura" }), _jsx("p", { children: sectorNarratives.agriculture })] }), _jsxs("div", { children: [_jsx("strong", { children: "Ganaderia" }), _jsx("p", { children: sectorNarratives.livestock })] }), _jsxs("div", { children: [_jsx("strong", { children: "Energias renovables" }), _jsx("p", { children: sectorNarratives.energy })] })] })), insights.error ? (_jsxs("div", { className: "error-banner", children: [_jsx("strong", { children: "No fue posible generar insights." }), _jsx("p", { children: insights.error.message ||
-                                    'No logramos conectar con la API de insights. Vuelve a intentarlo cuando tengas conexion estable.' })] })) : insights.data ? (insights.data.insights.length ? (_jsx("ul", { className: "insights-list", children: insights.data.insights.map((insight) => (_jsxs("li", { className: "insight-item", children: [_jsx("strong", { children: insight.kind }), _jsx("p", { children: insight.text })] }, insight.id))) })) : (_jsx("div", { className: "empty-state", children: "Sin hallazgos relevantes con los umbrales actuales. Ajustalos para mas sensibilidad." }))) : (_jsxs("div", { className: "skeleton", children: [_jsx("div", { className: "skeleton-bar" }), _jsx("div", { className: "skeleton-bar" }), _jsx("div", { className: "skeleton-bar" })] }))] })] }));
+    return (_jsxs("main", { className: "wrap", children: [_jsx("header", { className: "mb4 intro", children: _jsxs("div", { className: "hero-brand", children: [_jsxs("div", { className: "brand-icon", "aria-hidden": "true", children: [_jsx("span", { className: "brand-sun" }), _jsx("span", { className: "brand-cloud" }), _jsx("span", { className: "brand-leaf left" }), _jsx("span", { className: "brand-leaf right" }), _jsx("span", { className: "brand-grid" }), _jsx("span", { className: "brand-drops" })] }), _jsxs("div", { children: [_jsx("p", { className: "tagline", children: "Tendencias de lluvia en Colombia" }), _jsx("h1", { children: "Panel agrometeorol\u00F3gico" }), _jsx("p", { className: "muted", children: "Filtra por departamento y municipio, alterna entre acumulados o intensidad diaria y usa la l\u00EDnea de tendencia para resumir comportamientos. El mapa horario te ayuda a encontrar ventanas secas o picos concentrados." })] })] }) }), _jsxs("section", { className: "card help mb4", children: [_jsxs("div", { className: "help-header", children: [_jsx("strong", { children: "C\u00F3mo usar" }), _jsx("button", { type: "button", className: "btn small", onClick: () => setHelpHidden((prev) => !prev), children: helpHidden ? 'Mostrar guia' : 'Ocultar guia' })] }), !helpHidden && (_jsxs("ol", { className: "help-steps", children: [_jsx("li", { children: "Elige un departamento y opcionalmente un municipio para la serie local (por defecto usa la capital)." }), _jsx("li", { children: "Ajusta el rango r\u00E1pido (3 meses, 1 a\u00F1o, 5 a\u00F1os o 14 d\u00EDas de pron\u00F3stico). Tambi\u00E9n puedes fijar fechas manualmente." }), _jsx("li", { children: "Alterna entre acumulado diario o intensidad m\u00E1xima, y activa MA/EMA para suavizar la serie hist\u00F3rica." }), _jsx("li", { children: "Usa la distribuci\u00F3n horaria para detectar ventanas secas y revisa los insights autom\u00E1ticos para recomendaciones puntuales." })] }))] }), _jsxs("section", { className: "card controls mb4", children: [_jsxs("div", { className: "row", children: [_jsxs("label", { className: "field", children: [_jsx("span", { children: "Departamento" }), _jsx("select", { value: selectedDept, onChange: (event) => handleDeptChange(event.target.value), children: DEPARTMENT_OPTIONS.map((option) => (_jsx("option", { value: option.value, children: option.label }, option.value))) })] }), _jsxs("label", { className: "field", children: [_jsx("span", { children: "Municipio / ciudad" }), _jsx("select", { value: selectedMuni, onChange: (event) => handleMuniChange(event.target.value), children: municipalities.map((option) => (_jsx("option", { value: option.value, children: option.label }, option.value))) })] }), _jsxs("label", { className: "field", children: [_jsx("span", { children: "Desde" }), _jsx("input", { type: "date", value: range.from, onChange: (event) => handleFromChange(event.target.value) })] }), _jsxs("label", { className: "field", children: [_jsx("span", { children: "Hasta" }), _jsx("input", { type: "date", value: range.to, onChange: (event) => handleToChange(event.target.value) })] })] }), _jsxs("div", { className: "seg mt2", children: [RANGE_OPTIONS.map((option) => (_jsx("button", { type: "button", className: `btn ${rangeSelection === option.id ? 'active' : ''}`, onClick: () => handleRangePreset(option), children: option.label }, option.id))), _jsx("button", { type: "button", className: `btn small ${rangeSelection === 'custom' ? 'active' : ''}`, onClick: () => setRangeSelection('custom'), title: "Edita las fechas para definir tu rango personalizado.", children: "Personalizado" })] }), _jsx("div", { className: "seg mt2", children: METRIC_OPTIONS.map((option) => (_jsx("button", { type: "button", className: `btn ${metric === option.id ? 'active' : ''}`, onClick: () => setMetric(option.id), children: option.label }, option.id))) }), _jsxs("div", { className: "row gap mt2", children: [_jsx("button", { type: "button", className: "btn small", onClick: () => setShowTrend((prev) => !prev), disabled: isFutureRange, title: isFutureRange ? 'La tendencia no aplica a pronósticos futuros' : '', children: showTrend ? 'Ocultar tendencia' : 'Ver tendencia' }), _jsx("div", { className: "seg compact", children: TREND_OPTIONS.map((option) => (_jsx("button", { type: "button", className: `btn small ${trendType === option.id ? 'active' : ''}`, disabled: isFutureRange, onClick: () => setTrendType(option.id), title: option.helper, children: option.label }, option.id))) })] }), _jsxs("p", { className: "muted tiny mt2", children: [metricHelper, " ", activeRangeOption ? `- ${activeRangeOption.description}` : ''] }), _jsxs("div", { className: "refresh-controls mt2", children: [_jsx("span", { className: "tiny", children: "Actualizaci\u00F3n autom\u00E1tica" }), _jsx("div", { className: "seg compact", children: REFRESH_OPTIONS.map((option) => (_jsx("button", { type: "button", className: `btn small ${refreshRate === option.id ? 'active' : ''}`, onClick: () => setRefreshRate(option.id), children: option.label }, option.id))) }), _jsx("p", { className: "muted tiny", children: refreshConfig.description })] })] }), _jsx(RealtimePanel, { series: series.data, busy: series.isFetching }), _jsxs("section", { className: "card chart-card mb4", children: [_jsx("div", { className: `busy ${busy ? 'on' : ''}`, children: _jsxs("div", { className: "busy-pill", children: [_jsx("span", { className: "spin" }), _jsx("span", { children: "Actualizando datos..." })] }) }), _jsxs("div", { className: "section-header", children: [_jsxs("div", { children: [_jsx("h2", { children: "Serie diaria" }), _jsxs("p", { className: "muted tiny", children: [rangeSummary, " - ", metric === 'intensity' ? 'Intensidad máxima por día' : 'Acumulado diario (mm)'] })] }), _jsxs("div", { className: "series-meta tiny", children: [series.data?.meta?.source && _jsxs("span", { children: ["Fuente: ", series.data.meta.source] }), series.data?.meta?.tz && _jsxs("span", { children: ["TZ: ", series.data.meta.tz] }), _jsxs("span", { children: ["Registros: ", aggregated.count.toLocaleString('es-CO')] })] })] }), series.error && (_jsxs("div", { className: "error-banner mb3", children: [_jsx("strong", { children: "No fue posible actualizar la serie." }), _jsx("p", { children: series.error.message || 'No pudimos contactar la API. Revisa tu conexión o intenta nuevamente.' })] })), metaSummary && (_jsxs("div", { className: "meta-panel", children: [_jsxs("div", { className: "meta-item", children: [_jsx("strong", { children: "\u00DAltima actualizaci\u00F3n" }), _jsx("span", { children: metaSummary.updated })] }), _jsxs("div", { className: "meta-item", children: [_jsx("strong", { children: "Ubicaci\u00F3n" }), _jsx("span", { children: metaSummary.location })] }), _jsxs("div", { className: "meta-item", children: [_jsx("strong", { children: "Fuente" }), _jsx("span", { children: metaSummary.source })] }), _jsxs("div", { className: "meta-item", children: [_jsx("strong", { children: "Unidad" }), _jsx("span", { children: metaSummary.unit })] })] })), _jsx(PrecipitationChart, { points: aggregated.points, trend: trendPoints, metric: metric }), _jsxs("div", { className: "mt3", children: [_jsx(DailyHeatmap, { daily: dailyData, metric: metric }), _jsxs("details", { className: "glossary", children: [_jsx("summary", { children: "C\u00F3mo leer la intensidad" }), _jsxs("ul", { children: [_jsx("li", { children: "0-5 mm: Llovizna ligera, humedece sin generar escorrentia." }), _jsx("li", { children: "5-20 mm: Lluvia moderada, posible pausa corta en labores." }), _jsx("li", { children: "20-60 mm: Temporal, suelos saturados y riesgo de charcos." }), _jsxs("li", { children: ['> 60', " mm: Evento fuerte, probables anegamientos y retrasos."] })] })] })] }), _jsx("div", { className: "kpis mt3", children: kpis.map((item) => (_jsxs("div", { className: "kpi", children: [_jsx("span", { className: "kcap", children: item.label }), _jsxs("span", { className: "kval", children: [item.value, item.badge && (_jsx("span", { className: `badge ${item.badge.tone ?? ''}`.trim(), children: item.badge.label }))] }), item.note && _jsx("span", { className: "ksub", children: item.note })] }, item.id))) }), (chartNarrative || quickImpact) && (_jsxs("div", { className: "narrative-card", children: [quickImpact && (_jsxs("p", { children: [_jsx("strong", { children: "Lectura r\u00E1pida:" }), " ", quickImpact] })), chartNarrative && _jsx("p", { className: "chart-narrative", children: chartNarrative })] }))] }), _jsxs("section", { className: "card mb4", children: [_jsx("div", { className: "section-header", children: _jsxs("div", { children: [_jsx("h2", { children: "Condiciones agroenerg\u00E9ticas" }), _jsx("p", { className: "muted tiny", children: "Temperatura y humedad del suelo, ET0, radiaci\u00F3n y viento para apoyar ganaderos, agricultores y generaci\u00F3n renovable." })] }) }), _jsx(AgroPanels, { series: series.data }), agroNarrative && (_jsx("div", { className: "narrative-card slim mt2", children: _jsx("p", { children: agroNarrative }) })), _jsxs("details", { className: "glossary mt2", children: [_jsx("summary", { children: "C\u00F3mo leer estas variables" }), _jsxs("ul", { children: [_jsx("li", { children: "Temp. ambiente 18-32 C: confortable. <15 C implica amaneceres fr\u00EDos y >32 C demanda sombra e hidrataci\u00F3n." }), _jsx("li", { children: "Sensaci\u00F3n t\u00E9rmica >35 C: riesgo de estr\u00E9s para personal y ganado." }), _jsx("li", { children: "Humedad relativa <40 %: ambiente seco, incrementa demanda h\u00EDdrica; >85 % favorece hongos." }), _jsx("li", { children: "Lluvia 24h: <5 mm se absorbe rapido; >30 mm provoca charcos y compactacion." }), _jsx("li", { children: "ET0 >4 mm indica alta demanda de riego. Radiaci\u00F3n >4 kWh/m2 favorece la generaci\u00F3n solar." })] })] })] }), _jsxs("section", { className: "card mb4", children: [_jsx("div", { className: "section-header", children: _jsxs("div", { children: [_jsx("h2", { children: "Distribuci\u00F3n horaria" }), _jsx("p", { className: "muted tiny", children: "Identifica horarios con lluvia o ventanas secas (intensidad en mm/h)." })] }) }), _jsx("div", { className: "hourlyWrap", children: _jsx(HourlyHeatmap, { series: series.data, variable: "prcpRate" }) }), hourlyNarrative && (_jsx("div", { className: "narrative-card slim mt2", children: _jsx("p", { children: hourlyNarrative }) })), _jsxs("details", { className: "glossary mt2", children: [_jsx("summary", { children: "C\u00F3mo leer la distribuci\u00F3n" }), _jsxs("ul", { children: [_jsx("li", { children: "Bandas intensas al amanecer indican suelos saturados: retrasa la entrada de maquinaria." }), _jsx("li", { children: "Bloques continuos >60 % se\u00F1alan varios d\u00EDas lluviosos. Busca ventanas p\u00E1lidas (<30 %) para labores cr\u00EDticas." }), _jsx("li", { children: "Celdas claras aisladas equivalen a horas de baja probabilidad, ideales para riego o mantenimiento." })] })] })] }), _jsxs("section", { className: "card insights", children: [_jsx("div", { className: "section-header", children: _jsxs("div", { children: [_jsx("h2", { children: "Insights automatizados" }), _jsx("p", { className: "muted tiny", children: "Basados en umbrales de impacto y c\u00E1lculos del paquete insight-engine." })] }) }), sectorNarratives && (_jsxs("div", { className: "sector-insights", children: [_jsxs("div", { children: [_jsx("strong", { children: "Agricultura" }), _jsx("p", { children: sectorNarratives.agriculture })] }), _jsxs("div", { children: [_jsx("strong", { children: "Ganader\u00EDa" }), _jsx("p", { children: sectorNarratives.livestock })] }), _jsxs("div", { children: [_jsx("strong", { children: "Energ\u00EDas renovables" }), _jsx("p", { children: sectorNarratives.energy })] })] })), insights.error ? (_jsxs("div", { className: "error-banner", children: [_jsx("strong", { children: "No fue posible generar insights." }), _jsx("p", { children: insights.error.message ||
+                                    'No logramos conectar con la API de insights. Vuelve a intentarlo cuando tengas conexión estable.' })] })) : insights.data ? (insights.data.insights.length ? (_jsx("ul", { className: "insights-list", children: insights.data.insights.map((insight) => (_jsxs("li", { className: "insight-item", children: [_jsx("strong", { children: insight.kind }), _jsx("p", { children: insight.text })] }, insight.id))) })) : (_jsx("div", { className: "empty-state", children: "Sin hallazgos relevantes con los umbrales actuales. Aj\u00FAstalos para m\u00E1s sensibilidad." }))) : (_jsxs("div", { className: "skeleton", children: [_jsx("div", { className: "skeleton-bar" }), _jsx("div", { className: "skeleton-bar" }), _jsx("div", { className: "skeleton-bar" })] }))] })] }));
 }
 function buildRange(option) {
     const today = startOfDay(new Date());
@@ -412,7 +413,7 @@ function buildKpis(summary, metric, trend, range, selection, activeRange, trendI
     return [
         {
             id: 'max',
-            label: metric === 'intensity' ? 'MAximo registrado' : 'MAximo diario',
+            label: metric === 'intensity' ? 'Máximo registrado' : 'Máximo diario',
             value: `${formatNumber(summary.maxValue)} ${unit}`,
             note: formatDisplayDate(summary.maxValueDate),
         },
@@ -420,7 +421,7 @@ function buildKpis(summary, metric, trend, range, selection, activeRange, trendI
             id: 'avg',
             label: 'Promedio diario',
             value: `${formatNumber(summary.average)} ${averageUnit}`,
-            note: `${summary.count.toLocaleString('es-CO')} dias analizados`,
+            note: `${summary.count.toLocaleString('es-CO')} días analizados`,
         },
         {
             id: 'trend',
@@ -451,15 +452,17 @@ function buildMetaSummary(series, metric, department, selectedMuni) {
         unit: metric === 'intensity' ? 'mm/h' : 'mm',
     };
 }
-function buildImpactNarrative(summary, metric) {
+function buildImpactNarrative(summary, metric, tense) {
     if (!summary.count)
         return null;
     const badge = buildIntensityBadge(summary.maxValue, metric);
     if (!badge)
         return null;
     const unit = metric === 'intensity' ? 'mm/h' : 'mm';
-    const impact = impactFromBadge(badge.label);
-    return `Acumulado ${formatNumber(summary.totalRain)} mm en ${summary.count.toLocaleString('es-CO')} dias. El pico diario alcanzo ${formatNumber(summary.maxValue)} ${unit} (${badge.label}). ${impact}`;
+    const impact = impactFromBadge(badge.label, tense);
+    const lead = tense === 'future' ? 'Se proyectan' : 'Se acumularon';
+    const peakVerb = tense === 'future' ? 'podría alcanzar' : 'alcanzó';
+    return `${lead} ${formatNumber(summary.totalRain)} mm en ${summary.count.toLocaleString('es-CO')} días. El pico diario ${peakVerb} ${formatNumber(summary.maxValue)} ${unit} (${badge.label}). ${impact}`;
 }
 function buildIntensityBadge(value, metric) {
     if (!Number.isFinite(value) || value <= 0)
@@ -473,65 +476,67 @@ function buildIntensityBadge(value, metric) {
         return { label: 'Lluvia moderada' };
     return { label: 'Llovizna ligera' };
 }
-function impactFromBadge(label) {
+function impactFromBadge(label, tense) {
+    const caution = tense === 'future' ? 'podrían' : 'pudieron';
     switch (label) {
         case 'Evento fuerte':
-            return 'Probables anegamientos y retrasos logisticos; prioriza ventanas secas antes de ingresar maquinaria.';
+            return `Anegamientos y retrasos logísticos ${caution} requerir ventanas secas antes de ingresar maquinaria.`;
         case 'Temporal':
-            return 'Suelos saturados y charcos puntuales: evita labores pesadas hasta que baje la intensidad.';
+            return `Suelos saturados y charcos puntuales ${caution} frenar labores pesadas.`;
         case 'Lluvia moderada':
-            return 'Mojado general que puede interrumpir labores breves; aprovecha ventanas menores a 5 mm.';
+            return `Mojado general ${caution} interrumpir labores breves; aprovecha ventanas menores a 5 mm.`;
         default:
-            return 'Condiciones suaves ideales para mantenimiento ligero y aplicaciones foliares.';
+            return 'Condiciones suaves, útiles para mantenimiento ligero y aplicaciones foliares.';
     }
 }
-function buildSectorNarratives(summary, series, metric) {
+function buildSectorNarratives(summary, series, metric, tense) {
     if (!summary.count)
         return null;
     const badge = buildIntensityBadge(summary.maxValue, metric);
     const baselines = computeAgroBaselines(series);
+    const isFuture = tense === 'future';
     const agricultureParts = [];
-    agricultureParts.push(`Analizamos ${summary.count.toLocaleString('es-CO')} dias con ${formatNumber(summary.totalRain)} mm (${formatNumber(summary.average)} mm/dia).`);
+    agricultureParts.push(`${isFuture ? 'Se proyectan' : 'Se analizaron'} ${summary.count.toLocaleString('es-CO')} días con ${formatNumber(summary.totalRain)} mm (${formatNumber(summary.average)} mm/día).`);
     if (badge?.label === 'Evento fuerte') {
-        agricultureParts.push('La lluvia mas intensa sugiere atrasar siembra, fertilizacion foliar y entrada de maquinaria hasta que el lote drene.');
+        agricultureParts.push(`${isFuture ? 'La lluvia más intensa proyectada sugiere' : 'La lluvia más intensa sugirió'} atrasar siembra, fertilización foliar y entrada de maquinaria hasta que el lote drene.`);
     }
     else if (badge?.label === 'Temporal') {
-        agricultureParts.push('Charcos probables; programa labores en franjas secas y verifica drenajes secundarios.');
+        agricultureParts.push(`${isFuture ? 'Charcos probables; programa' : 'Hubo charcos probables; programar'} labores en franjas secas y verifica drenajes secundarios.`);
     }
     else if (summary.average < 5) {
-        agricultureParts.push('Acumulado modesto, ideal para preparar riego y aprovechar cualquier evento >5 mm.');
+        agricultureParts.push(`${isFuture ? 'Acumulado modesto proyectado' : 'Acumulado modesto observado'}, ideal para preparar riego y aprovechar cualquier evento >5 mm.`);
     }
     else {
-        agricultureParts.push('Humedad regular: vigila malezas y usa las ventanas con menos de 10 mm para cosecha mecanica.');
+        agricultureParts.push(`${isFuture ? 'Humedad regular proyectada' : 'Humedad regular observada'}: vigila malezas y usa las ventanas con menos de 10 mm para cosecha mecánica.`);
     }
     const livestockParts = [];
     if (badge && (badge.label === 'Temporal' || badge.label === 'Evento fuerte')) {
-        livestockParts.push('Pasturas en zonas bajas pueden encharcarse; rota hatos a potreros altos y refuerza caminos.');
+        livestockParts.push(`${isFuture ? 'Pasturas en zonas bajas podrían encharcarse' : 'Pasturas en zonas bajas se encharcaron'}; rota hatos a potreros altos y refuerza caminos.`);
     }
     else if (summary.average < 4) {
-        livestockParts.push('Secuencia mas seca; provee sombra, sales y agua fresca para evitar estres termico.');
+        livestockParts.push(`${isFuture ? 'Secuencia más seca proyectada' : 'Secuencia más seca observada'}; provee sombra, sales y agua fresca para evitar estrés térmico.`);
     }
     else {
-        livestockParts.push('Humedad media favorece rebrote, pero revisa corrales despues de jornadas superiores a 20 mm.');
+        livestockParts.push(`${isFuture ? 'Humedad media favorecería el rebrote' : 'Humedad media favoreció el rebrote'}, pero revisa corrales en jornadas superiores a 20 mm.`);
     }
     if (baselines.wind != null) {
         livestockParts.push(baselines.wind >= 8
-            ? `Viento medio ${(baselines.wind ?? 0).toFixed(1)} m/s ayuda a ventilar establos.`
+            ? `Viento medio ${(baselines.wind ?? 0).toFixed(1)} m/s ${isFuture ? 'ayudaría' : 'ayudó'} a ventilar establos.`
             : `Viento suave ${(baselines.wind ?? 0).toFixed(1)} m/s: monitorea insectos y calor acumulado.`);
     }
     const energyParts = [];
     if (baselines.solarKwh != null) {
         energyParts.push(baselines.solarKwh >= 4.5
-            ? `Radiacion ${(baselines.solarKwh ?? 0).toFixed(1)} kWh/m2: buen rendimiento fotovoltaico y para secado de forraje.`
-            : `Radiacion limitada (${(baselines.solarKwh ?? 0).toFixed(1)} kWh/m2); reduce expectativas de generacion solar.`);
+            ? `Radiación ${(baselines.solarKwh ?? 0).toFixed(1)} kWh/m2: ${isFuture ? 'daría' : 'dio'} buen rendimiento fotovoltaico y para secado de forraje.`
+            : `Radiación limitada (${(baselines.solarKwh ?? 0).toFixed(1)} kWh/m2); ${isFuture ? 'reduce' : 'redujo'} expectativas de generación solar.`);
     }
     if (baselines.wind != null) {
         energyParts.push(baselines.wind >= 9
-            ? `Viento ${(baselines.wind ?? 0).toFixed(1)} m/s soporta turbinas menores y ventilacion forzada.`
-            : `Viento por debajo de ${(baselines.wind ?? 0).toFixed(1)} m/s: enfocate en capturar ventana solar.`);
+            ? `Viento ${(baselines.wind ?? 0).toFixed(1)} m/s ${isFuture ? 'soportaria' : 'soporto'} turbinas menores y ventilación forzada.`
+            : `Viento por debajo de ${(baselines.wind ?? 0).toFixed(1)} m/s: enfócate en capturar ventana solar.`);
     }
     if (!energyParts.length) {
-        energyParts.push('Sin lecturas recientes de radiacion ni viento; mantente atento a la proxima actualizacion.');
+        energyParts.push('Sin lecturas recientes de radiacion ni viento; mantente atento a la próxima actualización.');
     }
     return {
         agriculture: agricultureParts.join(' '),
@@ -539,13 +544,14 @@ function buildSectorNarratives(summary, series, metric) {
         energy: energyParts.join(' '),
     };
 }
-function buildAgroNarrative(series) {
+function buildAgroNarrative(series, tense) {
     const hourly = series?.hourly ?? [];
     if (!hourly.length)
         return null;
     const sample = sliceRecentHours(hourly, 24);
     if (!sample.length)
         return null;
+    const isFuture = tense === 'future';
     const avg = (key) => {
         const values = sample
             .map((point) => (typeof point[key] === 'number' ? point[key] : null))
@@ -573,21 +579,21 @@ function buildAgroNarrative(series) {
     const notes = [];
     if (temp != null) {
         if (temp >= 32 || (feels ?? temp) >= 35) {
-            notes.push(`Calor alto (${temp.toFixed(1)} C) con sensacion ${(feels ?? temp).toFixed(1)} C: prioriza sombra, hidratacion y labores cortas.`);
+            notes.push(`${isFuture ? 'Se proyecta' : 'Se observo'} calor alto (${temp.toFixed(1)} C) con sensacion ${(feels ?? temp).toFixed(1)} C; prioriza sombra, hidratación y labores cortas.`);
         }
         else if (temp <= 16) {
-            notes.push(`Mananas frescas (${temp.toFixed(1)} C): protege viveros y riegos tempranos.`);
+            notes.push(`${isFuture ? 'Se proyectan' : 'Se observaron'} mañanas frescas (${temp.toFixed(1)} C): protege viveros y riegos tempranos.`);
         }
         else {
-            notes.push(`Franja confortable (${temp.toFixed(1)} C) para trabajo continuo a campo.`);
+            notes.push(`${isFuture ? 'Se espera' : 'Hubo'} franja confortable (${temp.toFixed(1)} C) para trabajo continuo a campo.`);
         }
     }
     if (humidity != null) {
         if (humidity >= 85) {
-            notes.push(`Humedad elevada (${humidity.toFixed(0)} %) favorece hongos; ventila invernaderos.`);
+            notes.push(`Humedad elevada (${humidity.toFixed(0)} %) ${isFuture ? 'favorecería' : 'favoreció'} hongos; ventila invernaderos.`);
         }
         else if (humidity <= 40) {
-            notes.push(`Humedad baja (${humidity.toFixed(0)} %) incrementa demanda hidrica y riesgo de polvo.`);
+            notes.push(`Humedad baja (${humidity.toFixed(0)} %) ${isFuture ? 'elevaría' : 'elevó'} demanda hídrica y riesgo de polvo.`);
         }
         else {
             notes.push(`Humedad en equilibrio (${humidity.toFixed(0)} %).`);
@@ -595,42 +601,43 @@ function buildAgroNarrative(series) {
     }
     if (rain != null) {
         if (rain >= 40) {
-            notes.push(`Lluvia abundante (${rain.toFixed(1)} mm/24 h) satura suelos; espera drenaje antes de entrar maquinaria.`);
+            notes.push(`${isFuture ? 'Lluvia abundante proyectada' : 'Lluvia abundante observada'} (${rain.toFixed(1)} mm/24 h) ${isFuture ? 'saturaría' : 'saturó'} suelos; espera drenaje antes de entrar maquinaria.`);
         }
         else if (rain >= 12) {
-            notes.push(`Lluvia util (${rain.toFixed(1)} mm) recarga humedad superficial.`);
+            notes.push(`Lluvia útil (${rain.toFixed(1)} mm) ${isFuture ? 'recargaría' : 'recargó'} humedad superficial.`);
         }
         else if (rain < 5) {
             notes.push(`Solo ${rain.toFixed(1)} mm en 24 h: ten listo riego suplementario.`);
         }
     }
     else {
-        notes.push('Sin acumulado de lluvia en las ultimas 24 h.');
+        notes.push(`${isFuture ? 'Sin acumulado esperado' : 'Sin acumulado observado'} en las últimas 24 h.`);
     }
     if (evap != null) {
         notes.push(evap >= 5
-            ? `ET0 de ${evap.toFixed(1)} mm indica demanda hidrica alta.`
-            : `ET0 ${evap.toFixed(1)} mm mantiene consumo moderado.`);
+            ? `ET0 de ${evap.toFixed(1)} mm ${isFuture ? 'indicaría' : 'indicó'} demanda hídrica alta.`
+            : `ET0 ${evap.toFixed(1)} mm ${isFuture ? 'mantendría' : 'mantuvo'} consumo moderado.`);
     }
     if (solarKwh != null) {
         notes.push(solarKwh >= 4.5
-            ? `Radiacion ${(solarKwh ?? 0).toFixed(1)} kWh/m2 habilita buena generacion solar.`
-            : `Radiacion limitada ${(solarKwh ?? 0).toFixed(1)} kWh/m2; planifica secado con mas tiempo.`);
+            ? `Radiación ${(solarKwh ?? 0).toFixed(1)} kWh/m2 ${isFuture ? 'habilitaría' : 'habilitó'} buena generación solar.`
+            : `Radiación limitada ${(solarKwh ?? 0).toFixed(1)} kWh/m2; planifica secado con más tiempo.`);
     }
     if (wind != null) {
         notes.push(wind >= 9
-            ? `Viento ${(wind ?? 0).toFixed(1)} m/s: asegura cubiertas y controla deriva de pulverizaciones.`
-            : `Viento suave ${(wind ?? 0).toFixed(1)} m/s mantiene condiciones estables para equipos expuestos.`);
+            ? `Viento ${(wind ?? 0).toFixed(1)} m/s: ${isFuture ? 'aseguraría' : 'aseguró'} cubiertas y controla deriva de pulverizaciones.`
+            : `Viento suave ${(wind ?? 0).toFixed(1)} m/s ${isFuture ? 'mantendría' : 'mantuvo'} condiciones estables para equipos expuestos.`);
     }
     return notes.join(' ');
 }
-function buildHourlyNarrative(series) {
+function buildHourlyNarrative(series, tense) {
     const hourly = series?.hourly ?? [];
     if (!hourly.length)
         return null;
     const sample = sliceRecentHours(hourly, 72);
     if (!sample.length)
         return null;
+    const isFuture = tense === 'future';
     const ratePoints = sample
         .map((point) => point.t && typeof point.prcpRate === 'number'
         ? { iso: point.t, value: Number(point.prcpRate.toFixed(2)) }
@@ -666,16 +673,16 @@ function buildHourlyNarrative(series) {
     const heavyHours = ordered.filter((point) => point.value >= 2).length;
     const wetShare = Math.round((heavyHours / ordered.length) * 100);
     const notes = [];
-    notes.push(`Pico mas alto: ${peak.value.toFixed(1)} mm/h el ${formatHourLabel(peak.iso)}.`);
+    notes.push(`${isFuture ? 'Pico proyectado' : 'Pico registrado'}: ${peak.value.toFixed(1)} mm/h el ${formatHourLabel(peak.iso)}.`);
     if (bestDryStart && bestDryLen >= 3) {
-        notes.push(`Ventana seca de ${bestDryLen} h entre ${formatHourRange(bestDryStart, bestDryLen)}.`);
+        notes.push(`Ventana seca ${isFuture ? 'proyectada' : 'observada'} de ${bestDryLen} h entre ${formatHourRange(bestDryStart, bestDryLen)}.`);
     }
     else {
-        notes.push('Sin ventanas secas mayores a 3 h en las ultimas 72 h.');
+        notes.push(`Sin ventanas secas mayores a 3 h en las ${isFuture ? 'próximas' : 'últimas'} 72 h.`);
     }
     notes.push(wetShare >= 50
-        ? 'Mas del 50% de las horas recientes tuvieron lluvia significativa; agenda labores bajo techo.'
-        : `Solo ${wetShare}% de las horas mostraron lluvia >2 mm/h; aprovecha las franjas restantes para riego o mantenimiento.`);
+        ? `Más del 50% de las horas ${isFuture ? 'proyectadas' : 'recientes'} tuvieron lluvia significativa; agenda labores bajo techo.`
+        : `Solo ${wetShare}% de las horas ${isFuture ? 'proyectadas' : 'observadas'} muestran lluvia >2 mm/h; aprovecha las franjas restantes para riego o mantenimiento.`);
     return notes.join(' ');
 }
 function formatHourLabel(iso) {
@@ -737,7 +744,7 @@ function summarizeTrend(trend) {
     if (!first || !last) {
         return {
             value: 'Sin datos',
-            note: 'Necesitamos mas puntos para calcular la tendencia.',
+            note: 'Necesitamos más puntos para calcular la tendencia.',
         };
     }
     const diff = last.value - first.value;
@@ -756,25 +763,26 @@ function summarizeTrend(trend) {
 function formatNumber(value) {
     return Number.isFinite(value) ? value.toLocaleString('es-CO', { maximumFractionDigits: 2 }) : '0';
 }
-function buildChartNarrative(summary, metric, rangeLabel, series, trendInfo) {
+function buildChartNarrative(summary, metric, rangeLabel, series, trendInfo, tense) {
     if (!summary.count) {
         return '';
     }
+    const isFuture = tense === 'future';
     const parts = [];
     if (metric === 'accumulated') {
-        parts.push(`Entre ${rangeLabel} se acumularon ${formatNumber(summary.totalRain)} mm distribuidos en ${summary.count} dias con datos.`);
+        parts.push(`Entre ${rangeLabel} ${isFuture ? 'se proyectan' : 'se acumularon'} ${formatNumber(summary.totalRain)} mm${isFuture ? ' proyectados' : ''} distribuidos en ${summary.count} días con datos.`);
         if (summary.maxValueDate) {
-            parts.push(`El dia mas lluvioso fue ${formatDisplayDate(summary.maxValueDate)}, cuando se registraron ${formatNumber(summary.maxValue)} mm en 24 horas.`);
+            parts.push(`El día más lluvioso ${isFuture ? 'proyectado sería' : 'fue'} ${formatDisplayDate(summary.maxValueDate)}, con ${formatNumber(summary.maxValue)} mm en 24 horas.`);
         }
     }
     else {
-        parts.push(`Analizamos ${summary.count} dias de intensidades entre ${rangeLabel}.`);
+        parts.push(`${isFuture ? 'Se proyectan' : 'Se analizaron'} ${summary.count} días de intensidades entre ${rangeLabel}.`);
         if (summary.maxValueDate) {
-            parts.push(`La rafaga maxima ocurrio el ${formatDisplayDate(summary.maxValueDate)} y alcanzo ${formatNumber(summary.maxValue)} mm/h.`);
+            parts.push(`La ráfaga máxima ${isFuture ? 'proyectada ocurriría' : 'ocurrió'} el ${formatDisplayDate(summary.maxValueDate)} y ${isFuture ? 'alcanzaría' : 'alcanzó'} ${formatNumber(summary.maxValue)} mm/h.`);
         }
     }
     if (trendInfo.value !== 'Sin datos') {
-        parts.push(`La serie suavizada indica un comportamiento ${trendInfo.value.toLowerCase()} (${trendInfo.note}).`);
+        parts.push(`La serie suavizada ${isFuture ? 'proyectada' : 'observada'} indica un comportamiento ${trendInfo.value.toLowerCase()} (${trendInfo.note}).`);
     }
     if (series?.meta?.source) {
         const tzNote = series.meta.tz ? `, zona ${series.meta.tz}` : '';
