@@ -24,7 +24,7 @@ const LIVE_TIPS = [
     },
     {
         title: 'Viento y presión',
-        body: 'Viento menor a 3 m/s es ideal para aspersiones; por encima de 9 m/s suele causar deriva. Presiones cercanas a 1000 hPa indican estabilidad, mientras caídas rápidas anticipan sistemas de lluvia.',
+        body: 'Viento menor a 3 m/s es ideal para aspersiones; por encima de 9 m/s suele causar deriva. Presiones cercanas a 100 kPa indican estabilidad, mientras caídas rápidas anticipan sistemas de lluvia.',
     },
 ];
 const DEFAULT_THRESHOLDS = {
