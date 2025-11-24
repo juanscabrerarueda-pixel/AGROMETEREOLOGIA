@@ -100,6 +100,44 @@ body {
   background: rgba(12, 15, 24, 0.7);
 }
 
+.realtime-sparkline {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 16px;
+  background: rgba(12, 15, 24, 0.7);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: center;
+}
+
+.sparkline-meta {
+  min-width: 160px;
+}
+
+.sparkline-meta strong {
+  display: block;
+  font-size: 26px;
+  margin: 4px 0;
+}
+
+.sparkline-chart {
+  flex: 1 1 220px;
+  min-height: 70px;
+}
+
+.sparkline-chart canvas {
+  width: 100% !important;
+  height: 70px !important;
+}
+
+.realtime-guide {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 16px;
+  background: rgba(12, 15, 24, 0.7);
+}
+
 .metric-label {
   font-size: 12px;
   letter-spacing: 0.05em;

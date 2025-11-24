@@ -1,5 +1,10 @@
 ﻿import { useMemo, useState } from 'react';
 import type { Series } from '@pkg/core';
+import { Line } from 'react-chartjs-2';
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Tooltip as ChartTooltip } from 'chart.js';
+
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, ChartTooltip);
+
 
 type RealtimePanelProps = {
   series?: Series | null;
@@ -50,9 +55,51 @@ const LIVE_TIPS = [
   },
 ];
 
+type Sparkline = {
+  labels: string[];
+  values: number[];
+  peak: number;
+  latest: number;
+  latestLabel: string;
+};
+
 export function RealtimePanel({ series, busy }: RealtimePanelProps) {
   const snapshot = useMemo(() => buildSnapshot(series), [series]);
-  const [guideOpen, setGuideOpen] = useState(false);
+  const sparkline = useMemo(() => buildSparkline(series), [series]);
+  const [guideOpen, setGuideOpen] = useState(true);
+  const sparklineChart = useMemo(() => {
+    if (!sparkline) return null;
+    return {
+      data: {
+        labels: sparkline.labels,
+        datasets: [
+          {
+            data: sparkline.values,
+            borderColor: '#60a5fa',
+            backgroundColor: 'rgba(96, 165, 250, 0.15)',
+            borderWidth: 2,
+            pointRadius: 0,
+            tension: 0.35,
+            fill: true,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { intersect: false, mode: 'index' as const } },
+        scales: {
+          x: { display: false },
+          y: {
+            display: false,
+            beginAtZero: true,
+            suggestedMax: Math.max(sparkline.peak * 1.2, 1),
+          },
+        },
+        elements: { point: { radius: 0 } },
+      },
+    };
+  }, [sparkline]);
 
   return (
     <section className="card realtime-card mb4">
@@ -107,6 +154,21 @@ export function RealtimePanel({ series, busy }: RealtimePanelProps) {
               </div>
             ))}
           </div>
+
+          {sparkline && sparklineChart && (
+            <div className="realtime-sparkline">
+              <div className="sparkline-meta">
+                <span className="tiny">Intensidad últimas 24 h</span>
+                <strong>{formatNumber(sparkline.latest, 1, 'mm/h')}</strong>
+                <p className="muted tiny">
+                  Pico reciente: {formatNumber(sparkline.peak, 1, 'mm/h')} · {sparkline.latestLabel}
+                </p>
+              </div>
+              <div className="sparkline-chart">
+                <Line data={sparklineChart.data} options={sparklineChart.options} height={60} />
+              </div>
+            </div>
+          )}
         </>
       ) : (
         <div className="empty-state">Ajusta el rango o la ubicación para ver datos en vivo.</div>
@@ -115,9 +177,9 @@ export function RealtimePanel({ series, busy }: RealtimePanelProps) {
       {snapshot && (
         <div className="realtime-guide mt3">
           <div className="help-header">
-            <strong>C?mo leer el monitoreo en vivo</strong>
+            <strong>Cómo leer el monitoreo en vivo</strong>
             <button type="button" className="btn small" onClick={() => setGuideOpen((prev) => !prev)}>
-              {guideOpen ? 'Ocultar gu?a' : 'Mostrar gu?a'}
+              {guideOpen ? 'Ocultar guía' : 'Mostrar guía'}
             </button>
           </div>
           {guideOpen && (
@@ -175,6 +237,37 @@ function buildSnapshot(series?: Series | null): Snapshot | null {
     forecastTotal: forecast.total,
     forecastPeak: forecast.peak,
     hasForecast: forecast.count > 0,
+  };
+}
+
+function buildSparkline(series?: Series | null): Sparkline | null {
+  if (!series || !Array.isArray(series.hourly) || !series.hourly.length) {
+    return null;
+  }
+  const now = Date.now();
+  const start = now - DAY_MS;
+  const candidates = (series.hourly as Series['hourly'])
+    .filter((point) => typeof point?.t === 'string')
+    .map((point) => ({
+      iso: point.t as string,
+      value: typeof point.prcpRate === 'number' ? Number(point.prcpRate.toFixed(2)) : 0,
+    }))
+    .filter((point) => {
+      const stamp = Date.parse(point.iso);
+      return Number.isFinite(stamp) && stamp >= start && stamp <= now;
+    })
+    .sort((a, b) => a.iso.localeCompare(b.iso));
+  if (!candidates.length) return null;
+  const windowed = candidates.slice(-24);
+  const values = windowed.map((point) => point.value);
+  const peak = values.reduce((max, value) => (value > max ? value : max), 0);
+  const latest = values[values.length - 1] ?? 0;
+  return {
+    labels: windowed.map((point) => formatSparklineLabel(point.iso)),
+    values,
+    peak,
+    latest,
+    latestLabel: formatSparklineLabel(windowed[windowed.length - 1]?.iso),
   };
 }
 
@@ -260,6 +353,18 @@ function formatRelativeLabel(timestamp: number, now: number): { label: string; i
   if (minutesDiff < 60) return { label: `Hace ${minutesDiff} min`, isStale: false };
   const hours = minutesDiff / 60;
   return { label: `Hace ${hours.toFixed(1)} h`, isStale: minutesDiff > 180 };
+}
+
+function formatSparklineLabel(iso?: string): string {
+  if (!iso) return 'sin fecha';
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return iso.slice(0, 10);
+  return date.toLocaleString('es-CO', {
+    day: '2-digit',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 }
 
 function computeForecast(points: Series['hourly'], now: number): { total: number; peak: number; count: number } {
