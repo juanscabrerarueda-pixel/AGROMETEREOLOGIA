@@ -6,12 +6,12 @@ const GITHUB_PAGES_HOST = 'github.io';
 const RENDER_API = 'https://agrometereologia-1.onrender.com';
 
 // When hosted on GitHub Pages we fall back to the Render API domain.
-const fallbackBase =
+const pagesFallback =
   typeof window !== 'undefined' && window.location.hostname.endsWith(GITHUB_PAGES_HOST)
     ? RENDER_API
     : '';
 
-const API_BASE = (ENV_BASE || fallbackBase).replace(/\/$/, '');
+const API_BASE = (ENV_BASE || pagesFallback || RENDER_API).replace(/\/$/, '');
 
 export interface SeriesQuery {
   depto: string;
