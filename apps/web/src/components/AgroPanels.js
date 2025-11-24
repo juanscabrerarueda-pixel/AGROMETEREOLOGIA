@@ -41,18 +41,18 @@ function buildCards(series) {
             return null;
         return values.reduce((total, val) => total + val, 0);
     };
-    const surfaceMoist = average([avg('soilMoist1'), avg('soilMoist3')]);
-    const rootMoist = average([avg('soilMoist9', 48), avg('soilMoist27', 48)]);
+    const airTemp = avg('temp', 24);
+    const feelsLike = avg('apparentTemp', 24);
+    const humidity = avg('rh', 24);
+    const rain = sum('prcp', 24);
     const evap = sum('evap', 24);
     const solar = avg('rs', 24);
     const wind = avg('wind', 24);
-    const surfaceTemp = avg('soilTemp0', 24);
-    const rootTemp = avg('soilTemp18', 24);
     const cards = [];
-    cards.push(buildMoistureCard('soil-shallow', 'Humedad 0-5 cm', surfaceMoist));
-    cards.push(buildMoistureCard('soil-root', 'Humedad raiz 10-30 cm', rootMoist));
-    cards.push(buildTemperatureCard('soil-temp', 'Temp. suelo (superficie)', surfaceTemp));
-    cards.push(buildTemperatureCard('root-temp', 'Temp. suelo (raices)', rootTemp));
+    cards.push(buildAirTempCard('air-temp', 'Temp. ambiente (24h)', airTemp));
+    cards.push(buildFeelsLikeCard('feels-like', 'Sensacion termica', feelsLike));
+    cards.push(buildHumidityCard('humidity', 'Humedad relativa', humidity));
+    cards.push(buildRainCard('rain', 'Lluvia 24h', rain));
     cards.push(buildEvapCard(evap));
     cards.push(buildSolarCard(solar));
     cards.push(buildWindCard(wind));
@@ -74,51 +74,94 @@ function average(values) {
         return null;
     return numeric.reduce((sum, val) => sum + val, 0) / numeric.length;
 }
-function buildMoistureCard(id, title, value) {
+function buildAirTempCard(id, title, value) {
     if (value == null) {
         return { id, title, value: 'Sin dato', status: 'muted', note: 'Esperando nuevas lecturas.' };
     }
-    const pct = value * 100;
     let status = 'ok';
-    let note = 'Dentro del rango ideal para pasturas.';
-    if (value < 0.18) {
+    let note = 'Rango confortable para labores a campo.';
+    if (value < 15) {
+        status = 'warn';
+        note = 'Mananas frias: protege cultivos sensibles.';
+    }
+    else if (value > 32) {
         status = 'alert';
-        note = 'Suelo seco: programa riego o rota el ganado.';
-    }
-    else if (value < 0.25) {
-        status = 'warn';
-        note = 'Humedad moderada, monitorea la demanda hidrica.';
-    }
-    else if (value > 0.45) {
-        status = 'warn';
-        note = 'Suelo muy humedo, aumenta el riesgo de compactacion.';
-    }
-    return {
-        id,
-        title,
-        value: `${pct.toFixed(0)}%`,
-        status,
-        note,
-    };
-}
-function buildTemperatureCard(id, title, value) {
-    if (value == null) {
-        return { id, title, value: 'Sin dato', status: 'muted' };
-    }
-    let status = 'ok';
-    let note = 'Buen ambiente para actividad microbiana.';
-    if (value < 10) {
-        status = 'warn';
-        note = 'Suelo frio: germinacion lenta y posible estres radicular.';
-    }
-    else if (value > 30) {
-        status = 'alert';
-        note = 'Suelo caliente: protege raices poco profundas.';
+        note = 'Calor alto: planifica descanso de personal y ganado.';
     }
     return {
         id,
         title,
         value: `${value.toFixed(1)} C`,
+        status,
+        note,
+    };
+}
+function buildFeelsLikeCard(id, title, value) {
+    if (value == null) {
+        return { id, title, value: 'Sin dato', status: 'muted' };
+    }
+    let status = 'ok';
+    let note = 'Sensible para trabajo agro y confort animal.';
+    if (value > 35) {
+        status = 'alert';
+        note = 'Sensacion extrema: refuerza hidratacion y sombra.';
+    }
+    else if (value > 30) {
+        status = 'warn';
+        note = 'Calor intenso, evita labores pesadas al sol.';
+    }
+    return {
+        id,
+        title,
+        value: `${value.toFixed(1)} C`,
+        status,
+        note,
+    };
+}
+function buildHumidityCard(id, title, value) {
+    if (value == null) {
+        return { id, title, value: 'Sin dato', status: 'muted' };
+    }
+    let status = 'ok';
+    let note = 'Buen equilibrio para secado y confort animal.';
+    if (value < 40) {
+        status = 'warn';
+        note = 'Ambiente seco: riesgo de stress hidrico.';
+    }
+    else if (value > 85) {
+        status = 'warn';
+        note = 'Muy humedo: favorece hongos y enfermedades.';
+    }
+    return {
+        id,
+        title,
+        value: `${value.toFixed(0)}%`,
+        status,
+        note,
+    };
+}
+function buildRainCard(id, title, value) {
+    if (value == null) {
+        return { id, title, value: 'Sin dato', status: 'muted' };
+    }
+    let status = 'ok';
+    let note = 'Precipitacion util para recarga de humedad.';
+    if (value > 60) {
+        status = 'alert';
+        note = 'Lluvia intensa: monitorea anegamientos y accesos.';
+    }
+    else if (value > 30) {
+        status = 'warn';
+        note = 'Evento significativo, planifica cosecha y logística.';
+    }
+    else if (value < 5) {
+        status = 'warn';
+        note = 'Acumulado bajo, prepara riego o suplementacion.';
+    }
+    return {
+        id,
+        title,
+        value: `${value.toFixed(1)} mm`,
         status,
         note,
     };
