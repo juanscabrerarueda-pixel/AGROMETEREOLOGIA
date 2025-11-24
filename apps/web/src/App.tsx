@@ -124,6 +124,15 @@ const WINDOW_BY_RANGE: Record<RangeKey, number> = {
   future: 7,
 };
 
+const INSIGHT_KIND_META: Record<
+  string,
+  { label: string; tone: 'trend' | 'advice' | 'event'; icon: string }
+> = {
+  trend: { label: 'Trend', tone: 'trend', icon: '📈' },
+  advice: { label: 'Consejo', tone: 'advice', icon: '💡' },
+  event: { label: 'Evento', tone: 'event', icon: '⚠️' },
+};
+
 export default function App() {
   if (!FEATURE_AGROMETEO) {
     return (
@@ -219,6 +228,7 @@ export default function App() {
     () => buildImpactNarrative(aggregated, metric, tense),
     [aggregated, metric, tense]
   );
+  const insightSummary = useMemo(() => aggregateSeries(series.data, 'accumulated'), [series.data]);
   const sectorNarratives = useMemo(
     () => buildSectorNarratives(aggregated, series.data, metric, tense),
     [aggregated, series.data, metric, tense]
@@ -616,6 +626,18 @@ export default function App() {
             <p className="muted tiny">
               Basados en umbrales de impacto y cálculos del paquete insight-engine.
             </p>
+            {insightSummary.count > 0 && (
+              <div className="insights-kpis tiny">
+                <span className="insights-chip">
+                  <span className="chip-label">Lluvia analizada</span>
+                  <strong>{formatNumber(insightSummary.totalRain)} mm</strong>
+                </span>
+                <span className="insights-chip">
+                  <span className="chip-label">Días con dato</span>
+                  <strong>{insightSummary.count.toLocaleString('es-CO')}</strong>
+                </span>
+              </div>
+            )}
           </div>
         </div>
         {sectorNarratives && (
@@ -647,7 +669,21 @@ export default function App() {
             <ul className="insights-list">
               {insights.data.insights.map((insight) => (
                 <li key={insight.id} className="insight-item">
-                  <strong>{insight.kind}</strong>
+                  {(() => {
+                    const meta = INSIGHT_KIND_META[insight.kind] ?? {
+                      label: insight.kind,
+                      tone: 'trend' as const,
+                      icon: 'ℹ️',
+                    };
+                    return (
+                      <span className={`insight-pill ${meta.tone}`}>
+                        <span className="insight-pill-icon" aria-hidden="true">
+                          {meta.icon}
+                        </span>
+                        {meta.label}
+                      </span>
+                    );
+                  })()}
                   <p>{insight.text}</p>
                 </li>
               ))}
