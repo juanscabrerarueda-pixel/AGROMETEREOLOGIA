@@ -43,6 +43,9 @@ type ChartSummary = {
   lastDate?: string;
 };
 
+type SuspiciousPoint = Pick<AggregatedPoint, 'date' | 'label' | 'value'>;
+type AnomalyReport = { reference: number; points: SuspiciousPoint[] };
+
 type Kpi = { id: string; label: string; value: string; note?: string; badge?: KPIBadge };
 type KPIBadge = { label: string; tone?: 'warn' | 'alert' };
 type SectorNarratives = { agriculture: string; livestock: string; energy: string };
@@ -280,6 +283,8 @@ export default function App() {
     () => buildKpis(aggregated, metric, trendPoints, range, rangeSelection, activeRangeOption, trendInfo),
     [activeRangeOption, aggregated, metric, range, rangeSelection, trendInfo, trendPoints]
   );
+  const anomalyReport = useMemo(() => detectSuspiciousPoints(aggregated.points, metric), [aggregated.points, metric]);
+  const hasAnomalies = anomalyReport.points.length > 0;
 
   const rangeSummary = formatRangeSummary(range);
   const chartNarrative = useMemo(
@@ -616,6 +621,24 @@ export default function App() {
                   <strong>Unidad</strong>
                   <span>{metaSummary.unit}</span>
                 </div>
+              </div>
+            )}
+
+            {hasAnomalies && (
+              <div className="alert-card">
+                <strong>Datos por confirmar</strong>
+                <p>
+                  Detectamos {anomalyReport.points.length} valores diarios fuera del rango habitual (percentil 95 ≈{' '}
+                  {formatNumber(anomalyReport.reference)} {metric === 'intensity' ? 'mm/h' : 'mm'}). Verifica estos días
+                  con IDEAM, NASA POWER/CHIRPS o tus pluviómetros locales antes de tomar decisiones.
+                </p>
+                <ul>
+                  {anomalyReport.points.slice(0, 4).map((point) => (
+                    <li key={point.date}>
+                      {point.label}: {formatNumber(point.value)} {metric === 'intensity' ? 'mm/h' : 'mm'}
+                    </li>
+                  ))}
+                </ul>
               </div>
             )}
 
@@ -1534,6 +1557,45 @@ function summarizeTrend(trend: TrendPoint[] | null): { value: string; note: stri
   return {
     value: label,
     note: `${pct >= 0 ? '+' : ''}${pct.toFixed(1)}% respecto al inicio`,
+  };
+}
+
+function detectSuspiciousPoints(points: AggregatedPoint[], metric: Metric): AnomalyReport {
+  if (!Array.isArray(points) || !points.length) {
+    return { reference: 0, points: [] };
+  }
+
+  const candidates: SuspiciousPoint[] = points
+    .filter((point) => !point.isForecast && Number.isFinite(point.value) && (point.value ?? 0) > 0)
+    .map((point) => ({
+      date: point.date,
+      label: point.label,
+      value: point.value,
+    }));
+
+  if (candidates.length < 10) {
+    return { reference: 0, points: [] };
+  }
+
+  const sortedValues = candidates.map((point) => point.value).sort((a, b) => a - b);
+  const percentileIndex = Math.min(sortedValues.length - 1, Math.floor(sortedValues.length * 0.95));
+  const reference = sortedValues[percentileIndex] ?? 0;
+  const median = sortedValues[Math.floor(sortedValues.length / 2)] ?? reference;
+  const ratioThreshold = metric === 'intensity' ? 1.8 : 1.5;
+  const minAbsolute = metric === 'intensity' ? 2 : 15;
+
+  const flagged = candidates
+    .filter((point) => {
+      if (point.value < minAbsolute) return false;
+      const aboveReference = reference > 0 ? point.value >= reference : false;
+      const aboveMedianRatio = median > 0 ? point.value >= median * ratioThreshold : false;
+      return aboveReference || aboveMedianRatio;
+    })
+    .sort((a, b) => b.value - a.value);
+
+  return {
+    reference,
+    points: flagged,
   };
 }
 

@@ -1,1 +1,1 @@
-Build: restore App.tsx from 2dd1165
+Build: anomaly alert + data sanity check (2025-11-25 08:33 America/Bogota)
