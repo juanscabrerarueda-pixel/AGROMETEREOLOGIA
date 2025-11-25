@@ -90,15 +90,15 @@ export function insightsFromSeries(series: Series, thresholds: Thresholds): Insi
 
             daily.totalRain
 
-          )} mm repartidos en ${daily.totalDays} días con registro.`
+          )} mm repartidos en ${daily.totalDays} dÃ­as con registro.`
 
-        : `Entre ${rangeText} ${isFuture ? 'no se proyecta' : 'no se registró'} lluvia medible.`;
+        : `Entre ${rangeText} ${isFuture ? 'no se proyecta' : 'no se registrÃ³'} lluvia medible.`;
 
     const maxSentence =
 
       daily.maxRainDate && daily.maxRain > 0
 
-        ? `El día más lluvioso ${isFuture ? 'proyectado sería' : 'fue'} ${formatDate(
+        ? `El dÃ­a mÃ¡s lluvioso ${isFuture ? 'proyectado serÃ­a' : 'fue'} ${formatDate(
 
             daily.maxRainDate
 
@@ -110,7 +110,7 @@ export function insightsFromSeries(series: Series, thresholds: Thresholds): Insi
 
       daily.lastRainDate && daily.lastRainValue != null
 
-        ? `El último día con lluvia ${isFuture ? 'proyectada sería' : 'fue'} ${formatDate(
+        ? `El Ãºltimo dÃ­a con lluvia ${isFuture ? 'proyectada serÃ­a' : 'fue'} ${formatDate(
 
             daily.lastRainDate
 
@@ -122,13 +122,13 @@ export function insightsFromSeries(series: Series, thresholds: Thresholds): Insi
 
       rainyShare != null && spanDays
 
-        ? `Hubo lluvia en ${daily.totalDays} de ${spanDays} d?as (${rainyShare.toFixed(0)} % del periodo) y ${dryDays ?? 0} se mantuvieron secos.`
+        ? `Hubo lluvia en ${daily.totalDays} de ${spanDays} dÃ­as (${rainyShare.toFixed(0)} % del periodo) y ${dryDays ?? 0} se mantuvieron secos.`
 
         : '';
 
     const averagesSentence = avgRainyDay
 
-      ? `Cuando llovi?, promedi? ${formatNumber(avgRainyDay)} mm por d?a${
+      ? `Cuando lloviÃ³, promediÃ³ ${formatNumber(avgRainyDay)} mm por dÃ­a${
 
           avgWholeSpan ? ` (${formatNumber(avgWholeSpan)} mm diarios sobre toda la ventana).` : '.'
 
@@ -138,11 +138,11 @@ export function insightsFromSeries(series: Series, thresholds: Thresholds): Insi
 
     const drySentence = daily.longestDry
 
-      ? `La racha seca m?s larga ${isFuture ? 'proyectada ser?a' : 'dur?'} ${
+      ? `La racha seca mÃ¡s larga ${isFuture ? 'proyectada serÃ­a' : 'durÃ³'} ${
 
           daily.longestDry.length
 
-        } d?as entre ${formatDate(daily.longestDry.from)} y ${formatDate(daily.longestDry.to)}.`
+        } dÃ­as entre ${formatDate(daily.longestDry.from)} y ${formatDate(daily.longestDry.to)}.`
 
       : '';
 
@@ -174,7 +174,7 @@ export function insightsFromSeries(series: Series, thresholds: Thresholds): Insi
 
       kind: 'advice',
 
-      text: `${isFuture ? 'Se proyecta' : 'Se presentó'} una sequía de ${dry.length} días entre ${formatDate(
+      text: `${isFuture ? 'Se proyecta' : 'Se presentÃ³'} una sequÃ­a de ${dry.length} dÃ­as entre ${formatDate(
 
         dry.from
 
@@ -206,9 +206,9 @@ export function insightsFromSeries(series: Series, thresholds: Thresholds): Insi
 
       uniquePeakDays.length > 1
 
-        ? `Impactaron ${uniquePeakDays.length} d?as distintos entre ${formatDate(earliestPeak.from)} y ${formatDate(latestPeak.from)}.`
+        ? `Impactaron ${uniquePeakDays.length} dÃ­as distintos entre ${formatDate(earliestPeak.from)} y ${formatDate(latestPeak.from)}.`
 
-        : `Se concentraron el ${formatDate(earliestPeak.from)}, se?al de un evento puntual.`;
+        : `Se concentraron el ${formatDate(earliestPeak.from)}, seÃ±al de un evento puntual.`;
 
     insights.push({
 
@@ -220,11 +220,11 @@ export function insightsFromSeries(series: Series, thresholds: Thresholds): Insi
 
         1
 
-      )} mm/h. El m?s intenso ${isFuture ? 'alcanzar?a' : 'alcanz?'} ${formatNumber(highest.value)} mm/h el ${formatDate(
+      )} mm/h. El mÃ¡s intenso ${isFuture ? 'alcanzarÃ­a' : 'alcanzÃ³'} ${formatNumber(highest.value)} mm/h el ${formatDate(
 
         highest.from
 
-      )}. ${distributionSentence} Programa labores cr?ticas fuera de esas ventanas para evitar da?os por escorrent?a.`,
+      )}. ${distributionSentence} Programa labores crÃ­ticas fuera de esas ventanas para evitar daÃ±os por escorrentÃ­a.`,
 
       data: { peaks },
 
@@ -280,7 +280,7 @@ export function insightsFromSeries(series: Series, thresholds: Thresholds): Insi
 
         kind: 'advice',
 
-        text: `El perfil 10-30 cm ${isFuture ? 'mostraría' : 'mostró'} humedad baja (${(rootMoist * 100).toFixed(
+        text: `El perfil 10-30 cm ${isFuture ? 'mostrarÃ­a' : 'mostrÃ³'} humedad baja (${(rootMoist * 100).toFixed(
 
           0
 
@@ -296,11 +296,11 @@ export function insightsFromSeries(series: Series, thresholds: Thresholds): Insi
 
         kind: 'advice',
 
-        text: `Suelo muy húmedo (${(rootMoist * 100).toFixed(
+        text: `Suelo muy hÃºmedo (${(rootMoist * 100).toFixed(
 
           0
 
-        )}%) ${isFuture ? 'podría' : 'pudo'} compactar cultivos con maquinaria pesada.`,
+        )}%) ${isFuture ? 'podrÃ­a' : 'pudo'} compactar cultivos con maquinaria pesada.`,
 
       });
 
@@ -320,11 +320,11 @@ export function insightsFromSeries(series: Series, thresholds: Thresholds): Insi
 
       kind: 'advice',
 
-      text: `La ET0 ${isFuture ? 'alcanzaría' : 'alcanzó'} ${evapDemand.toFixed(
+      text: `La ET0 ${isFuture ? 'alcanzarÃ­a' : 'alcanzÃ³'} ${evapDemand.toFixed(
 
         1
 
-      )} mm en 24 h. Refuerza hidratación animal o riego.`,
+      )} mm en 24 h. Refuerza hidrataciÃ³n animal o riego.`,
 
     });
 
@@ -342,7 +342,7 @@ export function insightsFromSeries(series: Series, thresholds: Thresholds): Insi
 
       kind: 'event',
 
-      text: `${isFuture ? 'Se proyecta' : 'Hubo'} alta radiación solar: condiciones favorables para secado de forrajes y generación fotovoltaica.`,
+      text: `${isFuture ? 'Se proyecta' : 'Hubo'} alta radiaciÃ³n solar: condiciones favorables para secado de forrajes y generaciÃ³n fotovoltaica.`,
 
     });
 
