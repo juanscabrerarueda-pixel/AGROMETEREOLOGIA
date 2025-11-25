@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import type { Series } from '@pkg/core';
 import './App.css';
 import { FEATURE_AGROMETEO } from './config/flags';
@@ -79,39 +79,39 @@ const REFRESH_OPTIONS: RefreshOption[] = [
 const RANGE_OPTIONS: RangeOption[] = [
   {
     id: 'threeMonths',
-    label: 'Últimos 3 meses',
+    label: '├Ültimos 3 meses',
     days: 90,
-    description: 'Observa la evolución reciente (aprox. último trimestre).',
+    description: 'Observa la evoluci├│n reciente (aprox. ├║ltimo trimestre).',
   },
   {
     id: 'oneYear',
-    label: 'Último año',
+    label: '├Ültimo a├▒o',
     days: 365,
-    description: 'Analiza cómo cerró el último año hídrico completo.',
+    description: 'Analiza c├│mo cerr├│ el ├║ltimo a├▒o h├¡drico completo.',
   },
   {
     id: 'fiveYears',
-    label: 'Últimos 5 años',
+    label: '├Ültimos 5 a├▒os',
     days: 365 * 5,
     description: 'Identifica tendencias multianuales y cambios estructurales.',
   },
   {
     id: 'future',
-    label: 'Próx. 14 días',
+    label: 'Pr├│x. 14 d├¡as',
     days: 14,
     future: true,
-    description: 'Pronóstico inmediato (sin línea de tendencia).',
+    description: 'Pron├│stico inmediato (sin l├¡nea de tendencia).',
   },
 ];
 
 const METRIC_OPTIONS: Array<{ id: Metric; label: string; helper: string }> = [
-  { id: 'accumulated', label: 'Acumulado diario', helper: 'Suma mm por día (precipitación acumulada).' },
+  { id: 'accumulated', label: 'Acumulado diario', helper: 'Suma mm por d├¡a (precipitaci├│n acumulada).' },
   { id: 'intensity', label: 'Intensidad (mm/h)', helper: 'Pico horario diario (mm/h) como proxy de intensidad.' },
 ];
 
 const TREND_OPTIONS: Array<{ id: TrendType; label: string; helper: string }> = [
-  { id: 'MA', label: 'MA', helper: 'Media móvil con ventana fija.' },
-  { id: 'EMA', label: 'EMA', helper: 'Media móvil exponencial (pondera lo reciente).' },
+  { id: 'MA', label: 'MA', helper: 'Media m├│vil con ventana fija.' },
+  { id: 'EMA', label: 'EMA', helper: 'Media m├│vil exponencial (pondera lo reciente).' },
 ];
 
 const DEFAULT_DEPARTMENT = DEPARTMENT_OPTIONS[0];
@@ -124,21 +124,12 @@ const WINDOW_BY_RANGE: Record<RangeKey, number> = {
   future: 7,
 };
 
-const INSIGHT_KIND_META: Record<
-  string,
-  { label: string; tone: 'trend' | 'advice' | 'event'; icon: string }
-> = {
-  trend: { label: 'Trend', tone: 'trend', icon: '📈' },
-  advice: { label: 'Consejo', tone: 'advice', icon: '💡' },
-  event: { label: 'Evento', tone: 'event', icon: '⚠️' },
-};
-
 export default function App() {
   if (!FEATURE_AGROMETEO) {
     return (
       <main className="wrap">
         <section className="card">
-          <h1>Panel agrometeorológico</h1>
+          <h1>Panel agrometeorol├│gico</h1>
           <p>Activa la variable VITE_FEATURE_AGROMETEO para visualizar este tablero.</p>
         </section>
       </main>
@@ -147,40 +138,15 @@ export default function App() {
 
   const { thresholds } = useThresholds();
 
-  const desktopDefault = typeof window === 'undefined' ? true : window.innerWidth > 720;
   const [selectedDept, setSelectedDept] = useState<string>(DEFAULT_DEPARTMENT_VALUE);
   const [selectedMuni, setSelectedMuni] = useState<string>(DEFAULT_MUNICIPALITY_VALUE);
   const [metric, setMetric] = useState<Metric>('accumulated');
   const [trendType, setTrendType] = useState<TrendType>('EMA');
   const [showTrend, setShowTrend] = useState(true);
-  const [helpHidden, setHelpHidden] = useState(() => !desktopDefault);
+  const [helpHidden, setHelpHidden] = useState(false);
   const [rangeSelection, setRangeSelection] = useState<RangeSelection>('threeMonths');
   const [range, setRange] = useState<DateRange>(() => buildRange(RANGE_OPTIONS[0]));
   const [refreshRate, setRefreshRate] = useState<RefreshKey>('1m');
-  const [filtersOpen, setFiltersOpen] = useState(desktopDefault);
-  const [chartOpen, setChartOpen] = useState(desktopDefault);
-  const [agroOpen, setAgroOpen] = useState(desktopDefault);
-  const [hourlyOpen, setHourlyOpen] = useState(desktopDefault);
-  const [insightsOpen, setInsightsOpen] = useState(desktopDefault);
-  const isMobile = useIsMobile();
-
-  useEffect(() => {
-    if (isMobile) {
-      setHelpHidden(true);
-      setFiltersOpen(false);
-      setChartOpen(false);
-      setAgroOpen(false);
-      setHourlyOpen(false);
-      setInsightsOpen(false);
-    } else {
-      setHelpHidden(false);
-      setFiltersOpen(true);
-      setChartOpen(true);
-      setAgroOpen(true);
-      setHourlyOpen(true);
-      setInsightsOpen(true);
-    }
-  }, [isMobile]);
 
   const currentDepartment =
     DEPARTMENT_OPTIONS.find((option) => option.value === selectedDept) ?? DEPARTMENT_OPTIONS[0];
@@ -253,7 +219,6 @@ export default function App() {
     () => buildImpactNarrative(aggregated, metric, tense),
     [aggregated, metric, tense]
   );
-  const insightSummary = useMemo(() => aggregateSeries(series.data, 'accumulated'), [series.data]);
   const sectorNarratives = useMemo(
     () => buildSectorNarratives(aggregated, series.data, metric, tense),
     [aggregated, series.data, metric, tense]
@@ -286,42 +251,6 @@ export default function App() {
     () => buildChartNarrative(aggregated, metric, rangeSummary, series.data, trendInfo, tense),
     [aggregated, metric, rangeSummary, series.data, trendInfo, tense]
   );
-  const overviewSummary = useMemo(
-    () => ({
-      location: metaSummary?.location ?? 'Selecciona una ubicación',
-      updated: metaSummary?.updated ?? 'Sin dato',
-      source: metaSummary?.source ?? 'Fuente no disponible',
-    }),
-    [metaSummary]
-  );
-  const summaryPills = useMemo(() => {
-    if (!aggregated.count) {
-      return [
-        { id: 'empty', label: 'Sin datos en el rango', value: '--', note: 'Ajusta ubicación o fechas.' },
-      ];
-    }
-    const unit = metric === 'intensity' ? 'mm/h' : 'mm';
-    return [
-      {
-        id: 'total',
-        label: tense === 'future' ? 'Total proyectado' : 'Acumulado analizado',
-        value: `${formatNumber(aggregated.totalRain)} mm`,
-        note: `${aggregated.count.toLocaleString('es-CO')} días con dato`,
-      },
-      {
-        id: 'avg',
-        label: 'Promedio diario',
-        value: `${formatNumber(aggregated.average)} ${unit}`,
-        note: 'Media del período seleccionado.',
-      },
-      {
-        id: 'peak',
-        label: metric === 'intensity' ? 'Pico horario' : 'Máximo diario',
-        value: `${formatNumber(aggregated.maxValue)} ${unit}`,
-        note: aggregated.maxValueDate ? formatDisplayDate(aggregated.maxValueDate) : undefined,
-      },
-    ];
-  }, [aggregated, metric, tense]);
 
   const handleRangePreset = (option: RangeOption) => {
     setRangeSelection(option.id);
@@ -370,447 +299,369 @@ export default function App() {
           </div>
           <div>
             <p className="tagline">Tendencias de lluvia en Colombia</p>
-            <h1>Panel agrometeorológico</h1>
+            <h1>Panel agrometeorol├│gico</h1>
             <p className="muted">
               Filtra por departamento y municipio, alterna entre acumulados o intensidad diaria y usa la
-              línea de tendencia para resumir comportamientos. El mapa horario te ayuda a encontrar
+              l├¡nea de tendencia para resumir comportamientos. El mapa horario te ayuda a encontrar
               ventanas secas o picos concentrados.
             </p>
           </div>
         </div>
       </header>
 
-      <section className={`card help mb4 mobile-fold ${helpHidden ? 'collapsed' : 'open'}`}>
-        <div className="fold-toggle-row">
-          <strong>Cómo usar</strong>
-          <button type="button" className="btn small ghost" onClick={() => setHelpHidden((prev) => !prev)}>
-            {helpHidden ? 'Mostrar guía' : 'Ocultar guía'}
+      <section className="card help mb4">
+        <div className="help-header">
+          <strong>C├│mo usar</strong>
+          <button
+            type="button"
+            className="btn small"
+            onClick={() => setHelpHidden((prev) => !prev)}
+          >
+            {helpHidden ? 'Mostrar guia' : 'Ocultar guia'}
           </button>
         </div>
         {!helpHidden && (
-          <div className="fold-body">
-            <ol className="help-steps">
-              <li>
-                Comienza en <strong>Monitoreo en vivo</strong>: valida el sello ¿Hace X min? y usa la actualización automática (1, 5 o 15 min) para seguir tormentas en tiempo real.
-              </li>
-              <li>
-                Elige un departamento y opcionalmente un municipio para la serie local (por defecto usa la capital) y confirma la fuente mostrada en la tarjeta en vivo.
-              </li>
-              <li>
-                Ajusta el rango rápido (3 meses, 1 año, 5 años o 14 días de pronóstico). También puedes fijar fechas manualmente cuando necesites comparar ventanas específicas.
-              </li>
-              <li>
-                Alterna entre acumulado diario o intensidad máxima, activa MA/EMA para suavizar la serie histórica y combina los insights automáticos para traducir la señal en acciones.
-              </li>
-              <li>
-                Usa la distribución diaria y horaria para detectar ventanas secas o picos concentrados antes de programar labores a campo.
-              </li>
-            </ol>
-          </div>
+          <ol className="help-steps">
+            <li>
+              Elige un departamento y opcionalmente un municipio para la serie local (por defecto usa
+              la capital).
+            </li>
+            <li>
+              Ajusta el rango r├ípido (3 meses, 1 a├▒o, 5 a├▒os o 14 d├¡as de pron├│stico). Tambi├®n puedes
+              fijar fechas manualmente.
+            </li>
+            <li>
+              Alterna entre acumulado diario o intensidad m├íxima, y activa MA/EMA para suavizar la
+              serie hist├│rica.
+            </li>
+            <li>
+              Usa la distribucion horaria para detectar ventanas secas y revisa los insights
+              automaticos para recomendaciones puntuales.
+            </li>
+          </ol>
         )}
       </section>
 
-      <section className="card mobile-overview mb4">
-        <div className="overview-top">
-          <div className="overview-cell">
-            <span className="tiny">Ubicación activa</span>
-            <strong>{overviewSummary.location}</strong>
-            <p className="muted tiny">{rangeSummary}</p>
-          </div>
-          <div className="overview-cell">
-            <span className="tiny">Último dato</span>
-            <strong>{overviewSummary.updated}</strong>
-            <p className="muted tiny">Fuente: {overviewSummary.source}</p>
-          </div>
-        </div>
-        <div className="overview-pills">
-          {summaryPills.map((pill) => (
-            <div key={pill.id} className="overview-pill">
-              <span className="tiny">{pill.label}</span>
-              <strong>{pill.value}</strong>
-              {pill.note && <p className="muted tiny">{pill.note}</p>}
-            </div>
-          ))}
-        </div>
-      </section>
+      <section className="card controls mb4">
+        <div className="row">
+          <label className="field">
+            <span>Departamento</span>
+            <select value={selectedDept} onChange={(event) => handleDeptChange(event.target.value)}>
+              {DEPARTMENT_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
 
-      <section className={`card controls mb4 ${filtersOpen ? 'open' : 'collapsed'}`}>
-        <div className="controls-header">
-          <div>
-            <h2>Filtros rápidos</h2>
-            <p className="muted tiny">
-              Define ubicación, rango y métricas para ajustar la lectura histórica y el pronóstico.
-            </p>
-          </div>
-          <button type="button" className="btn small ghost" onClick={() => setFiltersOpen((prev) => !prev)}>
-            {filtersOpen ? 'Ocultar filtros' : 'Mostrar filtros'}
+          <label className="field">
+            <span>Municipio / ciudad</span>
+            <select value={selectedMuni} onChange={(event) => handleMuniChange(event.target.value)}>
+              {municipalities.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="field">
+            <span>Desde</span>
+            <input type="date" value={range.from} onChange={(event) => handleFromChange(event.target.value)} />
+          </label>
+
+          <label className="field">
+            <span>Hasta</span>
+            <input type="date" value={range.to} onChange={(event) => handleToChange(event.target.value)} />
+          </label>
+        </div>
+
+        <div className="seg mt2">
+          {RANGE_OPTIONS.map((option) => (
+            <button
+              key={option.id}
+              type="button"
+              className={`btn ${rangeSelection === option.id ? 'active' : ''}`}
+              onClick={() => handleRangePreset(option)}
+            >
+              {option.label}
+            </button>
+          ))}
+          <button
+            type="button"
+            className={`btn small ${rangeSelection === 'custom' ? 'active' : ''}`}
+            onClick={() => setRangeSelection('custom')}
+            title="Edita las fechas para definir tu rango personalizado."
+          >
+            Personalizado
           </button>
         </div>
-        <div className="controls-body">
-          <div className="row">
-            <label className="field">
-              <span>Departamento</span>
-              <select value={selectedDept} onChange={(event) => handleDeptChange(event.target.value)}>
-                {DEPARTMENT_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </label>
 
-            <label className="field">
-              <span>Municipio / ciudad</span>
-              <select value={selectedMuni} onChange={(event) => handleMuniChange(event.target.value)}>
-                {municipalities.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label className="field">
-              <span>Desde</span>
-              <input type="date" value={range.from} onChange={(event) => handleFromChange(event.target.value)} />
-            </label>
-
-            <label className="field">
-              <span>Hasta</span>
-              <input type="date" value={range.to} onChange={(event) => handleToChange(event.target.value)} />
-            </label>
-          </div>
-
-          <div className="seg mt2">
-            {RANGE_OPTIONS.map((option) => (
-              <button
-                key={option.id}
-                type="button"
-                className={`btn ${rangeSelection === option.id ? 'active' : ''}`}
-                onClick={() => handleRangePreset(option)}
-              >
-                {option.label}
-              </button>
-            ))}
+        <div className="seg mt2">
+          {METRIC_OPTIONS.map((option) => (
             <button
+              key={option.id}
               type="button"
-              className={`btn small ${rangeSelection === 'custom' ? 'active' : ''}`}
-              onClick={() => setRangeSelection('custom')}
-              title="Edita las fechas para definir tu rango personalizado."
+              className={`btn ${metric === option.id ? 'active' : ''}`}
+              onClick={() => setMetric(option.id)}
             >
-              Personalizado
+              {option.label}
             </button>
-          </div>
+          ))}
+        </div>
 
-          <div className="seg mt2">
-            {METRIC_OPTIONS.map((option) => (
+        <div className="row gap mt2">
+          <button
+            type="button"
+            className="btn small"
+            onClick={() => setShowTrend((prev) => !prev)}
+            disabled={isFutureRange}
+            title={isFutureRange ? 'La tendencia no aplica a pron├│sticos futuros' : ''}
+          >
+            {showTrend ? 'Ocultar tendencia' : 'Ver tendencia'}
+          </button>
+          <div className="seg compact">
+            {TREND_OPTIONS.map((option) => (
               <button
                 key={option.id}
                 type="button"
-                className={`btn ${metric === option.id ? 'active' : ''}`}
-                onClick={() => setMetric(option.id)}
+                className={`btn small ${trendType === option.id ? 'active' : ''}`}
+                disabled={isFutureRange}
+                onClick={() => setTrendType(option.id)}
+                title={option.helper}
               >
                 {option.label}
               </button>
             ))}
           </div>
+        </div>
 
-          <div className="row gap mt2">
-            <button
-              type="button"
-              className="btn small"
-              onClick={() => setShowTrend((prev) => !prev)}
-              disabled={isFutureRange}
-              title={isFutureRange ? 'La tendencia no aplica a pronósticos futuros' : ''}
-            >
-              {showTrend ? 'Ocultar tendencia' : 'Ver tendencia'}
-            </button>
-            <div className="seg compact">
-              {TREND_OPTIONS.map((option) => (
-                <button
-                  key={option.id}
-                  type="button"
-                  className={`btn small ${trendType === option.id ? 'active' : ''}`}
-                  disabled={isFutureRange}
-                  onClick={() => setTrendType(option.id)}
-                  title={option.helper}
-                >
-                  {option.label}
-                </button>
-              ))}
-            </div>
+        <p className="muted tiny mt2">
+          {metricHelper} {activeRangeOption ? `- ${activeRangeOption.description}` : ''}
+        </p>
+
+        <div className="refresh-controls mt2">
+          <span className="tiny">Actualizacion automatica</span>
+          <div className="seg compact">
+            {REFRESH_OPTIONS.map((option) => (
+              <button
+                key={option.id}
+                type="button"
+                className={`btn small ${refreshRate === option.id ? 'active' : ''}`}
+                onClick={() => setRefreshRate(option.id)}
+              >
+                {option.label}
+              </button>
+            ))}
           </div>
-
-          <p className="muted tiny mt2">
-            {metricHelper} {activeRangeOption ? `- ${activeRangeOption.description}` : ''}
-          </p>
-
-          <div className="refresh-controls mt2">
-            <span className="tiny">Actualización automática</span>
-            <div className="seg compact">
-              {REFRESH_OPTIONS.map((option) => (
-                <button
-                  key={option.id}
-                  type="button"
-                  className={`btn small ${refreshRate === option.id ? 'active' : ''}`}
-                  onClick={() => setRefreshRate(option.id)}
-                >
-                  {option.label}
-                </button>
-              ))}
-            </div>
-            <p className="muted tiny">{refreshConfig.description}</p>
-          </div>
+          <p className="muted tiny">{refreshConfig.description}</p>
         </div>
       </section>
 
       <RealtimePanel series={series.data} busy={series.isFetching} />
 
-      <section className={`card chart-card mb4 mobile-fold ${chartOpen ? 'open' : 'collapsed'}`}>
-        <div className="fold-toggle-row">
+      <section className="card chart-card mb4">
+        <div className={`busy ${busy ? 'on' : ''}`}>
+          <div className="busy-pill">
+            <span className="spin" />
+            <span>Actualizando datos...</span>
+          </div>
+        </div>
+
+        <div className="section-header">
           <div>
             <h2>Serie diaria</h2>
             <p className="muted tiny">
-              {rangeSummary} - {metric === 'intensity' ? 'Intensidad máxima por día' : 'Acumulado diario (mm)'}
+              {rangeSummary} - {metric === 'intensity' ? 'Intensidad m├íxima por d├¡a' : 'Acumulado diario (mm)'}
             </p>
           </div>
-          <button type="button" className="btn small ghost" onClick={() => setChartOpen((prev) => !prev)}>
-            {chartOpen ? 'Ocultar' : 'Mostrar'}
-          </button>
+          <div className="series-meta tiny">
+            {series.data?.meta?.source && <span>Fuente: {series.data.meta.source}</span>}
+            {series.data?.meta?.tz && <span>TZ: {series.data.meta.tz}</span>}
+            <span>Registros: {aggregated.count.toLocaleString('es-CO')}</span>
+          </div>
         </div>
-        {(chartOpen || !isMobile) && (
-          <div className="fold-body">
-            <div className={`busy ${busy ? 'on' : ''}`}>
-              <div className="busy-pill">
-                <span className="spin" />
-                <span>Actualizando datos...</span>
-              </div>
-            </div>
-            <div className="series-meta tiny">
-              {series.data?.meta?.source && <span>Fuente: {series.data.meta.source}</span>}
-              {series.data?.meta?.tz && <span>TZ: {series.data.meta.tz}</span>}
-              <span>Registros: {aggregated.count.toLocaleString('es-CO')}</span>
-            </div>
-            {series.error && (
-              <div className="error-banner mb3">
-                <strong>No fue posible actualizar la serie.</strong>
-                <p>{series.error.message || 'No pudimos contactar la API. Revisa tu conexión o intenta nuevamente.'}</p>
-              </div>
-            )}
 
-            {metaSummary && (
-              <div className="meta-panel">
-                <div className="meta-item">
-                  <strong>Última actualización</strong>
-                  <span>{metaSummary.updated}</span>
-                </div>
-                <div className="meta-item">
-                  <strong>Ubicación</strong>
-                  <span>{metaSummary.location}</span>
-                </div>
-                <div className="meta-item">
-                  <strong>Fuente</strong>
-                  <span>{metaSummary.source}</span>
-                </div>
-                <div className="meta-item">
-                  <strong>Unidad</strong>
-                  <span>{metaSummary.unit}</span>
-                </div>
-              </div>
-            )}
+        {series.error && (
+          <div className="error-banner mb3">
+            <strong>No fue posible actualizar la serie.</strong>
+            <p>
+              {series.error.message || 'No pudimos contactar la API. Revisa tu conexion o intenta nuevamente.'}
+            </p>
+          </div>
+        )}
 
-            <PrecipitationChart points={aggregated.points} trend={trendPoints} metric={metric} />
-
-            <div className="mt3">
-              <DailyHeatmap daily={dailyData} metric={metric} />
-              <details className="glossary">
-                <summary>Cómo leer la intensidad</summary>
-                <ul>
-                  <li>0-5 mm: Llovizna ligera, humedece sin generar escorrentia.</li>
-                  <li>5-20 mm: Lluvia moderada, posible pausa corta en labores.</li>
-                  <li>20-60 mm: Temporal, suelos saturados y riesgo de charcos.</li>
-                  <li>{'> 60'} mm: Evento fuerte, probables anegamientos y retrasos.</li>
-                </ul>
-              </details>
+        {metaSummary && (
+          <div className="meta-panel">
+            <div className="meta-item">
+              <strong>Ultima actualizaci?n</strong>
+              <span>{metaSummary.updated}</span>
             </div>
-
-            <div className="kpis mt3">
-              {kpis.map((item) => (
-                <div key={item.id} className="kpi">
-                  <span className="kcap">{item.label}</span>
-                  <span className="kval">
-                    {item.value}
-                    {item.badge && (
-                      <span className={`badge ${item.badge.tone ?? ''}`.trim()}>{item.badge.label}</span>
-                    )}
-                  </span>
-                  {item.note && <span className="ksub">{item.note}</span>}
-                </div>
-              ))}
+            <div className="meta-item">
+              <strong>Ubicacion</strong>
+              <span>{metaSummary.location}</span>
             </div>
-            {(chartNarrative || quickImpact) && (
-              <div className="narrative-card">
-                {quickImpact && (
-                  <p>
-                    <strong>Lectura rápida:</strong> {quickImpact}
-                  </p>
+            <div className="meta-item">
+              <strong>Fuente</strong>
+              <span>{metaSummary.source}</span>
+            </div>
+            <div className="meta-item">
+              <strong>Unidad</strong>
+              <span>{metaSummary.unit}</span>
+            </div>
+          </div>
+        )}
+
+        <PrecipitationChart points={aggregated.points} trend={trendPoints} metric={metric} />
+
+        <div className="mt3">
+          <DailyHeatmap daily={dailyData} metric={metric} />
+          <details className="glossary">
+          <summary>C├│mo leer la intensidad</summary>
+            <ul>
+              <li>0-5 mm: Llovizna ligera, humedece sin generar escorrentia.</li>
+              <li>5-20 mm: Lluvia moderada, posible pausa corta en labores.</li>
+              <li>20-60 mm: Temporal, suelos saturados y riesgo de charcos.</li>
+              <li>{'> 60'} mm: Evento fuerte, probables anegamientos y retrasos.</li>
+            </ul>
+          </details>
+        </div>
+
+        <div className="kpis mt3">
+          {kpis.map((item) => (
+            <div key={item.id} className="kpi">
+              <span className="kcap">{item.label}</span>
+              <span className="kval">
+                {item.value}
+                {item.badge && (
+                  <span className={`badge ${item.badge.tone ?? ''}`.trim()}>{item.badge.label}</span>
                 )}
-                {chartNarrative && <p className="chart-narrative">{chartNarrative}</p>}
-              </div>
+              </span>
+              {item.note && <span className="ksub">{item.note}</span>}
+            </div>
+          ))}
+        </div>
+        {(chartNarrative || quickImpact) && (
+          <div className="narrative-card">
+            {quickImpact && (
+              <p>
+                <strong>Lectura rapida:</strong> {quickImpact}
+              </p>
             )}
+            {chartNarrative && <p className="chart-narrative">{chartNarrative}</p>}
           </div>
         )}
       </section>
 
-
-      <section className={`card mb4 mobile-fold ${agroOpen ? 'open' : 'collapsed'}`}>
-        <div className="fold-toggle-row">
+      <section className="card mb4">
+        <div className="section-header">
           <div>
-            <h2>Condiciones agroenergéticas</h2>
+            <h2>Condiciones agroenerg├®ticas</h2>
             <p className="muted tiny">
-              Temperatura y humedad del suelo, ET0, radiación y viento para apoyar ganaderos,
-              agricultores y generación renovable.
+              Temperatura y humedad del suelo, ET0, radiaci├│n y viento para apoyar ganaderos,
+              agricultores y generaci├│n renovable.
             </p>
           </div>
-          <button type="button" className="btn small ghost" onClick={() => setAgroOpen((prev) => !prev)}>
-            {agroOpen ? 'Ocultar' : 'Mostrar'}
-          </button>
         </div>
-        {(agroOpen || !isMobile) && (
-          <div className="fold-body">
-            <AgroPanels series={series.data} />
-            {agroNarrative && (
-              <div className="narrative-card slim mt2">
-                <p>{agroNarrative}</p>
-              </div>
-            )}
-            <details className="glossary mt2">
-              <summary>Cómo leer estas variables</summary>
-              <ul>
-                <li>Temp. ambiente 18-32 C: confortable. &lt;15 C implica amaneceres fríos y &gt;32 C demanda sombra e hidratación.</li>
-                <li>Sensación térmica &gt;35 C: riesgo de estrés para personal y ganado.</li>
-                <li>Humedad relativa &lt;40 %: ambiente seco, incrementa demanda hídrica; &gt;85 % favorece hongos.</li>
-                <li>Lluvia 24h: &lt;5 mm se absorbe rapido; &gt;30 mm provoca charcos y compactacion.</li>
-                <li>ET0 &gt;4 mm indica alta demanda de riego. Radiación &gt;4 kWh/m2 favorece la generación solar.</li>
-              </ul>
-            </details>
+        <AgroPanels series={series.data} />
+        {agroNarrative && (
+          <div className="narrative-card slim mt2">
+            <p>{agroNarrative}</p>
           </div>
         )}
+        <details className="glossary mt2">
+          <summary>C├│mo leer estas variables</summary>
+          <ul>
+            <li>Temp. ambiente 18-32 C: confortable. &lt;15 C implica amaneceres frios y &gt;32 C demanda sombra e hidratacion.</li>
+            <li>Sensacion termica &gt;35 C: riesgo de estr?s para personal y ganado.</li>
+            <li>Humedad relativa &lt;40 %: ambiente seco, incrementa demanda hidrica; &gt;85 % favorece hongos.</li>
+            <li>Lluvia 24h: &lt;5 mm se absorbe rapido; &gt;30 mm provoca charcos y compactacion.</li>
+            <li>ET0 &gt;4 mm indica alta demanda de riego. Radiaci├│n &gt;4 kWh/m2 favorece la generaci├│n solar.</li>
+          </ul>
+        </details>
       </section>
 
-
-      <section className={`card mb4 mobile-fold ${hourlyOpen ? 'open' : 'collapsed'}`}>
-        <div className="fold-toggle-row">
+      <section className="card mb4">
+        <div className="section-header">
           <div>
-            <h2>Distribución horaria</h2>
+            <h2>Distribucion horaria</h2>
             <p className="muted tiny">
               Identifica horarios con lluvia o ventanas secas (intensidad en mm/h).
             </p>
           </div>
-          <button type="button" className="btn small ghost" onClick={() => setHourlyOpen((prev) => !prev)}>
-            {hourlyOpen ? 'Ocultar' : 'Mostrar'}
-          </button>
         </div>
-        {(hourlyOpen || !isMobile) && (
-          <div className="fold-body">
-            <div className="hourlyWrap">
-              <HourlyHeatmap series={series.data} variable="prcpRate" />
-            </div>
-            {hourlyNarrative && (
-              <div className="narrative-card slim mt2">
-                <p>{hourlyNarrative}</p>
-              </div>
-            )}
-            <details className="glossary mt2">
-              <summary>Cómo leer la distribución</summary>
-              <ul>
-                <li>Bandas intensas al amanecer indican suelos saturados: retrasa la entrada de maquinaria.</li>
-                <li>Bloques continuos &gt;60 % señalan varios días lluviosos. Busca ventanas pálidas (&lt;30 %) para labores críticas.</li>
-                <li>Celdas claras aisladas equivalen a horas de baja probabilidad, ideales para riego o mantenimiento.</li>
-              </ul>
-            </details>
+        <div className="hourlyWrap">
+          <HourlyHeatmap series={series.data} variable="prcpRate" />
+        </div>
+        {hourlyNarrative && (
+          <div className="narrative-card slim mt2">
+            <p>{hourlyNarrative}</p>
           </div>
         )}
+        <details className="glossary mt2">
+          <summary>C├│mo leer la distribuci├│n</summary>
+          <ul>
+            <li>Bandas intensas al amanecer indican suelos saturados: retrasa la entrada de maquinaria.</li>
+            <li>Bloques continuos &gt;60 % se├▒alan varios d├¡as lluviosos. Busca ventanas p├ílidas (&lt;30 %) para labores cr├¡ticas.</li>
+            <li>Celdas claras aisladas equivalen a horas de baja probabilidad, ideales para riego o mantenimiento.</li>
+          </ul>
+        </details>
       </section>
 
-
-      <section className={`card insights mobile-fold ${insightsOpen ? 'open' : 'collapsed'}`}>
-        <div className="fold-toggle-row">
+      <section className="card insights">
+        <div className="section-header">
           <div>
             <h2>Insights automatizados</h2>
             <p className="muted tiny">
-              Basados en umbrales de impacto y cálculos del paquete insight-engine.
+              Basados en umbrales de impacto y calculos del paquete insight-engine.
             </p>
           </div>
-          <button type="button" className="btn small ghost" onClick={() => setInsightsOpen((prev) => !prev)}>
-            {insightsOpen ? 'Ocultar' : 'Mostrar'}
-          </button>
         </div>
-        {(insightsOpen || !isMobile) && (
-          <div className="fold-body">
-            {insightSummary.count > 0 && (
-              <div className="insights-kpis tiny">
-                <span className="insights-chip">
-                  <span className="chip-label">Lluvia analizada</span>
-                  <strong>{formatNumber(insightSummary.totalRain)} mm</strong>
-                </span>
-                <span className="insights-chip">
-                  <span className="chip-label">Días con dato</span>
-                  <strong>{insightSummary.count.toLocaleString('es-CO')}</strong>
-                </span>
-              </div>
-            )}
-            {sectorNarratives && (
-              <div className="sector-insights">
-                <div>
-                  <strong>Agricultura</strong>
-                  <p>{sectorNarratives.agriculture}</p>
-                </div>
-                <div>
-                  <strong>Ganadería</strong>
-                  <p>{sectorNarratives.livestock}</p>
-                </div>
-                <div>
-                  <strong>Energías renovables</strong>
-                  <p>{sectorNarratives.energy}</p>
-                </div>
-              </div>
-            )}
-            {insights.error ? (
-              <div className="error-banner">
-                <strong>No fue posible generar insights.</strong>
-                <p>{insights.error.message || 'No logramos conectar con la API de insights. Vuelve a intentarlo cuando tengas conexión estable.'}</p>
-              </div>
-            ) : insights.data ? (
-              insights.data.insights.length ? (
-                <ul className="insights-list">
-                  {insights.data.insights.map((item) => (
-                    <li key={item.id} className="insight-item">
-                      {(() => {
-                        const meta = INSIGHT_KIND_META[item.kind] ?? { label: item.kind, tone: 'trend', icon: 'ℹ️' };
-                        return (
-                          <span className={`insight-pill ${meta.tone}`}>
-                            <span className="insight-pill-icon" aria-hidden="true">
-                              {meta.icon}
-                            </span>
-                            {meta.label}
-                          </span>
-                        );
-                      })()}
-                      <p>{item.text}</p>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <div className="empty-state">Sin hallazgos relevantes con los umbrales actuales. Ajústalos para más sensibilidad.</div>
-              )
-            ) : (
-              <div className="skeleton">
-                <div className="skeleton-bar" />
-                <div className="skeleton-bar" />
-                <div className="skeleton-bar" />
-              </div>
-            )}
+        {sectorNarratives && (
+          <div className="sector-insights">
+            <div>
+              <strong>Agricultura</strong>
+              <p>{sectorNarratives.agriculture}</p>
+            </div>
+            <div>
+              <strong>Ganaderia</strong>
+              <p>{sectorNarratives.livestock}</p>
+            </div>
+            <div>
+              <strong>Energias renovables</strong>
+              <p>{sectorNarratives.energy}</p>
+            </div>
+          </div>
+        )}
+        {insights.error ? (
+          <div className="error-banner">
+            <strong>No fue posible generar insights.</strong>
+            <p>
+              {insights.error.message ||
+                'No logramos conectar con la API de insights. Vuelve a intentarlo cuando tengas conexi├│n estable.'}
+            </p>
+          </div>
+        ) : insights.data ? (
+          insights.data.insights.length ? (
+            <ul className="insights-list">
+              {insights.data.insights.map((insight) => (
+                <li key={insight.id} className="insight-item">
+                  <strong>{insight.kind}</strong>
+                  <p>{insight.text}</p>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className="empty-state">
+              Sin hallazgos relevantes con los umbrales actuales. Aj├║stalos para m├ís sensibilidad.
+            </div>
+          )
+        ) : (
+          <div className="skeleton">
+            <div className="skeleton-bar" />
+            <div className="skeleton-bar" />
+            <div className="skeleton-bar" />
           </div>
         )}
       </section>
@@ -829,24 +680,6 @@ function buildRange(option: RangeOption): DateRange {
   const to = formatISO(today);
   const from = formatISO(addDays(today, -(option.days - 1)));
   return { from, to };
-}
-
-function useIsMobile(breakpoint = 720) {
-  const [isMobile, setIsMobile] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return false;
-    return window.innerWidth <= breakpoint;
-  });
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const media = window.matchMedia(`(max-width: ${breakpoint}px)`);
-    const handler = () => setIsMobile(media.matches);
-    handler();
-    media.addEventListener('change', handler);
-    return () => media.removeEventListener('change', handler);
-  }, [breakpoint]);
-
-  return isMobile;
 }
 
 function normalizeRange(value: DateRange): DateRange {
@@ -1084,27 +917,19 @@ function buildKpis(
   const unit = metric === 'intensity' ? 'mm/h' : 'mm';
   const averageUnit = metric === 'intensity' ? 'mm/h' : 'mm';
   const rangeLabel = selection === 'custom' ? formatRangeSummary(range) : activeRange?.label ?? formatRangeSummary(range);
-  const history = computeHistoricalStats(summary);
 
   return [
     {
       id: 'max',
-      label: metric === 'intensity' ? 'Máximo registrado' : 'Máximo diario',
+      label: metric === 'intensity' ? 'M?ximo registrado' : 'M?ximo diario',
       value: `${formatNumber(summary.maxValue)} ${unit}`,
-      note: [formatDisplayDate(summary.maxValueDate), history?.max != null ? formatDeltaText(summary.maxValue, history.max, unit) : null]
-        .filter(Boolean)
-        .join(' · '),
+      note: formatDisplayDate(summary.maxValueDate),
     },
     {
       id: 'avg',
       label: 'Promedio diario',
       value: `${formatNumber(summary.average)} ${averageUnit}`,
-      note: [
-        `${summary.count.toLocaleString('es-CO')} días analizados`,
-        history?.average != null ? formatDeltaText(summary.average, history.average, averageUnit) : null,
-      ]
-        .filter(Boolean)
-        .join(' · '),
+      note: `${summary.count.toLocaleString('es-CO')} dias analizados`,
     },
     {
       id: 'trend',
@@ -1119,35 +944,6 @@ function buildKpis(
       note: rangeLabel,
     },
   ];
-}
-
-function computeHistoricalStats(summary: ChartSummary, years = 5): { average: number; max: number } | null {
-  if (!summary.points.length || !summary.lastDate) return null;
-  const lastStamp = Date.parse(`${summary.lastDate}T00:00:00Z`);
-  if (!Number.isFinite(lastStamp)) return null;
-  const cutoff = new Date(lastStamp);
-  cutoff.setUTCFullYear(cutoff.getUTCFullYear() - years);
-  const cutoffMs = cutoff.getTime();
-  const filtered = summary.points.filter((point) => {
-    const stamp = Date.parse(`${point.date}T00:00:00Z`);
-    return Number.isFinite(stamp) && stamp >= cutoffMs;
-  });
-  if (!filtered.length) return null;
-  const values = filtered.map((point) => point.value);
-  return {
-    average: values.reduce((sum, value) => sum + value, 0) / values.length,
-    max: Math.max(...values),
-  };
-}
-
-function formatDeltaText(current: number, baseline: number, unit: string): string {
-  if (!Number.isFinite(current) || !Number.isFinite(baseline)) return '';
-  const delta = Number((current - baseline).toFixed(2));
-  if (Math.abs(delta) < 0.01) {
-    return `sin cambio vs. 5 años`;
-  }
-  const prefix = delta >= 0 ? '+' : '−';
-  return `${prefix}${formatNumber(Math.abs(delta))} ${unit} vs. 5 años`;
 }
 
 function buildMetaSummary(
@@ -1177,10 +973,10 @@ function buildImpactNarrative(summary: ChartSummary, metric: Metric, tense: Tens
   const unit = metric === 'intensity' ? 'mm/h' : 'mm';
   const impact = impactFromBadge(badge.label, tense);
   const lead = tense === 'future' ? 'Se proyectan' : 'Se acumularon';
-  const peakVerb = tense === 'future' ? 'podría alcanzar' : 'alcanzó';
+  const peakVerb = tense === 'future' ? 'podria alcanzar' : 'alcanzo';
   return `${lead} ${formatNumber(summary.totalRain)} mm en ${summary.count.toLocaleString(
     'es-CO'
-  )} días. El pico diario ${peakVerb} ${formatNumber(summary.maxValue)} ${unit} (${badge.label}). ${impact}`;
+  )} dias. El pico diario ${peakVerb} ${formatNumber(summary.maxValue)} ${unit} (${badge.label}). ${impact}`;
 }
 
 function buildIntensityBadge(value: number, metric: Metric): KPIBadge | undefined {
@@ -1193,16 +989,16 @@ function buildIntensityBadge(value: number, metric: Metric): KPIBadge | undefine
 }
 
 function impactFromBadge(label: string, tense: Tense): string {
-  const caution = tense === 'future' ? 'podrían' : 'pudieron';
+  const caution = tense === 'future' ? 'podrian' : 'pudieron';
   switch (label) {
     case 'Evento fuerte':
-      return `Anegamientos y retrasos logísticos ${caution} requerir ventanas secas antes de ingresar maquinaria.`;
+      return `Anegamientos y retrasos log├¡sticos ${caution} requerir ventanas secas antes de ingresar maquinaria.`;
     case 'Temporal':
       return `Suelos saturados y charcos puntuales ${caution} frenar labores pesadas.`;
     case 'Lluvia moderada':
       return `Mojado general ${caution} interrumpir labores breves; aprovecha ventanas menores a 5 mm.`;
     default:
-      return 'Condiciones suaves, útiles para mantenimiento ligero y aplicaciones foliares.';
+      return 'Condiciones suaves, utiles para mantenimiento ligero y aplicaciones foliares.';
   }
 }
 
@@ -1221,11 +1017,11 @@ function buildSectorNarratives(
   agricultureParts.push(
     `${isFuture ? 'Se proyectan' : 'Se analizaron'} ${summary.count.toLocaleString(
       'es-CO'
-    )} días con ${formatNumber(summary.totalRain)} mm (${formatNumber(summary.average)} mm/día).`
+    )} dias con ${formatNumber(summary.totalRain)} mm (${formatNumber(summary.average)} mm/dia).`
   );
   if (badge?.label === 'Evento fuerte') {
     agricultureParts.push(
-      `${isFuture ? 'La lluvia más intensa proyectada sugiere' : 'La lluvia más intensa sugirió'} atrasar siembra, fertilización foliar y entrada de maquinaria hasta que el lote drene.`
+      `${isFuture ? 'La lluvia m├ís intensa proyectada sugiere' : 'La lluvia m├ís intensa sugiri├│'} atrasar siembra, fertilizaci├│n foliar y entrada de maquinaria hasta que el lote drene.`
   );
   } else if (badge?.label === 'Temporal') {
     agricultureParts.push(
@@ -1237,28 +1033,28 @@ function buildSectorNarratives(
     );
   } else {
     agricultureParts.push(
-      `${isFuture ? 'Humedad regular proyectada' : 'Humedad regular observada'}: vigila malezas y usa las ventanas con menos de 10 mm para cosecha mecánica.`
+      `${isFuture ? 'Humedad regular proyectada' : 'Humedad regular observada'}: vigila malezas y usa las ventanas con menos de 10 mm para cosecha mec?nica.`
     );
   }
 
   const livestockParts: string[] = [];
   if (badge && (badge.label === 'Temporal' || badge.label === 'Evento fuerte')) {
     livestockParts.push(
-      `${isFuture ? 'Pasturas en zonas bajas podrían encharcarse' : 'Pasturas en zonas bajas se encharcaron'}; rota hatos a potreros altos y refuerza caminos.`
+      `${isFuture ? 'Pasturas en zonas bajas podrian encharcarse' : 'Pasturas en zonas bajas se encharcaron'}; rota hatos a potreros altos y refuerza caminos.`
     );
   } else if (summary.average < 4) {
     livestockParts.push(
-      `${isFuture ? 'Secuencia más seca proyectada' : 'Secuencia más seca observada'}; provee sombra, sales y agua fresca para evitar estrés térmico.`
+      `${isFuture ? 'Secuencia m├ís seca proyectada' : 'Secuencia m├ís seca observada'}; provee sombra, sales y agua fresca para evitar estr├®s t├®rmico.`
     );
   } else {
     livestockParts.push(
-      `${isFuture ? 'Humedad media favorecería el rebrote' : 'Humedad media favoreció el rebrote'}, pero revisa corrales en jornadas superiores a 20 mm.`
+      `${isFuture ? 'Humedad media favoreceria el rebrote' : 'Humedad media favorecio el rebrote'}, pero revisa corrales en jornadas superiores a 20 mm.`
     );
   }
   if (baselines.wind != null) {
     livestockParts.push(
       baselines.wind >= 8
-        ? `Viento medio ${(baselines.wind ?? 0).toFixed(1)} m/s ${isFuture ? 'ayudaría' : 'ayudó'} a ventilar establos.`
+        ? `Viento medio ${(baselines.wind ?? 0).toFixed(1)} m/s ${isFuture ? 'ayudar?a' : 'ayudo'} a ventilar establos.`
         : `Viento suave ${(baselines.wind ?? 0).toFixed(1)} m/s: monitorea insectos y calor acumulado.`
     );
   }
@@ -1267,19 +1063,19 @@ function buildSectorNarratives(
   if (baselines.solarKwh != null) {
     energyParts.push(
       baselines.solarKwh >= 4.5
-        ? `Radiación ${(baselines.solarKwh ?? 0).toFixed(1)} kWh/m2: ${isFuture ? 'daría' : 'dio'} buen rendimiento fotovoltaico y para secado de forraje.`
-        : `Radiación limitada (${(baselines.solarKwh ?? 0).toFixed(1)} kWh/m2); ${isFuture ? 'reduce' : 'redujo'} expectativas de generación solar.`
+        ? `Radiaci?n ${(baselines.solarKwh ?? 0).toFixed(1)} kWh/m2: ${isFuture ? 'dar?a' : 'dio'} buen rendimiento fotovoltaico y para secado de forraje.`
+        : `Radiaci?n limitada (${(baselines.solarKwh ?? 0).toFixed(1)} kWh/m2); ${isFuture ? 'reduce' : 'redujo'} expectativas de generaci?n solar.`
     );
   }
   if (baselines.wind != null) {
     energyParts.push(
       baselines.wind >= 9
-        ? `Viento ${(baselines.wind ?? 0).toFixed(1)} m/s ${isFuture ? 'soportaria' : 'soporto'} turbinas menores y ventilación forzada.`
-        : `Viento por debajo de ${(baselines.wind ?? 0).toFixed(1)} m/s: enfócate en capturar ventana solar.`
+        ? `Viento ${(baselines.wind ?? 0).toFixed(1)} m/s ${isFuture ? 'soportaria' : 'soporto'} turbinas menores y ventilacion forzada.`
+        : `Viento por debajo de ${(baselines.wind ?? 0).toFixed(1)} m/s: enfocate en capturar ventana solar.`
     );
   }
   if (!energyParts.length) {
-    energyParts.push('Sin lecturas recientes de radiacion ni viento; mantente atento a la próxima actualización.');
+    energyParts.push('Sin lecturas recientes de radiacion ni viento; mantente atento a la pr?xima actualizaci?n.');
   }
 
   return {
@@ -1326,10 +1122,10 @@ function buildAgroNarrative(series: Series | undefined, tense: Tense): string | 
       notes.push(
         `${isFuture ? 'Se proyecta' : 'Se observo'} calor alto (${temp.toFixed(1)} C) con sensacion ${(feels ?? temp).toFixed(
           1
-        )} C; prioriza sombra, hidratación y labores cortas.`
+        )} C; prioriza sombra, hidratacion y labores cortas.`
       );
     } else if (temp <= 16) {
-      notes.push(`${isFuture ? 'Se proyectan' : 'Se observaron'} mañanas frescas (${temp.toFixed(1)} C): protege viveros y riegos tempranos.`);
+      notes.push(`${isFuture ? 'Se proyectan' : 'Se observaron'} mananas frescas (${temp.toFixed(1)} C): protege viveros y riegos tempranos.`);
     } else {
       notes.push(`${isFuture ? 'Se espera' : 'Hubo'} franja confortable (${temp.toFixed(1)} C) para trabajo continuo a campo.`);
     }
@@ -1337,9 +1133,9 @@ function buildAgroNarrative(series: Series | undefined, tense: Tense): string | 
 
   if (humidity != null) {
     if (humidity >= 85) {
-      notes.push(`Humedad elevada (${humidity.toFixed(0)} %) ${isFuture ? 'favorecería' : 'favoreció'} hongos; ventila invernaderos.`);
+      notes.push(`Humedad elevada (${humidity.toFixed(0)} %) ${isFuture ? 'favoreceria' : 'favorecio'} hongos; ventila invernaderos.`);
     } else if (humidity <= 40) {
-      notes.push(`Humedad baja (${humidity.toFixed(0)} %) ${isFuture ? 'elevaría' : 'elevó'} demanda hídrica y riesgo de polvo.`);
+      notes.push(`Humedad baja (${humidity.toFixed(0)} %) ${isFuture ? 'elevaria' : 'elevo'} demanda hidrica y riesgo de polvo.`);
     } else {
       notes.push(`Humedad en equilibrio (${humidity.toFixed(0)} %).`);
     }
@@ -1350,38 +1146,38 @@ function buildAgroNarrative(series: Series | undefined, tense: Tense): string | 
       notes.push(
         `${isFuture ? 'Lluvia abundante proyectada' : 'Lluvia abundante observada'} (${rain.toFixed(
           1
-        )} mm/24 h) ${isFuture ? 'saturaría' : 'saturó'} suelos; espera drenaje antes de entrar maquinaria.`
+        )} mm/24 h) ${isFuture ? 'saturaria' : 'saturo'} suelos; espera drenaje antes de entrar maquinaria.`
       );
     } else if (rain >= 12) {
-      notes.push(`Lluvia útil (${rain.toFixed(1)} mm) ${isFuture ? 'recargaría' : 'recargó'} humedad superficial.`);
+      notes.push(`Lluvia util (${rain.toFixed(1)} mm) ${isFuture ? 'recargaria' : 'recargo'} humedad superficial.`);
     } else if (rain < 5) {
       notes.push(`Solo ${rain.toFixed(1)} mm en 24 h: ten listo riego suplementario.`);
     }
   } else {
-    notes.push(`${isFuture ? 'Sin acumulado esperado' : 'Sin acumulado observado'} en las últimas 24 h.`);
+    notes.push(`${isFuture ? 'Sin acumulado esperado' : 'Sin acumulado observado'} en las ├║ltim?s 24 h.`);
   }
 
   if (evap != null) {
     notes.push(
       evap >= 5
-        ? `ET0 de ${evap.toFixed(1)} mm ${isFuture ? 'indicaría' : 'indicó'} demanda hídrica alta.`
-        : `ET0 ${evap.toFixed(1)} mm ${isFuture ? 'mantendría' : 'mantuvo'} consumo moderado.`
+        ? `ET0 de ${evap.toFixed(1)} mm ${isFuture ? 'indicaria' : 'indico'} demanda hidrica alta.`
+        : `ET0 ${evap.toFixed(1)} mm ${isFuture ? 'mantendria' : 'mantuvo'} consumo moderado.`
     );
   }
 
   if (solarKwh != null) {
     notes.push(
       solarKwh >= 4.5
-        ? `Radiación ${(solarKwh ?? 0).toFixed(1)} kWh/m2 ${isFuture ? 'habilitaría' : 'habilitó'} buena generación solar.`
-        : `Radiación limitada ${(solarKwh ?? 0).toFixed(1)} kWh/m2; planifica secado con más tiempo.`
+        ? `Radiaci?n ${(solarKwh ?? 0).toFixed(1)} kWh/m2 ${isFuture ? 'habilitaria' : 'habilito'} buena generaci?n solar.`
+        : `Radiaci├│n limitada ${(solarKwh ?? 0).toFixed(1)} kWh/m2; planifica secado con m├ís tiempo.`
     );
   }
 
   if (wind != null) {
     notes.push(
       wind >= 9
-        ? `Viento ${(wind ?? 0).toFixed(1)} m/s: ${isFuture ? 'aseguraría' : 'aseguró'} cubiertas y controla deriva de pulverizaciones.`
-        : `Viento suave ${(wind ?? 0).toFixed(1)} m/s ${isFuture ? 'mantendría' : 'mantuvo'} condiciones estables para equipos expuestos.`
+        ? `Viento ${(wind ?? 0).toFixed(1)} m/s: ${isFuture ? 'aseguraria' : 'aseguro'} cubiertas y controla deriva de pulverizaciones.`
+        : `Viento suave ${(wind ?? 0).toFixed(1)} m/s ${isFuture ? 'mantendria' : 'mantuvo'} condiciones estables para equipos expuestos.`
     );
   }
 
@@ -1449,11 +1245,11 @@ function buildHourlyNarrative(series: Series | undefined, tense: Tense): string 
       )}.`
     );
   } else {
-    notes.push(`Sin ventanas secas mayores a 3 h en las ${isFuture ? 'próximas' : 'últimas'} 72 h.`);
+    notes.push(`Sin ventanas secas mayores a 3 h en las ${isFuture ? 'pr?ximas' : 'ultimas'} 72 h.`);
   }
   notes.push(
     wetShare >= 50
-      ? `Más del 50% de las horas ${isFuture ? 'proyectadas' : 'recientes'} tuvieron lluvia significativa; agenda labores bajo techo.`
+      ? `M?s del 50% de las horas ${isFuture ? 'proyectadas' : 'recientes'} tuvieron lluvia significativa; agenda labores bajo techo.`
       : `Solo ${wetShare}% de las horas ${isFuture ? 'proyectadas' : 'observadas'} muestran lluvia >2 mm/h; aprovecha las franjas restantes para riego o mantenimiento.`
   );
 
@@ -1522,7 +1318,7 @@ function summarizeTrend(trend: TrendPoint[] | null): { value: string; note: stri
   if (!first || !last) {
     return {
       value: 'Sin datos',
-      note: 'Necesitamos más puntos para calcular la tendencia.',
+      note: 'Necesitamos m├ís puntos para calcular la tendencia.',
     };
   }
   const diff = last.value - first.value;
@@ -1559,24 +1355,24 @@ function buildChartNarrative(
     parts.push(
       `Entre ${rangeLabel} ${isFuture ? 'se proyectan' : 'se acumularon'} ${formatNumber(
         summary.totalRain
-      )} mm${isFuture ? ' proyectados' : ''} distribuidos en ${summary.count} días con datos.`
+      )} mm${isFuture ? ' proyectados' : ''} distribuidos en ${summary.count} dias con datos.`
     );
     if (summary.maxValueDate) {
       parts.push(
-        `El día más lluvioso ${isFuture ? 'proyectado sería' : 'fue'} ${formatDisplayDate(
+        `El dia m?s lluvioso ${isFuture ? 'proyectado seria' : 'fue'} ${formatDisplayDate(
           summary.maxValueDate
         )}, con ${formatNumber(summary.maxValue)} mm en 24 horas.`
       );
     }
   } else {
     parts.push(
-      `${isFuture ? 'Se proyectan' : 'Se analizaron'} ${summary.count} días de intensidades entre ${rangeLabel}.`
+      `${isFuture ? 'Se proyectan' : 'Se analizaron'} ${summary.count} dias de intensidades entre ${rangeLabel}.`
     );
     if (summary.maxValueDate) {
       parts.push(
-        `La ráfaga máxima ${isFuture ? 'proyectada ocurriría' : 'ocurrió'} el ${formatDisplayDate(
+        `La rafaga m?xima ${isFuture ? 'proyectada ocurriria' : 'ocurrio'} el ${formatDisplayDate(
           summary.maxValueDate
-        )} y ${isFuture ? 'alcanzaría' : 'alcanzó'} ${formatNumber(summary.maxValue)} mm/h.`
+        )} y ${isFuture ? 'alcanzaria' : 'alcanzo'} ${formatNumber(summary.maxValue)} mm/h.`
       );
     }
   }
