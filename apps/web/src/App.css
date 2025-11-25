@@ -633,10 +633,15 @@ body {
 
 .mobile-fold .fold-body {
   position: relative;
+  margin-top: 16px;
 }
 
 .mobile-fold.collapsed .fold-body {
   display: none;
+}
+
+.mobile-fold.collapsed .fold-toggle-row {
+  margin-bottom: 0;
 }
 
 .fold-toggle-row {
@@ -1443,6 +1448,10 @@ body {
     width: 100%;
   }
 
+  .controls-body {
+    gap: 12px;
+  }
+
   .fold-toggle-row {
     flex-direction: column;
     align-items: flex-start;
@@ -1454,6 +1463,7 @@ body {
 
   .row {
     flex-direction: column;
+    gap: 8px;
   }
 
   .seg {

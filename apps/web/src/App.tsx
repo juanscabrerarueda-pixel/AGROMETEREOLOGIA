@@ -382,28 +382,28 @@ export default function App() {
 
       <section className={`card help mb4 mobile-fold ${helpHidden ? 'collapsed' : 'open'}`}>
         <div className="fold-toggle-row">
-          <strong>C?mo usar</strong>
+          <strong>Cómo usar</strong>
           <button type="button" className="btn small ghost" onClick={() => setHelpHidden((prev) => !prev)}>
-            {helpHidden ? 'Mostrar gu?a' : 'Ocultar gu?a'}
+            {helpHidden ? 'Mostrar guía' : 'Ocultar guía'}
           </button>
         </div>
         {!helpHidden && (
           <div className="fold-body">
             <ol className="help-steps">
               <li>
-                Comienza en <strong>Monitoreo en vivo</strong>: valida el sello ?Hace X min? y usa la actualizaci?n autom?tica (1, 5 o 15 min) para seguir tormentas en tiempo real.
+                Comienza en <strong>Monitoreo en vivo</strong>: valida el sello ¿Hace X min? y usa la actualización automática (1, 5 o 15 min) para seguir tormentas en tiempo real.
               </li>
               <li>
                 Elige un departamento y opcionalmente un municipio para la serie local (por defecto usa la capital) y confirma la fuente mostrada en la tarjeta en vivo.
               </li>
               <li>
-                Ajusta el rango r?pido (3 meses, 1 a?o, 5 a?os o 14 d?as de pron?stico). Tambi?n puedes fijar fechas manualmente cuando necesites comparar ventanas espec?ficas.
+                Ajusta el rango rápido (3 meses, 1 año, 5 años o 14 días de pronóstico). También puedes fijar fechas manualmente cuando necesites comparar ventanas específicas.
               </li>
               <li>
-                Alterna entre acumulado diario o intensidad m?xima, activa MA/EMA para suavizar la serie hist?rica y combina los insights autom?ticos para traducir la se?al en acciones.
+                Alterna entre acumulado diario o intensidad máxima, activa MA/EMA para suavizar la serie histórica y combina los insights automáticos para traducir la señal en acciones.
               </li>
               <li>
-                Usa la distribuci?n diaria y horaria para detectar ventanas secas o picos concentrados antes de programar labores a campo.
+                Usa la distribución diaria y horaria para detectar ventanas secas o picos concentrados antes de programar labores a campo.
               </li>
             </ol>
           </div>
@@ -437,9 +437,9 @@ export default function App() {
       <section className={`card controls mb4 ${filtersOpen ? 'open' : 'collapsed'}`}>
         <div className="controls-header">
           <div>
-            <h2>Filtros r?pidos</h2>
+            <h2>Filtros rápidos</h2>
             <p className="muted tiny">
-              Define ubicaci?n, rango y m?tricas para ajustar la lectura hist?rica y el pron?stico.
+              Define ubicación, rango y métricas para ajustar la lectura histórica y el pronóstico.
             </p>
           </div>
           <button type="button" className="btn small ghost" onClick={() => setFiltersOpen((prev) => !prev)}>
@@ -521,7 +521,7 @@ export default function App() {
               className="btn small"
               onClick={() => setShowTrend((prev) => !prev)}
               disabled={isFutureRange}
-              title={isFutureRange ? 'La tendencia no aplica a pron?sticos futuros' : ''}
+              title={isFutureRange ? 'La tendencia no aplica a pronósticos futuros' : ''}
             >
               {showTrend ? 'Ocultar tendencia' : 'Ver tendencia'}
             </button>
@@ -546,7 +546,7 @@ export default function App() {
           </p>
 
           <div className="refresh-controls mt2">
-            <span className="tiny">Actualizaci?n autom?tica</span>
+            <span className="tiny">Actualización automática</span>
             <div className="seg compact">
               {REFRESH_OPTIONS.map((option) => (
                 <button
@@ -571,7 +571,7 @@ export default function App() {
           <div>
             <h2>Serie diaria</h2>
             <p className="muted tiny">
-              {rangeSummary} - {metric === 'intensity' ? 'Intensidad m?xima por d?a' : 'Acumulado diario (mm)'}
+              {rangeSummary} - {metric === 'intensity' ? 'Intensidad máxima por día' : 'Acumulado diario (mm)'}
             </p>
           </div>
           <button type="button" className="btn small ghost" onClick={() => setChartOpen((prev) => !prev)}>
@@ -594,18 +594,18 @@ export default function App() {
             {series.error && (
               <div className="error-banner mb3">
                 <strong>No fue posible actualizar la serie.</strong>
-                <p>{series.error.message || 'No pudimos contactar la API. Revisa tu conexi?n o intenta nuevamente.'}</p>
+                <p>{series.error.message || 'No pudimos contactar la API. Revisa tu conexión o intenta nuevamente.'}</p>
               </div>
             )}
 
             {metaSummary && (
               <div className="meta-panel">
                 <div className="meta-item">
-                  <strong>?ltima actualizaci?n</strong>
+                  <strong>Última actualización</strong>
                   <span>{metaSummary.updated}</span>
                 </div>
                 <div className="meta-item">
-                  <strong>Ubicaci?n</strong>
+                  <strong>Ubicación</strong>
                   <span>{metaSummary.location}</span>
                 </div>
                 <div className="meta-item">
@@ -624,7 +624,7 @@ export default function App() {
             <div className="mt3">
               <DailyHeatmap daily={dailyData} metric={metric} />
               <details className="glossary">
-                <summary>C?mo leer la intensidad</summary>
+                <summary>Cómo leer la intensidad</summary>
                 <ul>
                   <li>0-5 mm: Llovizna ligera, humedece sin generar escorrentia.</li>
                   <li>5-20 mm: Lluvia moderada, posible pausa corta en labores.</li>
@@ -652,7 +652,7 @@ export default function App() {
               <div className="narrative-card">
                 {quickImpact && (
                   <p>
-                    <strong>Lectura r?pida:</strong> {quickImpact}
+                    <strong>Lectura rápida:</strong> {quickImpact}
                   </p>
                 )}
                 {chartNarrative && <p className="chart-narrative">{chartNarrative}</p>}
@@ -666,10 +666,10 @@ export default function App() {
       <section className={`card mb4 mobile-fold ${agroOpen ? 'open' : 'collapsed'}`}>
         <div className="fold-toggle-row">
           <div>
-            <h2>Condiciones agroenerg?ticas</h2>
+            <h2>Condiciones agroenergéticas</h2>
             <p className="muted tiny">
-              Temperatura y humedad del suelo, ET0, radiaci?n y viento para apoyar ganaderos,
-              agricultores y generaci?n renovable.
+              Temperatura y humedad del suelo, ET0, radiación y viento para apoyar ganaderos,
+              agricultores y generación renovable.
             </p>
           </div>
           <button type="button" className="btn small ghost" onClick={() => setAgroOpen((prev) => !prev)}>
@@ -685,13 +685,13 @@ export default function App() {
               </div>
             )}
             <details className="glossary mt2">
-              <summary>C?mo leer estas variables</summary>
+              <summary>Cómo leer estas variables</summary>
               <ul>
-                <li>Temp. ambiente 18-32 C: confortable. &lt;15 C implica amaneceres fr?os y &gt;32 C demanda sombra e hidrataci?n.</li>
-                <li>Sensaci?n t?rmica &gt;35 C: riesgo de estr?s para personal y ganado.</li>
-                <li>Humedad relativa &lt;40 %: ambiente seco, incrementa demanda h?drica; &gt;85 % favorece hongos.</li>
+                <li>Temp. ambiente 18-32 C: confortable. &lt;15 C implica amaneceres fríos y &gt;32 C demanda sombra e hidratación.</li>
+                <li>Sensación térmica &gt;35 C: riesgo de estrés para personal y ganado.</li>
+                <li>Humedad relativa &lt;40 %: ambiente seco, incrementa demanda hídrica; &gt;85 % favorece hongos.</li>
                 <li>Lluvia 24h: &lt;5 mm se absorbe rapido; &gt;30 mm provoca charcos y compactacion.</li>
-                <li>ET0 &gt;4 mm indica alta demanda de riego. Radiaci?n &gt;4 kWh/m2 favorece la generaci?n solar.</li>
+                <li>ET0 &gt;4 mm indica alta demanda de riego. Radiación &gt;4 kWh/m2 favorece la generación solar.</li>
               </ul>
             </details>
           </div>
@@ -702,7 +702,7 @@ export default function App() {
       <section className={`card mb4 mobile-fold ${hourlyOpen ? 'open' : 'collapsed'}`}>
         <div className="fold-toggle-row">
           <div>
-            <h2>Distribuci?n horaria</h2>
+            <h2>Distribución horaria</h2>
             <p className="muted tiny">
               Identifica horarios con lluvia o ventanas secas (intensidad en mm/h).
             </p>
@@ -722,10 +722,10 @@ export default function App() {
               </div>
             )}
             <details className="glossary mt2">
-              <summary>C?mo leer la distribuci?n</summary>
+              <summary>Cómo leer la distribución</summary>
               <ul>
                 <li>Bandas intensas al amanecer indican suelos saturados: retrasa la entrada de maquinaria.</li>
-                <li>Bloques continuos &gt;60 % se?alan varios d?as lluviosos. Busca ventanas p?lidas (&lt;30 %) para labores cr?ticas.</li>
+                <li>Bloques continuos &gt;60 % señalan varios días lluviosos. Busca ventanas pálidas (&lt;30 %) para labores críticas.</li>
                 <li>Celdas claras aisladas equivalen a horas de baja probabilidad, ideales para riego o mantenimiento.</li>
               </ul>
             </details>
@@ -739,7 +739,7 @@ export default function App() {
           <div>
             <h2>Insights automatizados</h2>
             <p className="muted tiny">
-              Basados en umbrales de impacto y c?lculos del paquete insight-engine.
+              Basados en umbrales de impacto y cálculos del paquete insight-engine.
             </p>
           </div>
           <button type="button" className="btn small ghost" onClick={() => setInsightsOpen((prev) => !prev)}>
@@ -755,7 +755,7 @@ export default function App() {
                   <strong>{formatNumber(insightSummary.totalRain)} mm</strong>
                 </span>
                 <span className="insights-chip">
-                  <span className="chip-label">D?as con dato</span>
+                  <span className="chip-label">Días con dato</span>
                   <strong>{insightSummary.count.toLocaleString('es-CO')}</strong>
                 </span>
               </div>
@@ -767,11 +767,11 @@ export default function App() {
                   <p>{sectorNarratives.agriculture}</p>
                 </div>
                 <div>
-                  <strong>Ganader?a</strong>
+                  <strong>Ganadería</strong>
                   <p>{sectorNarratives.livestock}</p>
                 </div>
                 <div>
-                  <strong>Energ?as renovables</strong>
+                  <strong>Energías renovables</strong>
                   <p>{sectorNarratives.energy}</p>
                 </div>
               </div>
@@ -779,7 +779,7 @@ export default function App() {
             {insights.error ? (
               <div className="error-banner">
                 <strong>No fue posible generar insights.</strong>
-                <p>{insights.error.message || 'No logramos conectar con la API de insights. Vuelve a intentarlo cuando tengas conexi?n estable.'}</p>
+                <p>{insights.error.message || 'No logramos conectar con la API de insights. Vuelve a intentarlo cuando tengas conexión estable.'}</p>
               </div>
             ) : insights.data ? (
               insights.data.insights.length ? (
@@ -802,7 +802,7 @@ export default function App() {
                   ))}
                 </ul>
               ) : (
-                <div className="empty-state">Sin hallazgos relevantes con los umbrales actuales. Aj?stalos para m?s sensibilidad.</div>
+                <div className="empty-state">Sin hallazgos relevantes con los umbrales actuales. Ajústalos para más sensibilidad.</div>
               )
             ) : (
               <div className="skeleton">
