@@ -5,6 +5,7 @@ import { FEATURE_AGROMETEO } from './config/flags';
 import { useSeries } from './hooks/useSeries';
 import { useInsights } from './hooks/useInsights';
 import { useThresholds } from './state/thresholds';
+import { useReferenceDaily, type ReferenceDay } from './hooks/useReferenceDaily';
 import {
   PrecipitationChart,
   type AggregatedPoint,
@@ -43,6 +44,14 @@ type ChartSummary = {
   lastDate?: string;
 };
 
+type ReferenceDiff = {
+  date: string;
+  label: string;
+  appValue: number;
+  referenceValue: number;
+  delta: number;
+};
+
 type SuspiciousPoint = Pick<AggregatedPoint, 'date' | 'label' | 'value'>;
 type AnomalyReport = { reference: number; points: SuspiciousPoint[] };
 
@@ -78,6 +87,8 @@ const REFRESH_OPTIONS: RefreshOption[] = [
     description: 'Intervalo relajado para monitoreo de fondo.',
   },
 ];
+
+const REFERENCE_DIFF_THRESHOLD_MM = 12;
 
 const RANGE_OPTIONS: RangeOption[] = [
   {
@@ -285,6 +296,23 @@ export default function App() {
   );
   const anomalyReport = useMemo(() => detectSuspiciousPoints(aggregated.points, metric), [aggregated.points, metric]);
   const hasAnomalies = anomalyReport.points.length > 0;
+
+  const referenceParams = useMemo(() => {
+    if (metric !== 'accumulated' || isFutureRange) return null;
+    const lat = series.data?.meta?.lat;
+    const lon = series.data?.meta?.lon;
+    if (typeof lat !== 'number' || typeof lon !== 'number') return null;
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
+    return { lat, lon, from: range.from, to: range.to };
+  }, [isFutureRange, metric, range.from, range.to, series.data]);
+  const referenceDaily = useReferenceDaily(referenceParams);
+  const referenceComparison = useMemo(
+    () =>
+      referenceParams && referenceDaily.data?.days?.length
+        ? compareWithReference(aggregated.points, referenceDaily.data.days, REFERENCE_DIFF_THRESHOLD_MM)
+        : null,
+    [aggregated.points, referenceDaily.data, referenceParams]
+  );
 
   const rangeSummary = formatRangeSummary(range);
   const chartNarrative = useMemo(
@@ -639,6 +667,55 @@ export default function App() {
                     </li>
                   ))}
                 </ul>
+              </div>
+            )}
+            {referenceParams && (
+              <div className="reference-card">
+                <div className="reference-head">
+                  <strong>Cruce con Open-Meteo</strong>
+                  {referenceDaily.data?.coverage.from && (
+                    <span className="tiny muted">
+                      {formatDisplayDate(referenceDaily.data.coverage.from)} →{' '}
+                      {formatDisplayDate(referenceDaily.data.coverage.to ?? referenceDaily.data.coverage.from)}
+                    </span>
+                  )}
+                </div>
+                {referenceDaily.isLoading && (
+                  <p className="muted tiny">Descargando lluvia diaria de referencia…</p>
+                )}
+                {referenceDaily.error && (
+                  <p className="muted tiny">
+                    No fue posible consultar la serie oficial. {referenceDaily.error.message}
+                  </p>
+                )}
+                {!referenceDaily.isLoading && !referenceDaily.error && (
+                  <>
+                    {referenceDaily.data?.note && <p className="muted tiny">{referenceDaily.data.note}</p>}
+                    {referenceComparison && referenceComparison.flagged.length > 0 ? (
+                      <>
+                        <p>
+                          Detectamos {referenceComparison.flagged.length} días con diferencia ≥{' '}
+                          {REFERENCE_DIFF_THRESHOLD_MM} mm entre la app y Open-Meteo.
+                        </p>
+                        <ul>
+                          {referenceComparison.flagged.slice(0, 4).map((item) => (
+                            <li key={item.date}>
+                              {item.label}: {formatNumber(item.appValue)} vs {formatNumber(item.referenceValue)} mm (
+                              {formatSigned(item.delta)} mm)
+                            </li>
+                          ))}
+                        </ul>
+                        <p className="muted tiny">
+                          Valida estas fechas con IDEAM, CHIRPS o tus sensores locales antes de descartar la señal.
+                        </p>
+                      </>
+                    ) : (
+                      <p className="muted tiny">
+                        Sin diferencias mayores a {REFERENCE_DIFF_THRESHOLD_MM} mm frente a la referencia diaria disponible.
+                      </p>
+                    )}
+                  </>
+                )}
               </div>
             )}
 
@@ -1560,6 +1637,36 @@ function summarizeTrend(trend: TrendPoint[] | null): { value: string; note: stri
   };
 }
 
+function compareWithReference(
+  points: AggregatedPoint[],
+  reference: ReferenceDay[],
+  threshold: number
+): { flagged: ReferenceDiff[] } {
+  if (!Array.isArray(points) || !Array.isArray(reference) || !reference.length || threshold <= 0) {
+    return { flagged: [] };
+  }
+  const referenceMap = new Map(reference.map((day) => [day.date, day.value]));
+  const flagged: ReferenceDiff[] = [];
+
+  points.forEach((point) => {
+    if (point.isForecast) return;
+    const refValue = referenceMap.get(point.date);
+    if (typeof refValue !== 'number') return;
+    const delta = point.value - refValue;
+    if (Math.abs(delta) < threshold) return;
+    flagged.push({
+      date: point.date,
+      label: point.label,
+      appValue: point.value,
+      referenceValue: refValue,
+      delta,
+    });
+  });
+
+  flagged.sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta));
+  return { flagged };
+}
+
 function detectSuspiciousPoints(points: AggregatedPoint[], metric: Metric): AnomalyReport {
   if (!Array.isArray(points) || !points.length) {
     return { reference: 0, points: [] };
@@ -1601,6 +1708,11 @@ function detectSuspiciousPoints(points: AggregatedPoint[], metric: Metric): Anom
 
 function formatNumber(value: number): string {
   return Number.isFinite(value) ? value.toLocaleString('es-CO', { maximumFractionDigits: 2 }) : '0';
+}
+
+function formatSigned(value: number): string {
+  const prefix = value >= 0 ? '+' : '-';
+  return `${prefix}${formatNumber(Math.abs(value))}`;
 }
 
 function buildChartNarrative(

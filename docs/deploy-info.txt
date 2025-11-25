@@ -1,1 +1,1 @@
-Build: anomaly alert + data sanity check (2025-11-25 08:33 America/Bogota)
+Build: comparador Open-Meteo (2025-11-25 09:34 America/Bogota)
