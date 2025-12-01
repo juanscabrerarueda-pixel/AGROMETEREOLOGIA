@@ -30,7 +30,7 @@ body {
 .wrap {
   max-width: 1080px;
   margin: 0 auto;
-  padding: clamp(20px, 5vw, 40px) clamp(12px, 4vw, 24px) clamp(48px, 6vw, 80px);
+  padding: clamp(16px, 5vw, 40px) clamp(10px, 4vw, 24px) clamp(36px, 6vw, 72px);
   display: grid;
   gap: clamp(18px, 4vw, 28px);
 }
@@ -38,8 +38,8 @@ body {
 .card {
   background: linear-gradient(160deg, rgba(11, 15, 33, 0.92), rgba(17, 8, 27, 0.9));
   border: 1px solid rgba(255, 255, 255, 0.09);
-  border-radius: clamp(18px, 4vw, 28px);
-  padding: clamp(18px, 4vw, 28px);
+  border-radius: clamp(16px, 4vw, 26px);
+  padding: clamp(16px, 4vw, 26px);
   box-shadow: 0 35px 60px rgba(3, 5, 15, 0.7);
   backdrop-filter: blur(12px);
 }
@@ -578,14 +578,14 @@ body {
   background: var(--accent);
   border: none;
   color: #05060d;
-  padding: 11px 18px;
+  padding: 11px 16px;
   border-radius: 999px;
   cursor: pointer;
   font-size: 13px;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.03em;
   text-transform: uppercase;
   transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
-  min-width: clamp(110px, 22vw, 140px);
+  min-width: clamp(110px, 20vw, 140px);
   font-weight: 700;
   box-shadow: 0 16px 38px rgba(255, 170, 120, 0.35);
 }
