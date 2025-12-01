@@ -635,6 +635,17 @@ body {
   gap: 18px;
 }
 
+.controls .seg {
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 10px;
+}
+
+.controls .seg .btn {
+  flex: 1 1 140px;
+  min-width: 0;
+}
+
 .controls.collapsed .controls-body {
   display: none;
 }
@@ -1549,6 +1560,19 @@ body {
 
   .seg::-webkit-scrollbar {
     display: none;
+  }
+
+  .controls .seg {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    overflow: visible;
+    gap: 8px;
+    padding-bottom: 0;
+  }
+
+  .controls .seg .btn {
+    width: 100%;
+    min-width: 0;
   }
 
   .kpis {
