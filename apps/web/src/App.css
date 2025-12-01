@@ -637,8 +637,8 @@ body {
 }
 
 .controls .seg {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 10px;
 }
 
@@ -1576,15 +1576,12 @@ body {
 
   .controls .seg {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    overflow: visible;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 8px;
-    padding-bottom: 0;
   }
 
   .controls .seg .btn {
     width: 100%;
-    min-width: 0;
   }
 
   .kpis {
