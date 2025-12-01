@@ -30,16 +30,16 @@ body {
 .wrap {
   max-width: 1080px;
   margin: 0 auto;
-  padding: 40px 20px 72px;
+  padding: clamp(20px, 5vw, 40px) clamp(12px, 4vw, 24px) clamp(48px, 6vw, 80px);
   display: grid;
-  gap: 24px;
+  gap: clamp(18px, 4vw, 28px);
 }
 
 .card {
   background: linear-gradient(160deg, rgba(11, 15, 33, 0.92), rgba(17, 8, 27, 0.9));
   border: 1px solid rgba(255, 255, 255, 0.09);
-  border-radius: 28px;
-  padding: 28px;
+  border-radius: clamp(18px, 4vw, 28px);
+  padding: clamp(18px, 4vw, 28px);
   box-shadow: 0 35px 60px rgba(3, 5, 15, 0.7);
   backdrop-filter: blur(12px);
 }
@@ -50,43 +50,50 @@ body {
 
 .mobile-overview {
   display: grid;
-  gap: 18px;
+  gap: clamp(14px, 3vw, 18px);
 }
 
 .overview-top {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 18px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: clamp(12px, 3vw, 18px);
+  align-items: flex-start;
 }
 
 .overview-cell {
-  flex: 1 1 220px;
-  min-width: 180px;
+  border-radius: 18px;
+  padding: clamp(12px, 3vw, 18px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(7, 9, 18, 0.7);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .overview-cell strong {
-  display: block;
-  font-size: 20px;
-  margin: 4px 0;
+  font-size: clamp(18px, 4vw, 26px);
+  margin: 2px 0;
 }
 
 .overview-pills {
   display: grid;
-  gap: 12px;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: clamp(10px, 3vw, 14px);
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
 }
 
 .overview-pill {
   border-radius: 18px;
-  padding: 16px;
+  padding: clamp(12px, 3vw, 16px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(12, 15, 24, 0.78);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .overview-pill strong {
-  display: block;
-  font-size: 22px;
-  margin-top: 6px;
+  font-size: clamp(20px, 5vw, 26px);
+  margin-top: 2px;
 }
 
 .realtime-card {
@@ -394,14 +401,19 @@ body {
 
 .hero-brand {
   display: flex;
-  gap: 20px;
+  flex-wrap: wrap;
+  gap: clamp(16px, 3vw, 24px);
   align-items: center;
+}
+.hero-brand > div:last-child {
+  flex: 1 1 280px;
+  min-width: 0;
 }
 
 .brand-icon {
   position: relative;
-  width: 92px;
-  height: 92px;
+  width: clamp(72px, 18vw, 92px);
+  height: clamp(72px, 18vw, 92px);
   border-radius: 28px;
   background: linear-gradient(135deg, #ff8a8a, #ffd966, #60c9ff);
   box-shadow: 0 20px 35px rgba(255, 138, 138, 0.4);
@@ -573,7 +585,7 @@ body {
   letter-spacing: 0.04em;
   text-transform: uppercase;
   transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
-  min-width: 140px;
+  min-width: clamp(110px, 22vw, 140px);
   font-weight: 700;
   box-shadow: 0 16px 38px rgba(255, 170, 120, 0.35);
 }
@@ -729,6 +741,7 @@ body {
   justify-content: space-between;
   gap: 12px;
   margin-bottom: 18px;
+  flex-wrap: wrap;
 }
 
 .section-header h2 {
@@ -794,6 +807,7 @@ body {
   padding: 0;
   display: grid;
   gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
 
 .insights-kpis {
@@ -831,6 +845,9 @@ body {
   padding: 16px;
   background: rgba(16, 19, 28, 0.85);
   border: 1px solid rgba(96, 165, 250, 0.16);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .insight-item strong {
@@ -846,6 +863,7 @@ body {
   margin: 0;
   color: var(--ink);
   line-height: 1.5;
+  flex: 1;
 }
 
 .insight-pill {
@@ -886,12 +904,12 @@ body {
 
 .heatmap {
   display: grid;
-  gap: 16px;
+  gap: clamp(12px, 3vw, 18px);
 }
 
 .heatmap-headline h3 {
   margin: 0 0 6px;
-  font-size: 16px;
+  font-size: clamp(15px, 4vw, 18px);
 }
 
 .heatmap-headline p {
@@ -906,6 +924,7 @@ body {
   max-height: 520px;
   padding-bottom: 8px;
   padding-right: 6px;
+  scrollbar-width: thin;
 }
 
 .heatmap-stacks {
@@ -1002,21 +1021,21 @@ body {
 .agro-panels {
   display: grid;
   gap: 12px;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 }
 
 .meta-panel {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: clamp(10px, 2vw, 16px);
   margin-bottom: 16px;
 }
 
 .meta-item {
   border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 12px 14px;
-  background: rgba(15, 17, 27, 0.8);
+  border-radius: 14px;
+  padding: clamp(10px, 2.5vw, 14px);
+  background: rgba(15, 17, 27, 0.85);
   font-size: 13px;
 }
 
@@ -1035,6 +1054,7 @@ body {
   flex-direction: column;
   gap: 4px;
   box-shadow: 0 18px 40px rgba(3, 4, 15, 0.65);
+  min-height: 134px;
 }
 
 .agro-card.ok {
@@ -1113,6 +1133,7 @@ body {
 .daily-heatmap-gridWrapper {
   overflow-x: auto;
   padding-bottom: 6px;
+  scrollbar-width: thin;
 }
 
 .daily-week-row {
@@ -1171,6 +1192,7 @@ body {
   gap: 18px;
   overflow-x: auto;
   padding: 8px 4px 12px;
+  scrollbar-width: thin;
 }
 
 .daily-bars-week {
@@ -1595,5 +1617,41 @@ body {
 
   .heatmap-scroll .heatmap-matrix {
     min-width: 420px;
+  }
+}
+
+@media (max-width: 540px) {
+  .hero-brand {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .reference-card .reference-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  .sector-insights {
+    grid-template-columns: 1fr;
+  }
+  .daily-bars {
+    gap: 12px;
+  }
+  .overview-top {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .heatmap-scroll {
+    max-height: none;
+  }
+  .heatmap-stacks, .heatmap-matrix {
+    gap: 10px;
+  }
+  .daily-heatmap-grid {
+    gap: 2px;
+  }
+  .insights-list {
+    grid-template-columns: 1fr;
   }
 }
