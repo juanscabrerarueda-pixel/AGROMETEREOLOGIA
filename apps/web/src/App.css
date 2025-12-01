@@ -636,20 +636,33 @@ body {
   flex-direction: column;
   gap: 14px;
 }
+.controls .row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 12px;
+  align-items: end;
+}
+.controls .row.gap {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
 
 .controls .seg {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 10px;
+  justify-content: flex-start;
 }
-.controls .seg.stack {
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+.controls .seg.stack .btn {
+  flex: 0 1 clamp(150px, 22%, 220px);
 }
-.controls .seg.stack.compact {
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+.controls .seg.stack.compact .btn {
+  flex-basis: clamp(110px, 18%, 150px);
 }
 .controls .seg .btn {
-  width: 100%;
+  flex: 0 1 clamp(140px, 24%, 220px);
+  width: auto;
   min-width: 0;
   text-align: center;
 }
@@ -1574,7 +1587,12 @@ body {
     display: none;
   }
 
+  .controls .row {
+    grid-template-columns: 1fr;
+  }
+
   .controls .seg {
+    display: grid;
     grid-template-columns: 1fr;
     gap: 10px;
   }
@@ -1584,9 +1602,12 @@ body {
     grid-template-columns: 1fr;
   }
 
-  .controls .seg .btn {
+  .controls .seg .btn,
+  .controls .seg.stack .btn,
+  .controls .seg.stack.compact .btn {
     width: 100%;
     min-width: 0;
+    flex: 1 1 100%;
   }
 
   .kpis {
