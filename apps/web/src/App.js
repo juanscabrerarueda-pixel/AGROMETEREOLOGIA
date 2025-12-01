@@ -346,7 +346,29 @@ function formatChartLabel(iso) {
 function formatDisplayDate(iso) {
     if (!iso)
         return 'Sin dato';
+    if (/^\d{4}-\d{2}-\d{2}$/.test(iso)) {
+        return formatChartLabel(iso);
+    }
+    const date = new Date(iso);
+    if (!Number.isNaN(date.getTime())) {
+        return date.toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
     return formatChartLabel(iso);
+}
+function formatDateTime(iso) {
+    if (!iso)
+        return 'Sin dato';
+    const date = new Date(iso);
+    if (Number.isNaN(date.getTime())) {
+        return formatDisplayDate(iso);
+    }
+    return date.toLocaleString('es-CO', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+    });
 }
 function formatRangeSummary(range) {
     return `${formatDisplayDate(range.from)} -> ${formatDisplayDate(range.to)}`;
@@ -583,7 +605,7 @@ function buildMetaSummary(series, metric, department, selectedMuni) {
         return null;
     const hourly = series.hourly ?? [];
     const lastTimestamp = hourly.length ? hourly[hourly.length - 1]?.t : series.range?.to;
-    const updated = formatDisplayDate(lastTimestamp) || 'a';
+    const updated = formatDateTime(lastTimestamp) || 'Sin dato';
     const muniLabel = department?.municipalities.find((item) => item.value === selectedMuni)?.label;
     const location = [muniLabel, department?.label].filter(Boolean).join(' A ') || department?.label || 'a';
     return {
