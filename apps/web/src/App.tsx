@@ -514,7 +514,7 @@ export default function App() {
             </label>
           </div>
 
-          <div className="seg mt2">
+          <div className="seg stack mt2">
             {RANGE_OPTIONS.map((option) => (
               <button
                 key={option.id}
@@ -535,7 +535,7 @@ export default function App() {
             </button>
           </div>
 
-          <div className="seg mt2">
+          <div className="seg stack mt2">
             {METRIC_OPTIONS.map((option) => (
               <button
                 key={option.id}
@@ -558,7 +558,7 @@ export default function App() {
             >
               {showTrend ? 'Ocultar tendencia' : 'Ver tendencia'}
             </button>
-            <div className="seg compact">
+            <div className="seg stack compact">
               {TREND_OPTIONS.map((option) => (
                 <button
                   key={option.id}
@@ -580,7 +580,7 @@ export default function App() {
 
           <div className="refresh-controls mt2">
             <span className="tiny">Actualización automática</span>
-            <div className="seg compact">
+            <div className="seg stack compact">
               {REFRESH_OPTIONS.map((option) => (
                 <button
                   key={option.id}

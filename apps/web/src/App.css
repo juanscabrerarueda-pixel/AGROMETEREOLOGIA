@@ -528,6 +528,9 @@ body {
   flex-wrap: wrap;
   gap: 12px;
 }
+.controls .row {
+  flex-direction: column;
+}
 
 .row.gap {
   align-items: center;
@@ -615,8 +618,9 @@ body {
 }
 
 .controls {
-  display: grid;
-  gap: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(12px, 3vw, 20px);
 }
 
 .controls-header {
@@ -632,31 +636,34 @@ body {
 }
 
 .controls-body {
-  display: grid;
-  gap: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
 .controls .seg {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 10px;
+}
+.controls .seg.stack {
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+.controls .seg.stack.compact {
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
 }
 
 .controls .seg .btn {
   width: 100%;
   min-width: 0;
+  text-align: center;
 }
-
-.controls .seg {
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  gap: 10px;
-}
-
-.controls .seg .btn {
-  flex: 1 1 140px;
+.controls .btn {
+  width: 100%;
   min-width: 0;
 }
+
 
 .controls.collapsed .controls-body {
   display: none;
@@ -1561,6 +1568,9 @@ body {
     flex-direction: column;
     gap: 8px;
   }
+  .row.gap {
+    align-items: stretch;
+  }
 
   .seg {
     flex-wrap: nowrap;
@@ -1575,9 +1585,13 @@ body {
   }
 
   .controls .seg {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 8px;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .controls .seg.stack,
+  .controls .seg.stack.compact {
+    grid-template-columns: 1fr;
   }
 
   .controls .seg .btn {
