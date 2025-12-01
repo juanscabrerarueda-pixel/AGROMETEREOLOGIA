@@ -528,10 +528,6 @@ body {
   flex-wrap: wrap;
   gap: 12px;
 }
-.controls .row {
-  flex-direction: column;
-}
-
 .row.gap {
   align-items: center;
 }
@@ -642,19 +638,19 @@ body {
 }
 
 .controls .seg {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 10px;
 }
-.controls .seg.stack .btn {
-  flex: 1 1 clamp(160px, 26%, 220px);
+.controls .seg.stack {
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
 }
-.controls .seg.stack.compact .btn {
-  flex: 1 1 120px;
+.controls .seg.stack.compact {
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
 }
 .controls .seg .btn {
-  width: auto;
-  min-width: clamp(130px, 22vw, 180px);
+  width: 100%;
+  min-width: 0;
   text-align: center;
 }
 
@@ -1579,14 +1575,12 @@ body {
   }
 
   .controls .seg {
-    display: grid;
     grid-template-columns: 1fr;
     gap: 10px;
   }
 
   .controls .seg.stack,
   .controls .seg.stack.compact {
-    display: grid;
     grid-template-columns: 1fr;
   }
 
