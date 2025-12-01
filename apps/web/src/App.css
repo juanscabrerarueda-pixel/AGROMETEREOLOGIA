@@ -588,6 +588,7 @@ body {
   min-width: clamp(110px, 20vw, 140px);
   font-weight: 700;
   box-shadow: 0 16px 38px rgba(255, 170, 120, 0.35);
+  text-align: center;
 }
 
 .btn.small {
@@ -633,6 +634,17 @@ body {
 .controls-body {
   display: grid;
   gap: 18px;
+}
+
+.controls .seg {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+.controls .seg .btn {
+  width: 100%;
+  min-width: 0;
 }
 
 .controls .seg {
