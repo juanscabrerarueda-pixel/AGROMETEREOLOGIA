@@ -41,12 +41,16 @@ function clampHistoryRange(from: string, to: string): { from: Date; to: Date; li
     return { from: start, to: start, limited: true };
   }
   const effectiveEnd = end > yesterday ? yesterday : end;
+  if (effectiveEnd < start) {
+    return { from: start, to: start, limited: true };
+  }
   return { from: start, to: effectiveEnd, limited: end > yesterday };
 }
 
 async function fetchReferenceDaily(params: ReferenceParams): Promise<ReferenceResult> {
   const { from, to, limited } = clampHistoryRange(params.from, params.to);
-  if (from > to) {
+  const futureOnly = from.getTime() === to.getTime() && from > startOfUtcDay(new Date());
+  if (futureOnly) {
     return {
       source: 'open-meteo',
       timezone: 'UTC',

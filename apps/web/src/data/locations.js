@@ -9,8 +9,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Leticia"
             },
             {
-                "value": "Puerto Nariño",
-                "label": "Puerto Nariño"
+                "value": "Puerto Nari\u00f1o",
+                "label": "Puerto Nari\u00f1o"
             }
         ]
     },
@@ -23,16 +23,16 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Abejorral"
             },
             {
-                "value": "Abriaquí",
-                "label": "Abriaquí"
+                "value": "Abriaqu\u00ed",
+                "label": "Abriaqu\u00ed"
             },
             {
-                "value": "Alejandría",
-                "label": "Alejandría"
+                "value": "Alejandr\u00eda",
+                "label": "Alejandr\u00eda"
             },
             {
-                "value": "Amagá",
-                "label": "Amagá"
+                "value": "Amag\u00e1",
+                "label": "Amag\u00e1"
             },
             {
                 "value": "Amalfi",
@@ -43,24 +43,24 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Andes"
             },
             {
-                "value": "Angelópolis",
-                "label": "Angelópolis"
+                "value": "Angel\u00f3polis",
+                "label": "Angel\u00f3polis"
             },
             {
                 "value": "Angostura",
                 "label": "Angostura"
             },
             {
-                "value": "Anorí",
-                "label": "Anorí"
+                "value": "Anor\u00ed",
+                "label": "Anor\u00ed"
             },
             {
-                "value": "Anzá",
-                "label": "Anzá"
+                "value": "Anz\u00e1",
+                "label": "Anz\u00e1"
             },
             {
-                "value": "Apartadó",
-                "label": "Apartadó"
+                "value": "Apartad\u00f3",
+                "label": "Apartad\u00f3"
             },
             {
                 "value": "Arboletes",
@@ -95,16 +95,16 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Betulia"
             },
             {
-                "value": "Briceño",
-                "label": "Briceño"
+                "value": "Brice\u00f1o",
+                "label": "Brice\u00f1o"
             },
             {
-                "value": "Buriticá",
-                "label": "Buriticá"
+                "value": "Buritic\u00e1",
+                "label": "Buritic\u00e1"
             },
             {
-                "value": "Cáceres",
-                "label": "Cáceres"
+                "value": "C\u00e1ceres",
+                "label": "C\u00e1ceres"
             },
             {
                 "value": "Caicedo",
@@ -119,12 +119,12 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Campamento"
             },
             {
-                "value": "Cañasgordas",
-                "label": "Cañasgordas"
+                "value": "Ca\u00f1asgordas",
+                "label": "Ca\u00f1asgordas"
             },
             {
-                "value": "Caracolí",
-                "label": "Caracolí"
+                "value": "Caracol\u00ed",
+                "label": "Caracol\u00ed"
             },
             {
                 "value": "Caramanta",
@@ -135,32 +135,32 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Carepa"
             },
             {
-                "value": "Carolina del Príncipe",
-                "label": "Carolina del Príncipe"
+                "value": "Carolina del Pr\u00edncipe",
+                "label": "Carolina del Pr\u00edncipe"
             },
             {
                 "value": "Caucasia",
                 "label": "Caucasia"
             },
             {
-                "value": "Chigorodó",
-                "label": "Chigorodó"
+                "value": "Chigorod\u00f3",
+                "label": "Chigorod\u00f3"
             },
             {
                 "value": "Cisneros",
                 "label": "Cisneros"
             },
             {
-                "value": "Ciudad Bolívar",
-                "label": "Ciudad Bolívar"
+                "value": "Ciudad Bol\u00edvar",
+                "label": "Ciudad Bol\u00edvar"
             },
             {
-                "value": "Cocorná",
-                "label": "Cocorná"
+                "value": "Cocorn\u00e1",
+                "label": "Cocorn\u00e1"
             },
             {
-                "value": "Concepción",
-                "label": "Concepción"
+                "value": "Concepci\u00f3n",
+                "label": "Concepci\u00f3n"
             },
             {
                 "value": "Concordia",
@@ -175,12 +175,12 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Dabeiba"
             },
             {
-                "value": "Donmatías",
-                "label": "Donmatías"
+                "value": "Donmat\u00edas",
+                "label": "Donmat\u00edas"
             },
             {
-                "value": "Ebéjico",
-                "label": "Ebéjico"
+                "value": "Eb\u00e9jico",
+                "label": "Eb\u00e9jico"
             },
             {
                 "value": "El Bagre",
@@ -191,8 +191,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "El Carmen de Viboral"
             },
             {
-                "value": "El Peñol",
-                "label": "El Peñol"
+                "value": "El Pe\u00f1ol",
+                "label": "El Pe\u00f1ol"
             },
             {
                 "value": "El Retiro",
@@ -203,8 +203,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "El Santuario"
             },
             {
-                "value": "Entrerríos",
-                "label": "Entrerríos"
+                "value": "Entrerr\u00edos",
+                "label": "Entrerr\u00edos"
             },
             {
                 "value": "Envigado",
@@ -227,8 +227,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Girardota"
             },
             {
-                "value": "Gómez Plata",
-                "label": "Gómez Plata"
+                "value": "G\u00f3mez Plata",
+                "label": "G\u00f3mez Plata"
             },
             {
                 "value": "Granada",
@@ -243,8 +243,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Guarne"
             },
             {
-                "value": "Guatapé",
-                "label": "Guatapé"
+                "value": "Guatap\u00e9",
+                "label": "Guatap\u00e9"
             },
             {
                 "value": "Heliconia",
@@ -255,20 +255,20 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Hispania"
             },
             {
-                "value": "Itagüí",
-                "label": "Itagüí"
+                "value": "Itag\u00fc\u00ed",
+                "label": "Itag\u00fc\u00ed"
             },
             {
                 "value": "Ituango",
                 "label": "Ituango"
             },
             {
-                "value": "Jardín",
-                "label": "Jardín"
+                "value": "Jard\u00edn",
+                "label": "Jard\u00edn"
             },
             {
-                "value": "Jericó",
-                "label": "Jericó"
+                "value": "Jeric\u00f3",
+                "label": "Jeric\u00f3"
             },
             {
                 "value": "La Ceja",
@@ -283,8 +283,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "La Pintada"
             },
             {
-                "value": "La Unión",
-                "label": "La Unión"
+                "value": "La Uni\u00f3n",
+                "label": "La Uni\u00f3n"
             },
             {
                 "value": "Liborina",
@@ -299,32 +299,32 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Marinilla"
             },
             {
-                "value": "Medellín",
-                "label": "Medellín"
+                "value": "Medell\u00edn",
+                "label": "Medell\u00edn"
             },
             {
                 "value": "Montebello",
                 "label": "Montebello"
             },
             {
-                "value": "Murindó",
-                "label": "Murindó"
+                "value": "Murind\u00f3",
+                "label": "Murind\u00f3"
             },
             {
-                "value": "Mutatá",
-                "label": "Mutatá"
+                "value": "Mutat\u00e1",
+                "label": "Mutat\u00e1"
             },
             {
-                "value": "Nariño",
-                "label": "Nariño"
+                "value": "Nari\u00f1o",
+                "label": "Nari\u00f1o"
             },
             {
-                "value": "Nechí",
-                "label": "Nechí"
+                "value": "Nech\u00ed",
+                "label": "Nech\u00ed"
             },
             {
-                "value": "Necoclí",
-                "label": "Necoclí"
+                "value": "Necocl\u00ed",
+                "label": "Necocl\u00ed"
             },
             {
                 "value": "Olaya",
@@ -339,8 +339,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Pueblorrico"
             },
             {
-                "value": "Puerto Berrío",
-                "label": "Puerto Berrío"
+                "value": "Puerto Berr\u00edo",
+                "label": "Puerto Berr\u00edo"
             },
             {
                 "value": "Puerto Nare",
@@ -371,8 +371,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Salgar"
             },
             {
-                "value": "San Andrés de Cuerquia",
-                "label": "San Andrés de Cuerquia"
+                "value": "San Andr\u00e9s de Cuerquia",
+                "label": "San Andr\u00e9s de Cuerquia"
             },
             {
                 "value": "San Carlos",
@@ -383,16 +383,16 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "San Francisco"
             },
             {
-                "value": "San Jerónimo",
-                "label": "San Jerónimo"
+                "value": "San Jer\u00f3nimo",
+                "label": "San Jer\u00f3nimo"
             },
             {
-                "value": "San José de la Montaña",
-                "label": "San José de la Montaña"
+                "value": "San Jos\u00e9 de la Monta\u00f1a",
+                "label": "San Jos\u00e9 de la Monta\u00f1a"
             },
             {
-                "value": "San Juan de Urabá",
-                "label": "San Juan de Urabá"
+                "value": "San Juan de Urab\u00e1",
+                "label": "San Juan de Urab\u00e1"
             },
             {
                 "value": "San Luis",
@@ -403,8 +403,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "San Pedro de los Milagros"
             },
             {
-                "value": "San Pedro de Urabá",
-                "label": "San Pedro de Urabá"
+                "value": "San Pedro de Urab\u00e1",
+                "label": "San Pedro de Urab\u00e1"
             },
             {
                 "value": "San Rafael",
@@ -419,8 +419,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "San Vicente"
             },
             {
-                "value": "Santa Bárbara",
-                "label": "Santa Bárbara"
+                "value": "Santa B\u00e1rbara",
+                "label": "Santa B\u00e1rbara"
             },
             {
                 "value": "Santa Fe de Antioquia",
@@ -439,28 +439,28 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Segovia"
             },
             {
-                "value": "Sonsón",
-                "label": "Sonsón"
+                "value": "Sons\u00f3n",
+                "label": "Sons\u00f3n"
             },
             {
-                "value": "Sopetrán",
-                "label": "Sopetrán"
+                "value": "Sopetr\u00e1n",
+                "label": "Sopetr\u00e1n"
             },
             {
-                "value": "Támesis",
-                "label": "Támesis"
+                "value": "T\u00e1mesis",
+                "label": "T\u00e1mesis"
             },
             {
-                "value": "Tarazá",
-                "label": "Tarazá"
+                "value": "Taraz\u00e1",
+                "label": "Taraz\u00e1"
             },
             {
                 "value": "Tarso",
                 "label": "Tarso"
             },
             {
-                "value": "Titiribí",
-                "label": "Titiribí"
+                "value": "Titirib\u00ed",
+                "label": "Titirib\u00ed"
             },
             {
                 "value": "Toledo",
@@ -483,36 +483,36 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Valdivia"
             },
             {
-                "value": "Valparaíso",
-                "label": "Valparaíso"
+                "value": "Valpara\u00edso",
+                "label": "Valpara\u00edso"
             },
             {
-                "value": "Vegachí",
-                "label": "Vegachí"
+                "value": "Vegach\u00ed",
+                "label": "Vegach\u00ed"
             },
             {
                 "value": "Venecia",
                 "label": "Venecia"
             },
             {
-                "value": "Vigía del Fuerte",
-                "label": "Vigía del Fuerte"
+                "value": "Vig\u00eda del Fuerte",
+                "label": "Vig\u00eda del Fuerte"
             },
             {
-                "value": "Yalí",
-                "label": "Yalí"
+                "value": "Yal\u00ed",
+                "label": "Yal\u00ed"
             },
             {
                 "value": "Yarumal",
                 "label": "Yarumal"
             },
             {
-                "value": "Yolombó",
-                "label": "Yolombó"
+                "value": "Yolomb\u00f3",
+                "label": "Yolomb\u00f3"
             },
             {
-                "value": "Yondó",
-                "label": "Yondó"
+                "value": "Yond\u00f3",
+                "label": "Yond\u00f3"
             },
             {
                 "value": "Zaragoza",
@@ -541,8 +541,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Fortul"
             },
             {
-                "value": "Puerto Rondón",
-                "label": "Puerto Rondón"
+                "value": "Puerto Rond\u00f3n",
+                "label": "Puerto Rond\u00f3n"
             },
             {
                 "value": "Saravena",
@@ -555,8 +555,8 @@ export const DEPARTMENT_OPTIONS = [
         ]
     },
     {
-        "value": "Atlántico",
-        "label": "Atlántico",
+        "value": "Atl\u00e1ntico",
+        "label": "Atl\u00e1ntico",
         "municipalities": [
             {
                 "value": "Baranoa",
@@ -591,16 +591,16 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Malambo"
             },
             {
-                "value": "Manatí",
-                "label": "Manatí"
+                "value": "Manat\u00ed",
+                "label": "Manat\u00ed"
             },
             {
                 "value": "Palmar de Varela",
                 "label": "Palmar de Varela"
             },
             {
-                "value": "Piojó",
-                "label": "Piojó"
+                "value": "Pioj\u00f3",
+                "label": "Pioj\u00f3"
             },
             {
                 "value": "Polonuevo",
@@ -615,8 +615,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Puerto Colombia"
             },
             {
-                "value": "Repelón",
-                "label": "Repelón"
+                "value": "Repel\u00f3n",
+                "label": "Repel\u00f3n"
             },
             {
                 "value": "Sabanagrande",
@@ -627,38 +627,38 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Sabanalarga"
             },
             {
-                "value": "Santa Lucía",
-                "label": "Santa Lucía"
+                "value": "Santa Luc\u00eda",
+                "label": "Santa Luc\u00eda"
             },
             {
-                "value": "Santo Tomás",
-                "label": "Santo Tomás"
+                "value": "Santo Tom\u00e1s",
+                "label": "Santo Tom\u00e1s"
             },
             {
                 "value": "Soledad",
                 "label": "Soledad"
             },
             {
-                "value": "Suán",
-                "label": "Suán"
+                "value": "Su\u00e1n",
+                "label": "Su\u00e1n"
             },
             {
-                "value": "Tubará",
-                "label": "Tubará"
+                "value": "Tubar\u00e1",
+                "label": "Tubar\u00e1"
             },
             {
-                "value": "Usiacurí",
-                "label": "Usiacurí"
+                "value": "Usiacur\u00ed",
+                "label": "Usiacur\u00ed"
             }
         ]
     },
     {
-        "value": "Bolívar",
-        "label": "Bolívar",
+        "value": "Bol\u00edvar",
+        "label": "Bol\u00edvar",
         "municipalities": [
             {
-                "value": "Achí",
-                "label": "Achí"
+                "value": "Ach\u00ed",
+                "label": "Ach\u00ed"
             },
             {
                 "value": "Altos del Rosario",
@@ -705,28 +705,28 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Clemencia"
             },
             {
-                "value": "Córdoba",
-                "label": "Córdoba"
+                "value": "C\u00f3rdoba",
+                "label": "C\u00f3rdoba"
             },
             {
-                "value": "El Carmen de Bolívar",
-                "label": "El Carmen de Bolívar"
+                "value": "El Carmen de Bol\u00edvar",
+                "label": "El Carmen de Bol\u00edvar"
             },
             {
                 "value": "El Guamo",
                 "label": "El Guamo"
             },
             {
-                "value": "El Peñón",
-                "label": "El Peñón"
+                "value": "El Pe\u00f1\u00f3n",
+                "label": "El Pe\u00f1\u00f3n"
             },
             {
                 "value": "Hatillo de Loba",
                 "label": "Hatillo de Loba"
             },
             {
-                "value": "Magangué",
-                "label": "Magangué"
+                "value": "Magangu\u00e9",
+                "label": "Magangu\u00e9"
             },
             {
                 "value": "Mahates",
@@ -737,12 +737,12 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Margarita"
             },
             {
-                "value": "María la Baja",
-                "label": "María la Baja"
+                "value": "Mar\u00eda la Baja",
+                "label": "Mar\u00eda la Baja"
             },
             {
-                "value": "Mompós",
-                "label": "Mompós"
+                "value": "Momp\u00f3s",
+                "label": "Momp\u00f3s"
             },
             {
                 "value": "Montecristo",
@@ -753,8 +753,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Morales"
             },
             {
-                "value": "Norosí",
-                "label": "Norosí"
+                "value": "Noros\u00ed",
+                "label": "Noros\u00ed"
             },
             {
                 "value": "Pinillos",
@@ -765,12 +765,12 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Regidor"
             },
             {
-                "value": "Río Viejo",
-                "label": "Río Viejo"
+                "value": "R\u00edo Viejo",
+                "label": "R\u00edo Viejo"
             },
             {
-                "value": "San Cristóbal",
-                "label": "San Cristóbal"
+                "value": "San Crist\u00f3bal",
+                "label": "San Crist\u00f3bal"
             },
             {
                 "value": "San Estanislao",
@@ -793,8 +793,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "San Juan Nepomuceno"
             },
             {
-                "value": "San Martín de Loba",
-                "label": "San Martín de Loba"
+                "value": "San Mart\u00edn de Loba",
+                "label": "San Mart\u00edn de Loba"
             },
             {
                 "value": "San Pablo",
@@ -813,8 +813,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Santa Rosa del Sur"
             },
             {
-                "value": "Simití",
-                "label": "Simití"
+                "value": "Simit\u00ed",
+                "label": "Simit\u00ed"
             },
             {
                 "value": "Soplaviento",
@@ -833,8 +833,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Turbaco"
             },
             {
-                "value": "Turbaná",
-                "label": "Turbaná"
+                "value": "Turban\u00e1",
+                "label": "Turban\u00e1"
             },
             {
                 "value": "Villanueva",
@@ -847,8 +847,8 @@ export const DEPARTMENT_OPTIONS = [
         ]
     },
     {
-        "value": "Boyacá",
-        "label": "Boyacá",
+        "value": "Boyac\u00e1",
+        "label": "Boyac\u00e1",
         "municipalities": [
             {
                 "value": "Almeida",
@@ -863,36 +863,36 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Arcabuco"
             },
             {
-                "value": "Belén",
-                "label": "Belén"
+                "value": "Bel\u00e9n",
+                "label": "Bel\u00e9n"
             },
             {
                 "value": "Berbeo",
                 "label": "Berbeo"
             },
             {
-                "value": "Betéitiva",
-                "label": "Betéitiva"
+                "value": "Bet\u00e9itiva",
+                "label": "Bet\u00e9itiva"
             },
             {
                 "value": "Boavita",
                 "label": "Boavita"
             },
             {
-                "value": "Boyacá",
-                "label": "Boyacá"
+                "value": "Boyac\u00e1",
+                "label": "Boyac\u00e1"
             },
             {
-                "value": "Briceño",
-                "label": "Briceño"
+                "value": "Brice\u00f1o",
+                "label": "Brice\u00f1o"
             },
             {
                 "value": "Buenavista",
                 "label": "Buenavista"
             },
             {
-                "value": "Busbanzá",
-                "label": "Busbanzá"
+                "value": "Busbanz\u00e1",
+                "label": "Busbanz\u00e1"
             },
             {
                 "value": "Caldas",
@@ -911,12 +911,12 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Chinavita"
             },
             {
-                "value": "Chiquinquirá",
-                "label": "Chiquinquirá"
+                "value": "Chiquinquir\u00e1",
+                "label": "Chiquinquir\u00e1"
             },
             {
-                "value": "Chíquiza",
-                "label": "Chíquiza"
+                "value": "Ch\u00edquiza",
+                "label": "Ch\u00edquiza"
             },
             {
                 "value": "Chiscas",
@@ -931,20 +931,20 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Chitaraque"
             },
             {
-                "value": "Chivatá",
-                "label": "Chivatá"
+                "value": "Chivat\u00e1",
+                "label": "Chivat\u00e1"
             },
             {
                 "value": "Chivor",
                 "label": "Chivor"
             },
             {
-                "value": "Ciénega",
-                "label": "Ciénega"
+                "value": "Ci\u00e9nega",
+                "label": "Ci\u00e9nega"
             },
             {
-                "value": "Cómbita",
-                "label": "Cómbita"
+                "value": "C\u00f3mbita",
+                "label": "C\u00f3mbita"
             },
             {
                 "value": "Coper",
@@ -955,20 +955,20 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Corrales"
             },
             {
-                "value": "Covarachía",
-                "label": "Covarachía"
+                "value": "Covarach\u00eda",
+                "label": "Covarach\u00eda"
             },
             {
-                "value": "Cubará",
-                "label": "Cubará"
+                "value": "Cubar\u00e1",
+                "label": "Cubar\u00e1"
             },
             {
                 "value": "Cucaita",
                 "label": "Cucaita"
             },
             {
-                "value": "Cuítiva",
-                "label": "Cuítiva"
+                "value": "Cu\u00edtiva",
+                "label": "Cu\u00edtiva"
             },
             {
                 "value": "Duitama",
@@ -991,12 +991,12 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Floresta"
             },
             {
-                "value": "Gachantivá",
-                "label": "Gachantivá"
+                "value": "Gachantiv\u00e1",
+                "label": "Gachantiv\u00e1"
             },
             {
-                "value": "Gámeza",
-                "label": "Gámeza"
+                "value": "G\u00e1meza",
+                "label": "G\u00e1meza"
             },
             {
                 "value": "Garagoa",
@@ -1011,12 +1011,12 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Guateque"
             },
             {
-                "value": "Guayatá",
-                "label": "Guayatá"
+                "value": "Guayat\u00e1",
+                "label": "Guayat\u00e1"
             },
             {
-                "value": "Güicán",
-                "label": "Güicán"
+                "value": "G\u00fcic\u00e1n",
+                "label": "G\u00fcic\u00e1n"
             },
             {
                 "value": "Iza",
@@ -1027,8 +1027,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Jenesano"
             },
             {
-                "value": "Jericó",
-                "label": "Jericó"
+                "value": "Jeric\u00f3",
+                "label": "Jeric\u00f3"
             },
             {
                 "value": "La Capilla",
@@ -1051,8 +1051,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Macanal"
             },
             {
-                "value": "Maripí",
-                "label": "Maripí"
+                "value": "Marip\u00ed",
+                "label": "Marip\u00ed"
             },
             {
                 "value": "Miraflores",
@@ -1063,12 +1063,12 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Mongua"
             },
             {
-                "value": "Monguí",
-                "label": "Monguí"
+                "value": "Mongu\u00ed",
+                "label": "Mongu\u00ed"
             },
             {
-                "value": "Moniquirá",
-                "label": "Moniquirá"
+                "value": "Moniquir\u00e1",
+                "label": "Moniquir\u00e1"
             },
             {
                 "value": "Motavita",
@@ -1083,12 +1083,12 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Nobsa"
             },
             {
-                "value": "Nuevo Colón",
-                "label": "Nuevo Colón"
+                "value": "Nuevo Col\u00f3n",
+                "label": "Nuevo Col\u00f3n"
             },
             {
-                "value": "Oicatá",
-                "label": "Oicatá"
+                "value": "Oicat\u00e1",
+                "label": "Oicat\u00e1"
             },
             {
                 "value": "Otanche",
@@ -1099,8 +1099,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Pachavita"
             },
             {
-                "value": "Páez",
-                "label": "Páez"
+                "value": "P\u00e1ez",
+                "label": "P\u00e1ez"
             },
             {
                 "value": "Paipa",
@@ -1123,8 +1123,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Paya"
             },
             {
-                "value": "Paz del Río",
-                "label": "Paz del Río"
+                "value": "Paz del R\u00edo",
+                "label": "Paz del R\u00edo"
             },
             {
                 "value": "Pesca",
@@ -1135,44 +1135,44 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Pisba"
             },
             {
-                "value": "Puerto Boyacá",
-                "label": "Puerto Boyacá"
+                "value": "Puerto Boyac\u00e1",
+                "label": "Puerto Boyac\u00e1"
             },
             {
-                "value": "Quípama",
-                "label": "Quípama"
+                "value": "Qu\u00edpama",
+                "label": "Qu\u00edpama"
             },
             {
-                "value": "Ramiriquí",
-                "label": "Ramiriquí"
+                "value": "Ramiriqu\u00ed",
+                "label": "Ramiriqu\u00ed"
             },
             {
-                "value": "Ráquira",
-                "label": "Ráquira"
+                "value": "R\u00e1quira",
+                "label": "R\u00e1quira"
             },
             {
-                "value": "Rondón",
-                "label": "Rondón"
+                "value": "Rond\u00f3n",
+                "label": "Rond\u00f3n"
             },
             {
-                "value": "Saboyá",
-                "label": "Saboyá"
+                "value": "Saboy\u00e1",
+                "label": "Saboy\u00e1"
             },
             {
-                "value": "Sáchica",
-                "label": "Sáchica"
+                "value": "S\u00e1chica",
+                "label": "S\u00e1chica"
             },
             {
-                "value": "Samacá",
-                "label": "Samacá"
+                "value": "Samac\u00e1",
+                "label": "Samac\u00e1"
             },
             {
                 "value": "San Eduardo",
                 "label": "San Eduardo"
             },
             {
-                "value": "San José de Pare",
-                "label": "San José de Pare"
+                "value": "San Jos\u00e9 de Pare",
+                "label": "San Jos\u00e9 de Pare"
             },
             {
                 "value": "San Luis de Gaceno",
@@ -1191,16 +1191,16 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "San Pablo de Borbur"
             },
             {
-                "value": "Santa María",
-                "label": "Santa María"
+                "value": "Santa Mar\u00eda",
+                "label": "Santa Mar\u00eda"
             },
             {
                 "value": "Santa Rosa de Viterbo",
                 "label": "Santa Rosa de Viterbo"
             },
             {
-                "value": "Santa Sofía",
-                "label": "Santa Sofía"
+                "value": "Santa Sof\u00eda",
+                "label": "Santa Sof\u00eda"
             },
             {
                 "value": "Santana",
@@ -1219,16 +1219,16 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Siachoque"
             },
             {
-                "value": "Soatá",
-                "label": "Soatá"
+                "value": "Soat\u00e1",
+                "label": "Soat\u00e1"
             },
             {
                 "value": "Socha",
                 "label": "Socha"
             },
             {
-                "value": "Socotá",
-                "label": "Socotá"
+                "value": "Socot\u00e1",
+                "label": "Socot\u00e1"
             },
             {
                 "value": "Sogamoso",
@@ -1243,20 +1243,20 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Sora"
             },
             {
-                "value": "Soracá",
-                "label": "Soracá"
+                "value": "Sorac\u00e1",
+                "label": "Sorac\u00e1"
             },
             {
-                "value": "Sotaquirá",
-                "label": "Sotaquirá"
+                "value": "Sotaquir\u00e1",
+                "label": "Sotaquir\u00e1"
             },
             {
-                "value": "Susacón",
-                "label": "Susacón"
+                "value": "Susac\u00f3n",
+                "label": "Susac\u00f3n"
             },
             {
-                "value": "Sutamarchán",
-                "label": "Sutamarchán"
+                "value": "Sutamarch\u00e1n",
+                "label": "Sutamarch\u00e1n"
             },
             {
                 "value": "Sutatenza",
@@ -1271,16 +1271,16 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Tenza"
             },
             {
-                "value": "Tibaná",
-                "label": "Tibaná"
+                "value": "Tiban\u00e1",
+                "label": "Tiban\u00e1"
             },
             {
                 "value": "Tibasosa",
                 "label": "Tibasosa"
             },
             {
-                "value": "Tinjacá",
-                "label": "Tinjacá"
+                "value": "Tinjac\u00e1",
+                "label": "Tinjac\u00e1"
             },
             {
                 "value": "Tipacoque",
@@ -1291,12 +1291,12 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Toca"
             },
             {
-                "value": "Togüí",
-                "label": "Togüí"
+                "value": "Tog\u00fc\u00ed",
+                "label": "Tog\u00fc\u00ed"
             },
             {
-                "value": "Tópaga",
-                "label": "Tópaga"
+                "value": "T\u00f3paga",
+                "label": "T\u00f3paga"
             },
             {
                 "value": "Tota",
@@ -1307,24 +1307,24 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Tunja"
             },
             {
-                "value": "Tununguá",
-                "label": "Tununguá"
+                "value": "Tunungu\u00e1",
+                "label": "Tunungu\u00e1"
             },
             {
-                "value": "Turmequé",
-                "label": "Turmequé"
+                "value": "Turmequ\u00e9",
+                "label": "Turmequ\u00e9"
             },
             {
                 "value": "Tuta",
                 "label": "Tuta"
             },
             {
-                "value": "Tutazá",
-                "label": "Tutazá"
+                "value": "Tutaz\u00e1",
+                "label": "Tutaz\u00e1"
             },
             {
-                "value": "Úmbita",
-                "label": "Úmbita"
+                "value": "\u00dambita",
+                "label": "\u00dambita"
             },
             {
                 "value": "Ventaquemada",
@@ -1335,8 +1335,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Villa de Leyva"
             },
             {
-                "value": "Viracachá",
-                "label": "Viracachá"
+                "value": "Viracach\u00e1",
+                "label": "Viracach\u00e1"
             },
             {
                 "value": "Zetaquira",
@@ -1361,12 +1361,12 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Aranzazu"
             },
             {
-                "value": "Belalcázar",
-                "label": "Belalcázar"
+                "value": "Belalc\u00e1zar",
+                "label": "Belalc\u00e1zar"
             },
             {
-                "value": "Chinchiná",
-                "label": "Chinchiná"
+                "value": "Chinchin\u00e1",
+                "label": "Chinchin\u00e1"
             },
             {
                 "value": "Filadelfia",
@@ -1409,8 +1409,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Norcasia"
             },
             {
-                "value": "Pácora",
-                "label": "Pácora"
+                "value": "P\u00e1cora",
+                "label": "P\u00e1cora"
             },
             {
                 "value": "Palestina",
@@ -1433,24 +1433,24 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Salamina"
             },
             {
-                "value": "Samaná",
-                "label": "Samaná"
+                "value": "Saman\u00e1",
+                "label": "Saman\u00e1"
             },
             {
-                "value": "San José",
-                "label": "San José"
+                "value": "San Jos\u00e9",
+                "label": "San Jos\u00e9"
             },
             {
-                "value": "Supía",
-                "label": "Supía"
+                "value": "Sup\u00eda",
+                "label": "Sup\u00eda"
             },
             {
                 "value": "Victoria",
                 "label": "Victoria"
             },
             {
-                "value": "Villamaría",
-                "label": "Villamaría"
+                "value": "Villamar\u00eda",
+                "label": "Villamar\u00eda"
             },
             {
                 "value": "Viterbo",
@@ -1459,20 +1459,20 @@ export const DEPARTMENT_OPTIONS = [
         ]
     },
     {
-        "value": "Caquetá",
-        "label": "Caquetá",
+        "value": "Caquet\u00e1",
+        "label": "Caquet\u00e1",
         "municipalities": [
             {
                 "value": "Albania",
                 "label": "Albania"
             },
             {
-                "value": "Belén de los Andaquíes",
-                "label": "Belén de los Andaquíes"
+                "value": "Bel\u00e9n de los Andaqu\u00edes",
+                "label": "Bel\u00e9n de los Andaqu\u00edes"
             },
             {
-                "value": "Cartagena del Chairá",
-                "label": "Cartagena del Chairá"
+                "value": "Cartagena del Chair\u00e1",
+                "label": "Cartagena del Chair\u00e1"
             },
             {
                 "value": "Curillo",
@@ -1491,12 +1491,12 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Florencia"
             },
             {
-                "value": "La Montañita",
-                "label": "La Montañita"
+                "value": "La Monta\u00f1ita",
+                "label": "La Monta\u00f1ita"
             },
             {
-                "value": "Milán",
-                "label": "Milán"
+                "value": "Mil\u00e1n",
+                "label": "Mil\u00e1n"
             },
             {
                 "value": "Morelia",
@@ -1507,12 +1507,12 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Puerto Rico"
             },
             {
-                "value": "San José del Fragua",
-                "label": "San José del Fragua"
+                "value": "San Jos\u00e9 del Fragua",
+                "label": "San Jos\u00e9 del Fragua"
             },
             {
-                "value": "San Vicente del Caguán",
-                "label": "San Vicente del Caguán"
+                "value": "San Vicente del Cagu\u00e1n",
+                "label": "San Vicente del Cagu\u00e1n"
             },
             {
                 "value": "Solano",
@@ -1523,8 +1523,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Solita"
             },
             {
-                "value": "Valparaíso",
-                "label": "Valparaíso"
+                "value": "Valpara\u00edso",
+                "label": "Valpara\u00edso"
             }
         ]
     },
@@ -1537,8 +1537,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Aguazul"
             },
             {
-                "value": "Chámeza",
-                "label": "Chámeza"
+                "value": "Ch\u00e1meza",
+                "label": "Ch\u00e1meza"
             },
             {
                 "value": "Hato Corozal",
@@ -1549,20 +1549,20 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "La Salina"
             },
             {
-                "value": "Maní",
-                "label": "Maní"
+                "value": "Man\u00ed",
+                "label": "Man\u00ed"
             },
             {
                 "value": "Monterrey",
                 "label": "Monterrey"
             },
             {
-                "value": "Nunchía",
-                "label": "Nunchía"
+                "value": "Nunch\u00eda",
+                "label": "Nunch\u00eda"
             },
             {
-                "value": "Orocué",
-                "label": "Orocué"
+                "value": "Orocu\u00e9",
+                "label": "Orocu\u00e9"
             },
             {
                 "value": "Paz de Ariporo",
@@ -1581,16 +1581,16 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Sabanalarga"
             },
             {
-                "value": "Sácama",
-                "label": "Sácama"
+                "value": "S\u00e1cama",
+                "label": "S\u00e1cama"
             },
             {
                 "value": "San Luis de Palenque",
                 "label": "San Luis de Palenque"
             },
             {
-                "value": "Támara",
-                "label": "Támara"
+                "value": "T\u00e1mara",
+                "label": "T\u00e1mara"
             },
             {
                 "value": "Tauramena",
@@ -1627,16 +1627,16 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Balboa"
             },
             {
-                "value": "Bolívar",
-                "label": "Bolívar"
+                "value": "Bol\u00edvar",
+                "label": "Bol\u00edvar"
             },
             {
                 "value": "Buenos Aires",
                 "label": "Buenos Aires"
             },
             {
-                "value": "Cajibío",
-                "label": "Cajibío"
+                "value": "Cajib\u00edo",
+                "label": "Cajib\u00edo"
             },
             {
                 "value": "Caldono",
@@ -1659,20 +1659,20 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Florencia"
             },
             {
-                "value": "Guachené",
-                "label": "Guachené"
+                "value": "Guachen\u00e9",
+                "label": "Guachen\u00e9"
             },
             {
-                "value": "Guapí",
-                "label": "Guapí"
+                "value": "Guap\u00ed",
+                "label": "Guap\u00ed"
             },
             {
-                "value": "Inzá",
-                "label": "Inzá"
+                "value": "Inz\u00e1",
+                "label": "Inz\u00e1"
             },
             {
-                "value": "Jambaló",
-                "label": "Jambaló"
+                "value": "Jambal\u00f3",
+                "label": "Jambal\u00f3"
             },
             {
                 "value": "La Sierra",
@@ -1683,8 +1683,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "La Vega"
             },
             {
-                "value": "López de Micay",
-                "label": "López de Micay"
+                "value": "L\u00f3pez de Micay",
+                "label": "L\u00f3pez de Micay"
             },
             {
                 "value": "Mercaderes",
@@ -1703,40 +1703,40 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Padilla"
             },
             {
-                "value": "Páez",
-                "label": "Páez"
+                "value": "P\u00e1ez",
+                "label": "P\u00e1ez"
             },
             {
-                "value": "Patía",
-                "label": "Patía"
+                "value": "Pat\u00eda",
+                "label": "Pat\u00eda"
             },
             {
                 "value": "Piamonte",
                 "label": "Piamonte"
             },
             {
-                "value": "Piendamó",
-                "label": "Piendamó"
+                "value": "Piendam\u00f3",
+                "label": "Piendam\u00f3"
             },
             {
-                "value": "Popayán",
-                "label": "Popayán"
+                "value": "Popay\u00e1n",
+                "label": "Popay\u00e1n"
             },
             {
                 "value": "Puerto Tejada",
                 "label": "Puerto Tejada"
             },
             {
-                "value": "Puracé",
-                "label": "Puracé"
+                "value": "Purac\u00e9",
+                "label": "Purac\u00e9"
             },
             {
                 "value": "Rosas",
                 "label": "Rosas"
             },
             {
-                "value": "San Sebastián",
-                "label": "San Sebastián"
+                "value": "San Sebasti\u00e1n",
+                "label": "San Sebasti\u00e1n"
             },
             {
                 "value": "Santa Rosa",
@@ -1751,32 +1751,32 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Silvia"
             },
             {
-                "value": "Sotará",
-                "label": "Sotará"
+                "value": "Sotar\u00e1",
+                "label": "Sotar\u00e1"
             },
             {
-                "value": "Suárez",
-                "label": "Suárez"
+                "value": "Su\u00e1rez",
+                "label": "Su\u00e1rez"
             },
             {
                 "value": "Sucre",
                 "label": "Sucre"
             },
             {
-                "value": "Timbío",
-                "label": "Timbío"
+                "value": "Timb\u00edo",
+                "label": "Timb\u00edo"
             },
             {
-                "value": "Timbiquí",
-                "label": "Timbiquí"
+                "value": "Timbiqu\u00ed",
+                "label": "Timbiqu\u00ed"
             },
             {
-                "value": "Toribío",
-                "label": "Toribío"
+                "value": "Torib\u00edo",
+                "label": "Torib\u00edo"
             },
             {
-                "value": "Totoró",
-                "label": "Totoró"
+                "value": "Totor\u00f3",
+                "label": "Totor\u00f3"
             },
             {
                 "value": "Villa Rica",
@@ -1793,8 +1793,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Aguachica"
             },
             {
-                "value": "Agustín Codazzi",
-                "label": "Agustín Codazzi"
+                "value": "Agust\u00edn Codazzi",
+                "label": "Agust\u00edn Codazzi"
             },
             {
                 "value": "Astrea",
@@ -1813,12 +1813,12 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Chimichagua"
             },
             {
-                "value": "Chiriguaná",
-                "label": "Chiriguaná"
+                "value": "Chiriguan\u00e1",
+                "label": "Chiriguan\u00e1"
             },
             {
-                "value": "Curumaní",
-                "label": "Curumaní"
+                "value": "Curuman\u00ed",
+                "label": "Curuman\u00ed"
             },
             {
                 "value": "El Copey",
@@ -1833,8 +1833,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Gamarra"
             },
             {
-                "value": "González",
-                "label": "González"
+                "value": "Gonz\u00e1lez",
+                "label": "Gonz\u00e1lez"
             },
             {
                 "value": "La Gloria (Cesar)",
@@ -1849,8 +1849,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "La Paz"
             },
             {
-                "value": "Manaure Balcón del Cesar",
-                "label": "Manaure Balcón del Cesar"
+                "value": "Manaure Balc\u00f3n del Cesar",
+                "label": "Manaure Balc\u00f3n del Cesar"
             },
             {
                 "value": "Pailitas",
@@ -1865,8 +1865,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Pueblo Bello"
             },
             {
-                "value": "Río de Oro",
-                "label": "Río de Oro"
+                "value": "R\u00edo de Oro",
+                "label": "R\u00edo de Oro"
             },
             {
                 "value": "San Alberto",
@@ -1877,8 +1877,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "San Diego"
             },
             {
-                "value": "San Martín",
-                "label": "San Martín"
+                "value": "San Mart\u00edn",
+                "label": "San Mart\u00edn"
             },
             {
                 "value": "Tamalameque",
@@ -1891,40 +1891,40 @@ export const DEPARTMENT_OPTIONS = [
         ]
     },
     {
-        "value": "Chocó",
-        "label": "Chocó",
+        "value": "Choc\u00f3",
+        "label": "Choc\u00f3",
         "municipalities": [
             {
-                "value": "Acandí",
-                "label": "Acandí"
+                "value": "Acand\u00ed",
+                "label": "Acand\u00ed"
             },
             {
-                "value": "Alto Baudó",
-                "label": "Alto Baudó"
+                "value": "Alto Baud\u00f3",
+                "label": "Alto Baud\u00f3"
             },
             {
-                "value": "Bagadó",
-                "label": "Bagadó"
+                "value": "Bagad\u00f3",
+                "label": "Bagad\u00f3"
             },
             {
-                "value": "Bahía Solano",
-                "label": "Bahía Solano"
+                "value": "Bah\u00eda Solano",
+                "label": "Bah\u00eda Solano"
             },
             {
-                "value": "Bajo Baudó",
-                "label": "Bajo Baudó"
+                "value": "Bajo Baud\u00f3",
+                "label": "Bajo Baud\u00f3"
             },
             {
-                "value": "Bojayá",
-                "label": "Bojayá"
+                "value": "Bojay\u00e1",
+                "label": "Bojay\u00e1"
             },
             {
-                "value": "Cantón de San Pablo",
-                "label": "Cantón de San Pablo"
+                "value": "Cant\u00f3n de San Pablo",
+                "label": "Cant\u00f3n de San Pablo"
             },
             {
-                "value": "Cértegui",
-                "label": "Cértegui"
+                "value": "C\u00e9rtegui",
+                "label": "C\u00e9rtegui"
             },
             {
                 "value": "Condoto",
@@ -1939,86 +1939,86 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "El Carmen de Atrato"
             },
             {
-                "value": "El Carmen del Darién",
-                "label": "El Carmen del Darién"
+                "value": "El Carmen del Dari\u00e9n",
+                "label": "El Carmen del Dari\u00e9n"
             },
             {
                 "value": "Istmina",
                 "label": "Istmina"
             },
             {
-                "value": "Juradó",
-                "label": "Juradó"
+                "value": "Jurad\u00f3",
+                "label": "Jurad\u00f3"
             },
             {
                 "value": "Litoral de San Juan",
                 "label": "Litoral de San Juan"
             },
             {
-                "value": "Lloró",
-                "label": "Lloró"
+                "value": "Llor\u00f3",
+                "label": "Llor\u00f3"
             },
             {
                 "value": "Medio Atrato",
                 "label": "Medio Atrato"
             },
             {
-                "value": "Medio Baudó",
-                "label": "Medio Baudó"
+                "value": "Medio Baud\u00f3",
+                "label": "Medio Baud\u00f3"
             },
             {
                 "value": "Medio San Juan",
                 "label": "Medio San Juan"
             },
             {
-                "value": "Nóvita",
-                "label": "Nóvita"
+                "value": "N\u00f3vita",
+                "label": "N\u00f3vita"
             },
             {
-                "value": "Nuquí",
-                "label": "Nuquí"
+                "value": "Nuqu\u00ed",
+                "label": "Nuqu\u00ed"
             },
             {
-                "value": "Quibdó",
-                "label": "Quibdó"
+                "value": "Quibd\u00f3",
+                "label": "Quibd\u00f3"
             },
             {
-                "value": "Río Iró",
-                "label": "Río Iró"
+                "value": "R\u00edo Ir\u00f3",
+                "label": "R\u00edo Ir\u00f3"
             },
             {
-                "value": "Río Quito",
-                "label": "Río Quito"
+                "value": "R\u00edo Quito",
+                "label": "R\u00edo Quito"
             },
             {
                 "value": "Riosucio",
                 "label": "Riosucio"
             },
             {
-                "value": "San José del Palmar",
-                "label": "San José del Palmar"
+                "value": "San Jos\u00e9 del Palmar",
+                "label": "San Jos\u00e9 del Palmar"
             },
             {
-                "value": "Sipí",
-                "label": "Sipí"
+                "value": "Sip\u00ed",
+                "label": "Sip\u00ed"
             },
             {
-                "value": "Tadó",
-                "label": "Tadó"
+                "value": "Tad\u00f3",
+                "label": "Tad\u00f3"
             },
             {
-                "value": "Unguía",
-                "label": "Unguía"
+                "value": "Ungu\u00eda",
+                "label": "Ungu\u00eda"
             },
             {
-                "value": "Unión Panamericana",
-                "label": "Unión Panamericana"
+                "value": "Uni\u00f3n Panamericana",
+                "label": "Uni\u00f3n Panamericana"
             }
         ]
     },
     {
-        "value": "Córdoba",
-        "label": "Córdoba",
+        "value": "C\u00f3rdoba",
+        "label": "C\u00f3rdoba",
         "municipalities": [
             {
                 "value": "Ayapel",
@@ -2033,20 +2033,20 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Canalete"
             },
             {
-                "value": "Cereté",
-                "label": "Cereté"
+                "value": "Ceret\u00e9",
+                "label": "Ceret\u00e9"
             },
             {
-                "value": "Chimá",
-                "label": "Chimá"
+                "value": "Chim\u00e1",
+                "label": "Chim\u00e1"
             },
             {
-                "value": "Chinú",
-                "label": "Chinú"
+                "value": "Chin\u00fa",
+                "label": "Chin\u00fa"
             },
             {
-                "value": "Ciénaga de Oro",
-                "label": "Ciénaga de Oro"
+                "value": "Ci\u00e9naga de Oro",
+                "label": "Ci\u00e9naga de Oro"
             },
             {
                 "value": "Cotorra",
@@ -2061,24 +2061,24 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Lorica"
             },
             {
-                "value": "Los Córdobas",
-                "label": "Los Córdobas"
+                "value": "Los C\u00f3rdobas",
+                "label": "Los C\u00f3rdobas"
             },
             {
                 "value": "Momil",
                 "label": "Momil"
             },
             {
-                "value": "Montelíbano",
-                "label": "Montelíbano"
+                "value": "Montel\u00edbano",
+                "label": "Montel\u00edbano"
             },
             {
-                "value": "Montería",
-                "label": "Montería"
+                "value": "Monter\u00eda",
+                "label": "Monter\u00eda"
             },
             {
-                "value": "Moñitos",
-                "label": "Moñitos"
+                "value": "Mo\u00f1itos",
+                "label": "Mo\u00f1itos"
             },
             {
                 "value": "Planeta Rica",
@@ -2097,16 +2097,16 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Puerto Libertador"
             },
             {
-                "value": "Purísima",
-                "label": "Purísima"
+                "value": "Pur\u00edsima",
+                "label": "Pur\u00edsima"
             },
             {
-                "value": "Sahagún",
-                "label": "Sahagún"
+                "value": "Sahag\u00fan",
+                "label": "Sahag\u00fan"
             },
             {
-                "value": "San Andrés de Sotavento",
-                "label": "San Andrés de Sotavento"
+                "value": "San Andr\u00e9s de Sotavento",
+                "label": "San Andr\u00e9s de Sotavento"
             },
             {
                 "value": "San Antero",
@@ -2121,8 +2121,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "San Carlos"
             },
             {
-                "value": "San José de Uré",
-                "label": "San José de Uré"
+                "value": "San Jos\u00e9 de Ur\u00e9",
+                "label": "San Jos\u00e9 de Ur\u00e9"
             },
             {
                 "value": "San Pelayo",
@@ -2133,8 +2133,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Tierralta"
             },
             {
-                "value": "Tuchín",
-                "label": "Tuchín"
+                "value": "Tuch\u00edn",
+                "label": "Tuch\u00edn"
             },
             {
                 "value": "Valencia",
@@ -2151,8 +2151,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Agua de Dios"
             },
             {
-                "value": "Albán",
-                "label": "Albán"
+                "value": "Alb\u00e1n",
+                "label": "Alb\u00e1n"
             },
             {
                 "value": "Anapoima",
@@ -2167,24 +2167,24 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Apulo"
             },
             {
-                "value": "Arbeláez",
-                "label": "Arbeláez"
+                "value": "Arbel\u00e1ez",
+                "label": "Arbel\u00e1ez"
             },
             {
-                "value": "Beltrán",
-                "label": "Beltrán"
+                "value": "Beltr\u00e1n",
+                "label": "Beltr\u00e1n"
             },
             {
                 "value": "Bituima",
                 "label": "Bituima"
             },
             {
-                "value": "Bogotá",
-                "label": "Bogotá"
+                "value": "Bogot\u00e1",
+                "label": "Bogot\u00e1"
             },
             {
-                "value": "Bojacá",
-                "label": "Bojacá"
+                "value": "Bojac\u00e1",
+                "label": "Bojac\u00e1"
             },
             {
                 "value": "Cabrera",
@@ -2195,40 +2195,40 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Cachipay"
             },
             {
-                "value": "Cajicá",
-                "label": "Cajicá"
+                "value": "Cajic\u00e1",
+                "label": "Cajic\u00e1"
             },
             {
-                "value": "Caparrapí",
-                "label": "Caparrapí"
+                "value": "Caparrap\u00ed",
+                "label": "Caparrap\u00ed"
             },
             {
-                "value": "Cáqueza",
-                "label": "Cáqueza"
+                "value": "C\u00e1queza",
+                "label": "C\u00e1queza"
             },
             {
                 "value": "Carmen de Carupa",
                 "label": "Carmen de Carupa"
             },
             {
-                "value": "Chaguaní",
-                "label": "Chaguaní"
+                "value": "Chaguan\u00ed",
+                "label": "Chaguan\u00ed"
             },
             {
-                "value": "Chía",
-                "label": "Chía"
+                "value": "Ch\u00eda",
+                "label": "Ch\u00eda"
             },
             {
                 "value": "Chipaque",
                 "label": "Chipaque"
             },
             {
-                "value": "Choachí",
-                "label": "Choachí"
+                "value": "Choach\u00ed",
+                "label": "Choach\u00ed"
             },
             {
-                "value": "Chocontá",
-                "label": "Chocontá"
+                "value": "Chocont\u00e1",
+                "label": "Chocont\u00e1"
             },
             {
                 "value": "Cogua",
@@ -2239,28 +2239,28 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Cota"
             },
             {
-                "value": "Cucunubá",
-                "label": "Cucunubá"
+                "value": "Cucunub\u00e1",
+                "label": "Cucunub\u00e1"
             },
             {
                 "value": "El Colegio",
                 "label": "El Colegio"
             },
             {
-                "value": "El Peñón",
-                "label": "El Peñón"
+                "value": "El Pe\u00f1\u00f3n",
+                "label": "El Pe\u00f1\u00f3n"
             },
             {
                 "value": "El Rosal",
                 "label": "El Rosal"
             },
             {
-                "value": "Facatativá",
-                "label": "Facatativá"
+                "value": "Facatativ\u00e1",
+                "label": "Facatativ\u00e1"
             },
             {
-                "value": "Fómeque",
-                "label": "Fómeque"
+                "value": "F\u00f3meque",
+                "label": "F\u00f3meque"
             },
             {
                 "value": "Fosca",
@@ -2271,24 +2271,24 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Funza"
             },
             {
-                "value": "Fúquene",
-                "label": "Fúquene"
+                "value": "F\u00faquene",
+                "label": "F\u00faquene"
             },
             {
-                "value": "Fusagasugá",
-                "label": "Fusagasugá"
+                "value": "Fusagasug\u00e1",
+                "label": "Fusagasug\u00e1"
             },
             {
-                "value": "Gachalá",
-                "label": "Gachalá"
+                "value": "Gachal\u00e1",
+                "label": "Gachal\u00e1"
             },
             {
-                "value": "Gachancipá",
-                "label": "Gachancipá"
+                "value": "Gachancip\u00e1",
+                "label": "Gachancip\u00e1"
             },
             {
-                "value": "Gachetá",
-                "label": "Gachetá"
+                "value": "Gachet\u00e1",
+                "label": "Gachet\u00e1"
             },
             {
                 "value": "Gama",
@@ -2303,8 +2303,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Granada"
             },
             {
-                "value": "Guachetá",
-                "label": "Guachetá"
+                "value": "Guachet\u00e1",
+                "label": "Guachet\u00e1"
             },
             {
                 "value": "Guaduas",
@@ -2315,32 +2315,32 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Guasca"
             },
             {
-                "value": "Guataquí",
-                "label": "Guataquí"
+                "value": "Guataqu\u00ed",
+                "label": "Guataqu\u00ed"
             },
             {
                 "value": "Guatavita",
                 "label": "Guatavita"
             },
             {
-                "value": "Guayabal de Síquima",
-                "label": "Guayabal de Síquima"
+                "value": "Guayabal de S\u00edquima",
+                "label": "Guayabal de S\u00edquima"
             },
             {
                 "value": "Guayabetal",
                 "label": "Guayabetal"
             },
             {
-                "value": "Gutiérrez",
-                "label": "Gutiérrez"
+                "value": "Guti\u00e9rrez",
+                "label": "Guti\u00e9rrez"
             },
             {
-                "value": "Jerusalén",
-                "label": "Jerusalén"
+                "value": "Jerusal\u00e9n",
+                "label": "Jerusal\u00e9n"
             },
             {
-                "value": "Junín",
-                "label": "Junín"
+                "value": "Jun\u00edn",
+                "label": "Jun\u00edn"
             },
             {
                 "value": "La Calera",
@@ -2355,8 +2355,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "La Palma"
             },
             {
-                "value": "La Peña",
-                "label": "La Peña"
+                "value": "La Pe\u00f1a",
+                "label": "La Pe\u00f1a"
             },
             {
                 "value": "La Vega",
@@ -2367,8 +2367,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Lenguazaque"
             },
             {
-                "value": "Machetá",
-                "label": "Machetá"
+                "value": "Machet\u00e1",
+                "label": "Machet\u00e1"
             },
             {
                 "value": "Madrid",
@@ -2387,12 +2387,12 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Mosquera"
             },
             {
-                "value": "Nariño",
-                "label": "Nariño"
+                "value": "Nari\u00f1o",
+                "label": "Nari\u00f1o"
             },
             {
-                "value": "Nemocón",
-                "label": "Nemocón"
+                "value": "Nemoc\u00f3n",
+                "label": "Nemoc\u00f3n"
             },
             {
                 "value": "Nilo",
@@ -2431,8 +2431,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Puerto Salgar"
             },
             {
-                "value": "Pulí",
-                "label": "Pulí"
+                "value": "Pul\u00ed",
+                "label": "Pul\u00ed"
             },
             {
                 "value": "Quebradanegra",
@@ -2475,12 +2475,12 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Sasaima"
             },
             {
-                "value": "Sesquilé",
-                "label": "Sesquilé"
+                "value": "Sesquil\u00e9",
+                "label": "Sesquil\u00e9"
             },
             {
-                "value": "Sibaté",
-                "label": "Sibaté"
+                "value": "Sibat\u00e9",
+                "label": "Sibat\u00e9"
             },
             {
                 "value": "Silvania",
@@ -2495,8 +2495,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Soacha"
             },
             {
-                "value": "Sopó",
-                "label": "Sopó"
+                "value": "Sop\u00f3",
+                "label": "Sop\u00f3"
             },
             {
                 "value": "Subachoque",
@@ -2507,8 +2507,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Suesca"
             },
             {
-                "value": "Supatá",
-                "label": "Supatá"
+                "value": "Supat\u00e1",
+                "label": "Supat\u00e1"
             },
             {
                 "value": "Susa",
@@ -2547,32 +2547,32 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Tocaima"
             },
             {
-                "value": "Tocancipá",
-                "label": "Tocancipá"
+                "value": "Tocancip\u00e1",
+                "label": "Tocancip\u00e1"
             },
             {
-                "value": "Topaipí",
-                "label": "Topaipí"
+                "value": "Topaip\u00ed",
+                "label": "Topaip\u00ed"
             },
             {
-                "value": "Ubalá",
-                "label": "Ubalá"
+                "value": "Ubal\u00e1",
+                "label": "Ubal\u00e1"
             },
             {
                 "value": "Ubaque",
                 "label": "Ubaque"
             },
             {
-                "value": "Ubaté",
-                "label": "Ubaté"
+                "value": "Ubat\u00e9",
+                "label": "Ubat\u00e9"
             },
             {
                 "value": "Une",
                 "label": "Une"
             },
             {
-                "value": "Útica",
-                "label": "Útica"
+                "value": "\u00datica",
+                "label": "\u00datica"
             },
             {
                 "value": "Venecia",
@@ -2583,46 +2583,46 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Vergara"
             },
             {
-                "value": "Vianí",
-                "label": "Vianí"
+                "value": "Vian\u00ed",
+                "label": "Vian\u00ed"
             },
             {
-                "value": "Villagómez",
-                "label": "Villagómez"
+                "value": "Villag\u00f3mez",
+                "label": "Villag\u00f3mez"
             },
             {
-                "value": "Villapinzón",
-                "label": "Villapinzón"
+                "value": "Villapinz\u00f3n",
+                "label": "Villapinz\u00f3n"
             },
             {
                 "value": "Villeta",
                 "label": "Villeta"
             },
             {
-                "value": "Viotá",
-                "label": "Viotá"
+                "value": "Viot\u00e1",
+                "label": "Viot\u00e1"
             },
             {
-                "value": "Yacopí",
-                "label": "Yacopí"
+                "value": "Yacop\u00ed",
+                "label": "Yacop\u00ed"
             },
             {
-                "value": "Zipacón",
-                "label": "Zipacón"
+                "value": "Zipac\u00f3n",
+                "label": "Zipac\u00f3n"
             },
             {
-                "value": "Zipaquirá",
-                "label": "Zipaquirá"
+                "value": "Zipaquir\u00e1",
+                "label": "Zipaquir\u00e1"
             }
         ]
     },
     {
-        "value": "Guainía",
-        "label": "Guainía",
+        "value": "Guain\u00eda",
+        "label": "Guain\u00eda",
         "municipalities": [
             {
-                "value": "Inírida",
-                "label": "Inírida"
+                "value": "In\u00edrida",
+                "label": "In\u00edrida"
             }
         ]
     },
@@ -2643,8 +2643,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Miraflores"
             },
             {
-                "value": "San José del Guaviare",
-                "label": "San José del Guaviare"
+                "value": "San Jos\u00e9 del Guaviare",
+                "label": "San Jos\u00e9 del Guaviare"
             }
         ]
     },
@@ -2689,12 +2689,12 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "El Pital"
             },
             {
-                "value": "Elías",
-                "label": "Elías"
+                "value": "El\u00edas",
+                "label": "El\u00edas"
             },
             {
-                "value": "Garzón",
-                "label": "Garzón"
+                "value": "Garz\u00f3n",
+                "label": "Garz\u00f3n"
             },
             {
                 "value": "Gigante",
@@ -2709,8 +2709,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Hobo"
             },
             {
-                "value": "Íquira",
-                "label": "Íquira"
+                "value": "\u00cdquira",
+                "label": "\u00cdquira"
             },
             {
                 "value": "Isnos",
@@ -2725,8 +2725,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "La Plata"
             },
             {
-                "value": "Nátaga",
-                "label": "Nátaga"
+                "value": "N\u00e1taga",
+                "label": "N\u00e1taga"
             },
             {
                 "value": "Neiva",
@@ -2761,12 +2761,12 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Saladoblanco"
             },
             {
-                "value": "San Agustín",
-                "label": "San Agustín"
+                "value": "San Agust\u00edn",
+                "label": "San Agust\u00edn"
             },
             {
-                "value": "Santa María",
-                "label": "Santa María"
+                "value": "Santa Mar\u00eda",
+                "label": "Santa Mar\u00eda"
             },
             {
                 "value": "Suaza",
@@ -2789,16 +2789,16 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Tesalia"
             },
             {
-                "value": "Timaná",
-                "label": "Timaná"
+                "value": "Timan\u00e1",
+                "label": "Timan\u00e1"
             },
             {
                 "value": "Villavieja",
                 "label": "Villavieja"
             },
             {
-                "value": "Yaguará",
-                "label": "Yaguará"
+                "value": "Yaguar\u00e1",
+                "label": "Yaguar\u00e1"
             }
         ]
     },
@@ -2819,8 +2819,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Dibulla"
             },
             {
-                "value": "Distracción",
-                "label": "Distracción"
+                "value": "Distracci\u00f3n",
+                "label": "Distracci\u00f3n"
             },
             {
                 "value": "El Molino",
@@ -2881,8 +2881,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Aracataca"
             },
             {
-                "value": "Ariguaní",
-                "label": "Ariguaní"
+                "value": "Ariguan\u00ed",
+                "label": "Ariguan\u00ed"
             },
             {
                 "value": "Cerro de San Antonio",
@@ -2897,8 +2897,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Chibolo"
             },
             {
-                "value": "Ciénaga",
-                "label": "Ciénaga"
+                "value": "Ci\u00e9naga",
+                "label": "Ci\u00e9naga"
             },
             {
                 "value": "Concordia",
@@ -2909,16 +2909,16 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "El Banco"
             },
             {
-                "value": "El Piñón",
-                "label": "El Piñón"
+                "value": "El Pi\u00f1\u00f3n",
+                "label": "El Pi\u00f1\u00f3n"
             },
             {
-                "value": "El Retén",
-                "label": "El Retén"
+                "value": "El Ret\u00e9n",
+                "label": "El Ret\u00e9n"
             },
             {
-                "value": "Fundación",
-                "label": "Fundación"
+                "value": "Fundaci\u00f3n",
+                "label": "Fundaci\u00f3n"
             },
             {
                 "value": "Guamal",
@@ -2933,8 +2933,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Pedraza"
             },
             {
-                "value": "Pijiño del Carmen",
-                "label": "Pijiño del Carmen"
+                "value": "Piji\u00f1o del Carmen",
+                "label": "Piji\u00f1o del Carmen"
             },
             {
                 "value": "Pivijay",
@@ -2953,28 +2953,28 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Remolino"
             },
             {
-                "value": "Sabanas de San Ángel",
-                "label": "Sabanas de San Ángel"
+                "value": "Sabanas de San \u00c1ngel",
+                "label": "Sabanas de San \u00c1ngel"
             },
             {
                 "value": "Salamina",
                 "label": "Salamina"
             },
             {
-                "value": "San Sebastián de Buenavista",
-                "label": "San Sebastián de Buenavista"
+                "value": "San Sebasti\u00e1n de Buenavista",
+                "label": "San Sebasti\u00e1n de Buenavista"
             },
             {
-                "value": "San Zenón",
-                "label": "San Zenón"
+                "value": "San Zen\u00f3n",
+                "label": "San Zen\u00f3n"
             },
             {
                 "value": "Santa Ana",
                 "label": "Santa Ana"
             },
             {
-                "value": "Santa Bárbara de Pinto",
-                "label": "Santa Bárbara de Pinto"
+                "value": "Santa B\u00e1rbara de Pinto",
+                "label": "Santa B\u00e1rbara de Pinto"
             },
             {
                 "value": "Santa Marta",
@@ -2989,8 +2989,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Tenerife"
             },
             {
-                "value": "Zapayán",
-                "label": "Zapayán"
+                "value": "Zapay\u00e1n",
+                "label": "Zapay\u00e1n"
             },
             {
                 "value": "Zona Bananera",
@@ -3003,12 +3003,12 @@ export const DEPARTMENT_OPTIONS = [
         "label": "Meta",
         "municipalities": [
             {
-                "value": "Acacías",
-                "label": "Acacías"
+                "value": "Acac\u00edas",
+                "label": "Acac\u00edas"
             },
             {
-                "value": "Barranca de Upía",
-                "label": "Barranca de Upía"
+                "value": "Barranca de Up\u00eda",
+                "label": "Barranca de Up\u00eda"
             },
             {
                 "value": "Cabuyaro",
@@ -3059,12 +3059,12 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "La Uribe"
             },
             {
-                "value": "Lejanías",
-                "label": "Lejanías"
+                "value": "Lejan\u00edas",
+                "label": "Lejan\u00edas"
             },
             {
-                "value": "Mapiripán",
-                "label": "Mapiripán"
+                "value": "Mapirip\u00e1n",
+                "label": "Mapirip\u00e1n"
             },
             {
                 "value": "Mesetas",
@@ -3075,16 +3075,16 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Puerto Concordia"
             },
             {
-                "value": "Puerto Gaitán",
-                "label": "Puerto Gaitán"
+                "value": "Puerto Gait\u00e1n",
+                "label": "Puerto Gait\u00e1n"
             },
             {
                 "value": "Puerto Lleras",
                 "label": "Puerto Lleras"
             },
             {
-                "value": "Puerto López",
-                "label": "Puerto López"
+                "value": "Puerto L\u00f3pez",
+                "label": "Puerto L\u00f3pez"
             },
             {
                 "value": "Puerto Rico",
@@ -3107,8 +3107,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "San Juanito"
             },
             {
-                "value": "San Martín",
-                "label": "San Martín"
+                "value": "San Mart\u00edn",
+                "label": "San Mart\u00edn"
             },
             {
                 "value": "Villavicencio",
@@ -3121,16 +3121,16 @@ export const DEPARTMENT_OPTIONS = [
         ]
     },
     {
-        "value": "Nariño",
-        "label": "Nariño",
+        "value": "Nari\u00f1o",
+        "label": "Nari\u00f1o",
         "municipalities": [
             {
                 "value": "Aldana",
                 "label": "Aldana"
             },
             {
-                "value": "Ancuyá",
-                "label": "Ancuyá"
+                "value": "Ancuy\u00e1",
+                "label": "Ancuy\u00e1"
             },
             {
                 "value": "Arboleda",
@@ -3141,32 +3141,32 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Barbacoas"
             },
             {
-                "value": "Belén",
-                "label": "Belén"
+                "value": "Bel\u00e9n",
+                "label": "Bel\u00e9n"
             },
             {
                 "value": "Buesaco",
                 "label": "Buesaco"
             },
             {
-                "value": "Chachagüí",
-                "label": "Chachagüí"
+                "value": "Chachag\u00fc\u00ed",
+                "label": "Chachag\u00fc\u00ed"
             },
             {
-                "value": "Colón",
-                "label": "Colón"
+                "value": "Col\u00f3n",
+                "label": "Col\u00f3n"
             },
             {
-                "value": "Consacá",
-                "label": "Consacá"
+                "value": "Consac\u00e1",
+                "label": "Consac\u00e1"
             },
             {
                 "value": "Contadero",
                 "label": "Contadero"
             },
             {
-                "value": "Córdoba",
-                "label": "Córdoba"
+                "value": "C\u00f3rdoba",
+                "label": "C\u00f3rdoba"
             },
             {
                 "value": "Cuaspud",
@@ -3185,16 +3185,16 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "El Charco"
             },
             {
-                "value": "El Peñol",
-                "label": "El Peñol"
+                "value": "El Pe\u00f1ol",
+                "label": "El Pe\u00f1ol"
             },
             {
                 "value": "El Rosario",
                 "label": "El Rosario"
             },
             {
-                "value": "El Tablón",
-                "label": "El Tablón"
+                "value": "El Tabl\u00f3n",
+                "label": "El Tabl\u00f3n"
             },
             {
                 "value": "El Tambo",
@@ -3217,16 +3217,16 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Guaitarilla"
             },
             {
-                "value": "Gualmatán",
-                "label": "Gualmatán"
+                "value": "Gualmat\u00e1n",
+                "label": "Gualmat\u00e1n"
             },
             {
                 "value": "Iles",
                 "label": "Iles"
             },
             {
-                "value": "Imués",
-                "label": "Imués"
+                "value": "Imu\u00e9s",
+                "label": "Imu\u00e9s"
             },
             {
                 "value": "Ipiales",
@@ -3249,8 +3249,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "La Tola"
             },
             {
-                "value": "La Unión",
-                "label": "La Unión"
+                "value": "La Uni\u00f3n",
+                "label": "La Uni\u00f3n"
             },
             {
                 "value": "Leiva",
@@ -3265,8 +3265,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Los Andes"
             },
             {
-                "value": "Magüí Payán",
-                "label": "Magüí Payán"
+                "value": "Mag\u00fc\u00ed Pay\u00e1n",
+                "label": "Mag\u00fc\u00ed Pay\u00e1n"
             },
             {
                 "value": "Mallama",
@@ -3277,8 +3277,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Mosquera"
             },
             {
-                "value": "Nariño",
-                "label": "Nariño"
+                "value": "Nari\u00f1o",
+                "label": "Nari\u00f1o"
             },
             {
                 "value": "Olaya Herrera",
@@ -3297,8 +3297,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Policarpa"
             },
             {
-                "value": "Potosí",
-                "label": "Potosí"
+                "value": "Potos\u00ed",
+                "label": "Potos\u00ed"
             },
             {
                 "value": "Providencia",
@@ -3317,8 +3317,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Ricaurte"
             },
             {
-                "value": "Roberto Payán",
-                "label": "Roberto Payán"
+                "value": "Roberto Pay\u00e1n",
+                "label": "Roberto Pay\u00e1n"
             },
             {
                 "value": "Samaniego",
@@ -3329,8 +3329,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "San Bernardo"
             },
             {
-                "value": "San José de Albán",
-                "label": "San José de Albán"
+                "value": "San Jos\u00e9 de Alb\u00e1n",
+                "label": "San Jos\u00e9 de Alb\u00e1n"
             },
             {
                 "value": "San Lorenzo",
@@ -3345,12 +3345,12 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "San Pedro de Cartago"
             },
             {
-                "value": "Sandoná",
-                "label": "Sandoná"
+                "value": "Sandon\u00e1",
+                "label": "Sandon\u00e1"
             },
             {
-                "value": "Santa Bárbara",
-                "label": "Santa Bárbara"
+                "value": "Santa B\u00e1rbara",
+                "label": "Santa B\u00e1rbara"
             },
             {
                 "value": "Santacruz",
@@ -3373,8 +3373,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Tumaco"
             },
             {
-                "value": "Túquerres",
-                "label": "Túquerres"
+                "value": "T\u00faquerres",
+                "label": "T\u00faquerres"
             },
             {
                 "value": "Yacuanquer",
@@ -3387,8 +3387,8 @@ export const DEPARTMENT_OPTIONS = [
         "label": "Norte de Santander",
         "municipalities": [
             {
-                "value": "Ábrego",
-                "label": "Ábrego"
+                "value": "\u00c1brego",
+                "label": "\u00c1brego"
             },
             {
                 "value": "Arboledas",
@@ -3403,36 +3403,36 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Bucarasica"
             },
             {
-                "value": "Cáchira",
-                "label": "Cáchira"
+                "value": "C\u00e1chira",
+                "label": "C\u00e1chira"
             },
             {
-                "value": "Cácota",
-                "label": "Cácota"
+                "value": "C\u00e1cota",
+                "label": "C\u00e1cota"
             },
             {
-                "value": "Chinácota",
-                "label": "Chinácota"
+                "value": "Chin\u00e1cota",
+                "label": "Chin\u00e1cota"
             },
             {
-                "value": "Chitagá",
-                "label": "Chitagá"
+                "value": "Chitag\u00e1",
+                "label": "Chitag\u00e1"
             },
             {
-                "value": "Convención",
-                "label": "Convención"
+                "value": "Convenci\u00f3n",
+                "label": "Convenci\u00f3n"
             },
             {
-                "value": "Cúcuta",
-                "label": "Cúcuta"
+                "value": "C\u00facuta",
+                "label": "C\u00facuta"
             },
             {
                 "value": "Cucutilla",
                 "label": "Cucutilla"
             },
             {
-                "value": "Duranía",
-                "label": "Duranía"
+                "value": "Duran\u00eda",
+                "label": "Duran\u00eda"
             },
             {
                 "value": "El Carmen",
@@ -3451,20 +3451,20 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Gramalote"
             },
             {
-                "value": "Hacarí",
-                "label": "Hacarí"
+                "value": "Hacar\u00ed",
+                "label": "Hacar\u00ed"
             },
             {
-                "value": "Herrán",
-                "label": "Herrán"
+                "value": "Herr\u00e1n",
+                "label": "Herr\u00e1n"
             },
             {
                 "value": "La Esperanza",
                 "label": "La Esperanza"
             },
             {
-                "value": "La Playa de Belén",
-                "label": "La Playa de Belén"
+                "value": "La Playa de Bel\u00e9n",
+                "label": "La Playa de Bel\u00e9n"
             },
             {
                 "value": "Labateca",
@@ -3483,8 +3483,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Mutiscua"
             },
             {
-                "value": "Ocaña",
-                "label": "Ocaña"
+                "value": "Oca\u00f1a",
+                "label": "Oca\u00f1a"
             },
             {
                 "value": "Pamplona",
@@ -3531,8 +3531,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Teorama"
             },
             {
-                "value": "Tibú",
-                "label": "Tibú"
+                "value": "Tib\u00fa",
+                "label": "Tib\u00fa"
             },
             {
                 "value": "Toledo",
@@ -3553,8 +3553,8 @@ export const DEPARTMENT_OPTIONS = [
         "label": "Putumayo",
         "municipalities": [
             {
-                "value": "Colón",
-                "label": "Colón"
+                "value": "Col\u00f3n",
+                "label": "Col\u00f3n"
             },
             {
                 "value": "Mocoa",
@@ -3565,20 +3565,20 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Orito"
             },
             {
-                "value": "Puerto Asís",
-                "label": "Puerto Asís"
+                "value": "Puerto As\u00eds",
+                "label": "Puerto As\u00eds"
             },
             {
                 "value": "Puerto Caicedo",
                 "label": "Puerto Caicedo"
             },
             {
-                "value": "Puerto Guzmán",
-                "label": "Puerto Guzmán"
+                "value": "Puerto Guzm\u00e1n",
+                "label": "Puerto Guzm\u00e1n"
             },
             {
-                "value": "Puerto Leguízamo",
-                "label": "Puerto Leguízamo"
+                "value": "Puerto Legu\u00edzamo",
+                "label": "Puerto Legu\u00edzamo"
             },
             {
                 "value": "San Francisco",
@@ -3601,14 +3601,14 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Valle del Guamuez"
             },
             {
-                "value": "Villagarzón",
-                "label": "Villagarzón"
+                "value": "Villagarz\u00f3n",
+                "label": "Villagarz\u00f3n"
             }
         ]
     },
     {
-        "value": "Quindío",
-        "label": "Quindío",
+        "value": "Quind\u00edo",
+        "label": "Quind\u00edo",
         "municipalities": [
             {
                 "value": "Armenia",
@@ -3619,24 +3619,24 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Buenavista"
             },
             {
-                "value": "Calarcá",
-                "label": "Calarcá"
+                "value": "Calarc\u00e1",
+                "label": "Calarc\u00e1"
             },
             {
                 "value": "Circasia",
                 "label": "Circasia"
             },
             {
-                "value": "Córdoba",
-                "label": "Córdoba"
+                "value": "C\u00f3rdoba",
+                "label": "C\u00f3rdoba"
             },
             {
                 "value": "Filandia",
                 "label": "Filandia"
             },
             {
-                "value": "Génova",
-                "label": "Génova"
+                "value": "G\u00e9nova",
+                "label": "G\u00e9nova"
             },
             {
                 "value": "La Tebaida",
@@ -3665,24 +3665,24 @@ export const DEPARTMENT_OPTIONS = [
         "label": "Risaralda",
         "municipalities": [
             {
-                "value": "Apía",
-                "label": "Apía"
+                "value": "Ap\u00eda",
+                "label": "Ap\u00eda"
             },
             {
                 "value": "Balboa",
                 "label": "Balboa"
             },
             {
-                "value": "Belén de Umbría",
-                "label": "Belén de Umbría"
+                "value": "Bel\u00e9n de Umbr\u00eda",
+                "label": "Bel\u00e9n de Umbr\u00eda"
             },
             {
                 "value": "Dosquebradas",
                 "label": "Dosquebradas"
             },
             {
-                "value": "Guática",
-                "label": "Guática"
+                "value": "Gu\u00e1tica",
+                "label": "Gu\u00e1tica"
             },
             {
                 "value": "La Celia",
@@ -3697,8 +3697,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Marsella"
             },
             {
-                "value": "Mistrató",
-                "label": "Mistrató"
+                "value": "Mistrat\u00f3",
+                "label": "Mistrat\u00f3"
             },
             {
                 "value": "Pereira",
@@ -3709,8 +3709,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Pueblo Rico"
             },
             {
-                "value": "Quinchía",
-                "label": "Quinchía"
+                "value": "Quinch\u00eda",
+                "label": "Quinch\u00eda"
             },
             {
                 "value": "Santa Rosa de Cabal",
@@ -3723,16 +3723,16 @@ export const DEPARTMENT_OPTIONS = [
         ]
     },
     {
-        "value": "San Andrés y Providencia",
-        "label": "San Andrés y Providencia",
+        "value": "San Andr\u00e9s y Providencia",
+        "label": "San Andr\u00e9s y Providencia",
         "municipalities": [
             {
                 "value": "Providencia y Santa Catalina Islas",
                 "label": "Providencia y Santa Catalina Islas"
             },
             {
-                "value": "San Andrés",
-                "label": "San Andrés"
+                "value": "San Andr\u00e9s",
+                "label": "San Andr\u00e9s"
             }
         ]
     },
@@ -3769,8 +3769,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Betulia"
             },
             {
-                "value": "Bolívar",
-                "label": "Bolívar"
+                "value": "Bol\u00edvar",
+                "label": "Bol\u00edvar"
             },
             {
                 "value": "Bucaramanga",
@@ -3789,20 +3789,20 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Capitanejo"
             },
             {
-                "value": "Carcasí",
-                "label": "Carcasí"
+                "value": "Carcas\u00ed",
+                "label": "Carcas\u00ed"
             },
             {
-                "value": "Cepitá",
-                "label": "Cepitá"
+                "value": "Cepit\u00e1",
+                "label": "Cepit\u00e1"
             },
             {
                 "value": "Cerrito",
                 "label": "Cerrito"
             },
             {
-                "value": "Charalá",
-                "label": "Charalá"
+                "value": "Charal\u00e1",
+                "label": "Charal\u00e1"
             },
             {
                 "value": "Charta",
@@ -3813,48 +3813,48 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Chima"
             },
             {
-                "value": "Chipatá",
-                "label": "Chipatá"
+                "value": "Chipat\u00e1",
+                "label": "Chipat\u00e1"
             },
             {
                 "value": "Cimitarra",
                 "label": "Cimitarra"
             },
             {
-                "value": "Concepción",
-                "label": "Concepción"
+                "value": "Concepci\u00f3n",
+                "label": "Concepci\u00f3n"
             },
             {
                 "value": "Confines",
                 "label": "Confines"
             },
             {
-                "value": "Contratación",
-                "label": "Contratación"
+                "value": "Contrataci\u00f3n",
+                "label": "Contrataci\u00f3n"
             },
             {
                 "value": "Coromoro",
                 "label": "Coromoro"
             },
             {
-                "value": "Curití",
-                "label": "Curití"
+                "value": "Curit\u00ed",
+                "label": "Curit\u00ed"
             },
             {
-                "value": "El Carmen de Chucurí",
-                "label": "El Carmen de Chucurí"
+                "value": "El Carmen de Chucur\u00ed",
+                "label": "El Carmen de Chucur\u00ed"
             },
             {
                 "value": "El Guacamayo",
                 "label": "El Guacamayo"
             },
             {
-                "value": "El Peñón",
-                "label": "El Peñón"
+                "value": "El Pe\u00f1\u00f3n",
+                "label": "El Pe\u00f1\u00f3n"
             },
             {
-                "value": "El Playón",
-                "label": "El Playón"
+                "value": "El Play\u00f3n",
+                "label": "El Play\u00f3n"
             },
             {
                 "value": "El Socorro",
@@ -3869,24 +3869,24 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Enciso"
             },
             {
-                "value": "Florián",
-                "label": "Florián"
+                "value": "Flori\u00e1n",
+                "label": "Flori\u00e1n"
             },
             {
                 "value": "Floridablanca",
                 "label": "Floridablanca"
             },
             {
-                "value": "Galán",
-                "label": "Galán"
+                "value": "Gal\u00e1n",
+                "label": "Gal\u00e1n"
             },
             {
-                "value": "Gámbita",
-                "label": "Gámbita"
+                "value": "G\u00e1mbita",
+                "label": "G\u00e1mbita"
             },
             {
-                "value": "Girón",
-                "label": "Girón"
+                "value": "Gir\u00f3n",
+                "label": "Gir\u00f3n"
             },
             {
                 "value": "Guaca",
@@ -3897,28 +3897,28 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Guadalupe"
             },
             {
-                "value": "Guapotá",
-                "label": "Guapotá"
+                "value": "Guapot\u00e1",
+                "label": "Guapot\u00e1"
             },
             {
-                "value": "Guavatá",
-                "label": "Guavatá"
+                "value": "Guavat\u00e1",
+                "label": "Guavat\u00e1"
             },
             {
-                "value": "Güepsa",
-                "label": "Güepsa"
+                "value": "G\u00fcepsa",
+                "label": "G\u00fcepsa"
             },
             {
                 "value": "Hato",
                 "label": "Hato"
             },
             {
-                "value": "Jesús María",
-                "label": "Jesús María"
+                "value": "Jes\u00fas Mar\u00eda",
+                "label": "Jes\u00fas Mar\u00eda"
             },
             {
-                "value": "Jordán",
-                "label": "Jordán"
+                "value": "Jord\u00e1n",
+                "label": "Jord\u00e1n"
             },
             {
                 "value": "La Belleza",
@@ -3929,8 +3929,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "La Paz"
             },
             {
-                "value": "Landázuri",
-                "label": "Landázuri"
+                "value": "Land\u00e1zuri",
+                "label": "Land\u00e1zuri"
             },
             {
                 "value": "Lebrija",
@@ -3945,8 +3945,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Macaravita"
             },
             {
-                "value": "Málaga",
-                "label": "Málaga"
+                "value": "M\u00e1laga",
+                "label": "M\u00e1laga"
             },
             {
                 "value": "Matanza",
@@ -3981,8 +3981,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Palmas del Socorro"
             },
             {
-                "value": "Páramo",
-                "label": "Páramo"
+                "value": "P\u00e1ramo",
+                "label": "P\u00e1ramo"
             },
             {
                 "value": "Piedecuesta",
@@ -4013,8 +4013,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Sabana de Torres"
             },
             {
-                "value": "San Andrés",
-                "label": "San Andrés"
+                "value": "San Andr\u00e9s",
+                "label": "San Andr\u00e9s"
             },
             {
                 "value": "San Benito",
@@ -4025,28 +4025,28 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "San Gil"
             },
             {
-                "value": "San Joaquín",
-                "label": "San Joaquín"
+                "value": "San Joaqu\u00edn",
+                "label": "San Joaqu\u00edn"
             },
             {
-                "value": "San José de Miranda",
-                "label": "San José de Miranda"
+                "value": "San Jos\u00e9 de Miranda",
+                "label": "San Jos\u00e9 de Miranda"
             },
             {
                 "value": "San Miguel",
                 "label": "San Miguel"
             },
             {
-                "value": "San Vicente de Chucurí",
-                "label": "San Vicente de Chucurí"
+                "value": "San Vicente de Chucur\u00ed",
+                "label": "San Vicente de Chucur\u00ed"
             },
             {
-                "value": "Santa Bárbara",
-                "label": "Santa Bárbara"
+                "value": "Santa B\u00e1rbara",
+                "label": "Santa B\u00e1rbara"
             },
             {
-                "value": "Santa Helena del Opón",
-                "label": "Santa Helena del Opón"
+                "value": "Santa Helena del Op\u00f3n",
+                "label": "Santa Helena del Op\u00f3n"
             },
             {
                 "value": "Simacota",
@@ -4061,20 +4061,20 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Sucre"
             },
             {
-                "value": "Suratá",
-                "label": "Suratá"
+                "value": "Surat\u00e1",
+                "label": "Surat\u00e1"
             },
             {
                 "value": "Tona",
                 "label": "Tona"
             },
             {
-                "value": "Valle de San José",
-                "label": "Valle de San José"
+                "value": "Valle de San Jos\u00e9",
+                "label": "Valle de San Jos\u00e9"
             },
             {
-                "value": "Vélez",
-                "label": "Vélez"
+                "value": "V\u00e9lez",
+                "label": "V\u00e9lez"
             },
             {
                 "value": "Vetas",
@@ -4103,20 +4103,20 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Caimito"
             },
             {
-                "value": "Chalán",
-                "label": "Chalán"
+                "value": "Chal\u00e1n",
+                "label": "Chal\u00e1n"
             },
             {
-                "value": "Colosó",
-                "label": "Colosó"
+                "value": "Colos\u00f3",
+                "label": "Colos\u00f3"
             },
             {
                 "value": "Corozal",
                 "label": "Corozal"
             },
             {
-                "value": "Coveñas",
-                "label": "Coveñas"
+                "value": "Cove\u00f1as",
+                "label": "Cove\u00f1as"
             },
             {
                 "value": "El Roble",
@@ -4131,8 +4131,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Guaranda"
             },
             {
-                "value": "La Unión",
-                "label": "La Unión"
+                "value": "La Uni\u00f3n",
+                "label": "La Uni\u00f3n"
             },
             {
                 "value": "Los Palmitos",
@@ -4151,8 +4151,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Ovejas"
             },
             {
-                "value": "Sampués",
-                "label": "Sampués"
+                "value": "Sampu\u00e9s",
+                "label": "Sampu\u00e9s"
             },
             {
                 "value": "San Antonio de Palmito",
@@ -4179,8 +4179,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "San Pedro"
             },
             {
-                "value": "Sincé",
-                "label": "Sincé"
+                "value": "Sinc\u00e9",
+                "label": "Sinc\u00e9"
             },
             {
                 "value": "Sincelejo",
@@ -4191,12 +4191,12 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Sucre"
             },
             {
-                "value": "Tolú",
-                "label": "Tolú"
+                "value": "Tol\u00fa",
+                "label": "Tol\u00fa"
             },
             {
-                "value": "Tolú Viejo",
-                "label": "Tolú Viejo"
+                "value": "Tol\u00fa Viejo",
+                "label": "Tol\u00fa Viejo"
             }
         ]
     },
@@ -4217,8 +4217,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Ambalema"
             },
             {
-                "value": "Anzoátegui",
-                "label": "Anzoátegui"
+                "value": "Anzo\u00e1tegui",
+                "label": "Anzo\u00e1tegui"
             },
             {
                 "value": "Armero",
@@ -4233,8 +4233,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Cajamarca"
             },
             {
-                "value": "Carmen de Apicalá",
-                "label": "Carmen de Apicalá"
+                "value": "Carmen de Apical\u00e1",
+                "label": "Carmen de Apical\u00e1"
             },
             {
                 "value": "Casabianca",
@@ -4265,8 +4265,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "El Espinal"
             },
             {
-                "value": "Falán",
-                "label": "Falán"
+                "value": "Fal\u00e1n",
+                "label": "Fal\u00e1n"
             },
             {
                 "value": "Flandes",
@@ -4289,20 +4289,20 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Honda"
             },
             {
-                "value": "Ibagué",
-                "label": "Ibagué"
+                "value": "Ibagu\u00e9",
+                "label": "Ibagu\u00e9"
             },
             {
                 "value": "Icononzo",
                 "label": "Icononzo"
             },
             {
-                "value": "Lérida",
-                "label": "Lérida"
+                "value": "L\u00e9rida",
+                "label": "L\u00e9rida"
             },
             {
-                "value": "Líbano",
-                "label": "Líbano"
+                "value": "L\u00edbano",
+                "label": "L\u00edbano"
             },
             {
                 "value": "Mariquita",
@@ -4341,8 +4341,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Prado"
             },
             {
-                "value": "Purificación",
-                "label": "Purificación"
+                "value": "Purificaci\u00f3n",
+                "label": "Purificaci\u00f3n"
             },
             {
                 "value": "Rioblanco",
@@ -4357,8 +4357,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Rovira"
             },
             {
-                "value": "Saldaña",
-                "label": "Saldaña"
+                "value": "Salda\u00f1a",
+                "label": "Salda\u00f1a"
             },
             {
                 "value": "San Antonio",
@@ -4373,8 +4373,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Santa Isabel"
             },
             {
-                "value": "Suárez",
-                "label": "Suárez"
+                "value": "Su\u00e1rez",
+                "label": "Su\u00e1rez"
             },
             {
                 "value": "Valle de San Juan",
@@ -4399,12 +4399,12 @@ export const DEPARTMENT_OPTIONS = [
         "label": "Valle del Cauca",
         "municipalities": [
             {
-                "value": "Alcalá",
-                "label": "Alcalá"
+                "value": "Alcal\u00e1",
+                "label": "Alcal\u00e1"
             },
             {
-                "value": "Andalucía",
-                "label": "Andalucía"
+                "value": "Andaluc\u00eda",
+                "label": "Andaluc\u00eda"
             },
             {
                 "value": "Ansermanuevo",
@@ -4415,8 +4415,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Argelia"
             },
             {
-                "value": "Bolívar",
-                "label": "Bolívar"
+                "value": "Bol\u00edvar",
+                "label": "Bol\u00edvar"
             },
             {
                 "value": "Buenaventura",
@@ -4455,8 +4455,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Dagua"
             },
             {
-                "value": "El Águila",
-                "label": "El Águila"
+                "value": "El \u00c1guila",
+                "label": "El \u00c1guila"
             },
             {
                 "value": "El Cairo",
@@ -4479,20 +4479,20 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Ginebra"
             },
             {
-                "value": "Guacarí",
-                "label": "Guacarí"
+                "value": "Guacar\u00ed",
+                "label": "Guacar\u00ed"
             },
             {
-                "value": "Jamundí",
-                "label": "Jamundí"
+                "value": "Jamund\u00ed",
+                "label": "Jamund\u00ed"
             },
             {
                 "value": "La Cumbre",
                 "label": "La Cumbre"
             },
             {
-                "value": "La Unión",
-                "label": "La Unión"
+                "value": "La Uni\u00f3n",
+                "label": "La Uni\u00f3n"
             },
             {
                 "value": "La Victoria",
@@ -4515,8 +4515,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Restrepo"
             },
             {
-                "value": "Riofrío",
-                "label": "Riofrío"
+                "value": "Riofr\u00edo",
+                "label": "Riofr\u00edo"
             },
             {
                 "value": "Roldanillo",
@@ -4539,8 +4539,8 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "Trujillo"
             },
             {
-                "value": "Tuluá",
-                "label": "Tuluá"
+                "value": "Tulu\u00e1",
+                "label": "Tulu\u00e1"
             },
             {
                 "value": "Ulloa",
@@ -4569,16 +4569,16 @@ export const DEPARTMENT_OPTIONS = [
         ]
     },
     {
-        "value": "Vaupés",
-        "label": "Vaupés",
+        "value": "Vaup\u00e9s",
+        "label": "Vaup\u00e9s",
         "municipalities": [
             {
-                "value": "Carurú",
-                "label": "Carurú"
+                "value": "Carur\u00fa",
+                "label": "Carur\u00fa"
             },
             {
-                "value": "Mitú",
-                "label": "Mitú"
+                "value": "Mit\u00fa",
+                "label": "Mit\u00fa"
             },
             {
                 "value": "Taraira",
@@ -4599,12 +4599,12 @@ export const DEPARTMENT_OPTIONS = [
                 "label": "La Primavera"
             },
             {
-                "value": "Puerto Carreño",
-                "label": "Puerto Carreño"
+                "value": "Puerto Carre\u00f1o",
+                "label": "Puerto Carre\u00f1o"
             },
             {
-                "value": "Santa Rosalía",
-                "label": "Santa Rosalía"
+                "value": "Santa Rosal\u00eda",
+                "label": "Santa Rosal\u00eda"
             }
         ]
     }

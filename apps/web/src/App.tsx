@@ -93,39 +93,39 @@ const REFERENCE_DIFF_THRESHOLD_MM = 12;
 const RANGE_OPTIONS: RangeOption[] = [
   {
     id: 'threeMonths',
-    label: 'Últimos 3 meses',
+    label: '\u00daltimos 3 meses',
     days: 90,
-    description: 'Observa la evolución reciente (aprox. último trimestre).',
+    description: 'Observa la evoluci\u00f3n reciente (aprox. \u00faltimo trimestre).',
   },
   {
     id: 'oneYear',
-    label: 'Último año',
+    label: '\u00daltimo a\u00f1o',
     days: 365,
-    description: 'Analiza cómo cerró el último año hídrico completo.',
+    description: 'Analiza c\u00f3mo cerr\u00f3 el \u00faltimo a\u00f1o h\u00eddrico completo.',
   },
   {
     id: 'fiveYears',
-    label: 'Últimos 5 años',
+    label: '\u00daltimos 5 a\u00f1os',
     days: 365 * 5,
     description: 'Identifica tendencias multianuales y cambios estructurales.',
   },
   {
     id: 'future',
-    label: 'Próx. 14 días',
+    label: 'Pr\u00f3x. 14 d\u00edas',
     days: 14,
     future: true,
-    description: 'Pronóstico inmediato (sin línea de tendencia).',
+    description: 'Pron\u00f3stico inmediato (sin l\u00ednea de tendencia).',
   },
 ];
 
 const METRIC_OPTIONS: Array<{ id: Metric; label: string; helper: string }> = [
-  { id: 'accumulated', label: 'Acumulado diario', helper: 'Suma mm por día (precipitación acumulada).' },
+  { id: 'accumulated', label: 'Acumulado diario', helper: 'Suma mm por d\u00eda (precipitaci\u00f3n acumulada).' },
   { id: 'intensity', label: 'Intensidad (mm/h)', helper: 'Pico horario diario (mm/h) como proxy de intensidad.' },
 ];
 
 const TREND_OPTIONS: Array<{ id: TrendType; label: string; helper: string }> = [
-  { id: 'MA', label: 'MA', helper: 'Media móvil con ventana fija.' },
-  { id: 'EMA', label: 'EMA', helper: 'Media móvil exponencial (pondera lo reciente).' },
+  { id: 'MA', label: 'MA', helper: 'Media m\u00f3vil con ventana fija.' },
+  { id: 'EMA', label: 'EMA', helper: 'Media m\u00f3vil exponencial (pondera lo reciente).' },
 ];
 
 const DEFAULT_DEPARTMENT = DEPARTMENT_OPTIONS[0];
@@ -142,9 +142,9 @@ const INSIGHT_KIND_META: Record<
   string,
   { label: string; tone: 'trend' | 'advice' | 'event'; icon: string }
 > = {
-  trend: { label: 'Trend', tone: 'trend', icon: '📈' },
-  advice: { label: 'Consejo', tone: 'advice', icon: '💡' },
-  event: { label: 'Evento', tone: 'event', icon: '⚠️' },
+  trend: { label: 'Trend', tone: 'trend', icon: '\u{1f4c8}' },
+  advice: { label: 'Consejo', tone: 'advice', icon: '\u{1f4a1}' },
+  event: { label: 'Evento', tone: 'event', icon: '\u26a0\ufe0f' },
 };
 
 export default function App() {
@@ -152,7 +152,7 @@ export default function App() {
     return (
       <main className="wrap">
         <section className="card">
-          <h1>Panel agrometeorológico</h1>
+          <h1>Panel agrometeorol\u00f3gico</h1>
           <p>Activa la variable VITE_FEATURE_AGROMETEO para visualizar este tablero.</p>
         </section>
       </main>
@@ -321,7 +321,7 @@ export default function App() {
   );
   const overviewSummary = useMemo(
     () => ({
-      location: metaSummary?.location ?? 'Selecciona una ubicación',
+      location: metaSummary?.location ?? 'Selecciona una ubicaci\u00f3n',
       updated: metaSummary?.updated ?? 'Sin dato',
       source: metaSummary?.source ?? 'Fuente no disponible',
     }),
@@ -330,7 +330,7 @@ export default function App() {
   const summaryPills = useMemo(() => {
     if (!aggregated.count) {
       return [
-        { id: 'empty', label: 'Sin datos en el rango', value: '--', note: 'Ajusta ubicación o fechas.' },
+        { id: 'empty', label: 'Sin datos en el rango', value: '--', note: 'Ajusta ubicaci\u00f3n o fechas.' },
       ];
     }
     const unit = metric === 'intensity' ? 'mm/h' : 'mm';
@@ -339,17 +339,17 @@ export default function App() {
         id: 'total',
         label: tense === 'future' ? 'Total proyectado' : 'Acumulado analizado',
         value: `${formatNumber(aggregated.totalRain)} mm`,
-        note: `${aggregated.count.toLocaleString('es-CO')} días con dato`,
+        note: `${aggregated.count.toLocaleString('es-CO')} d\u00edas con dato`,
       },
       {
         id: 'avg',
         label: 'Promedio diario',
         value: `${formatNumber(aggregated.average)} ${unit}`,
-        note: 'Media del período seleccionado.',
+        note: 'Media del per\u00edodo seleccionado.',
       },
       {
         id: 'peak',
-        label: metric === 'intensity' ? 'Pico horario' : 'Máximo diario',
+        label: metric === 'intensity' ? 'Pico horario' : 'M\u00e1ximo diario',
         value: `${formatNumber(aggregated.maxValue)} ${unit}`,
         note: aggregated.maxValueDate ? formatDisplayDate(aggregated.maxValueDate) : undefined,
       },
@@ -403,10 +403,10 @@ export default function App() {
           </div>
           <div>
             <p className="tagline">Tendencias de lluvia en Colombia</p>
-            <h1>Panel agrometeorológico</h1>
+            <h1>Panel agrometeorol\u00f3gico</h1>
             <p className="muted">
               Filtra por departamento y municipio, alterna entre acumulados o intensidad diaria y usa la
-              línea de tendencia para resumir comportamientos. El mapa horario te ayuda a encontrar
+              l\u00ednea de tendencia para resumir comportamientos. El mapa horario te ayuda a encontrar
               ventanas secas o picos concentrados.
             </p>
           </div>
@@ -415,28 +415,28 @@ export default function App() {
 
       <section className={`card help mb4 mobile-fold ${helpHidden ? 'collapsed' : 'open'}`}>
         <div className="fold-toggle-row">
-          <strong>Cómo usar</strong>
+          <strong>C\u00f3mo usar</strong>
           <button type="button" className="btn small ghost" onClick={() => setHelpHidden((prev) => !prev)}>
-            {helpHidden ? 'Mostrar guía' : 'Ocultar guía'}
+            {helpHidden ? 'Mostrar gu\u00eda' : 'Ocultar gu\u00eda'}
           </button>
         </div>
         {!helpHidden && (
           <div className="fold-body">
             <ol className="help-steps">
               <li>
-                Comienza en <strong>Monitoreo en vivo</strong>: valida el sello ¿Hace X min? y usa la actualización automática (1, 5 o 15 min) para seguir tormentas en tiempo real.
+                Comienza en <strong>Monitoreo en vivo</strong>: valida el sello \u00bfHace X min? y usa la actualizaci\u00f3n autom\u00e1tica (1, 5 o 15 min) para seguir tormentas en tiempo real.
               </li>
               <li>
                 Elige un departamento y opcionalmente un municipio para la serie local (por defecto usa la capital) y confirma la fuente mostrada en la tarjeta en vivo.
               </li>
               <li>
-                Ajusta el rango rápido (3 meses, 1 año, 5 años o 14 días de pronóstico). También puedes fijar fechas manualmente cuando necesites comparar ventanas específicas.
+                Ajusta el rango r\u00e1pido (3 meses, 1 a\u00f1o, 5 a\u00f1os o 14 d\u00edas de pron\u00f3stico). Tambi\u00e9n puedes fijar fechas manualmente cuando necesites comparar ventanas espec\u00edficas.
               </li>
               <li>
-                Alterna entre acumulado diario o intensidad máxima, activa MA/EMA para suavizar la serie histórica y combina los insights automáticos para traducir la señal en acciones.
+                Alterna entre acumulado diario o intensidad m\u00e1xima, activa MA/EMA para suavizar la serie hist\u00f3rica y combina los insights autom\u00e1ticos para traducir la se\u00f1al en acciones.
               </li>
               <li>
-                Usa la distribución diaria y horaria para detectar ventanas secas o picos concentrados antes de programar labores a campo.
+                Usa la distribuci\u00f3n diaria y horaria para detectar ventanas secas o picos concentrados antes de programar labores a campo.
               </li>
             </ol>
           </div>
@@ -446,12 +446,12 @@ export default function App() {
       <section className="card mobile-overview mb4">
         <div className="overview-top">
           <div className="overview-cell">
-            <span className="tiny">Ubicación activa</span>
+            <span className="tiny">Ubicaci\u00f3n activa</span>
             <strong>{overviewSummary.location}</strong>
             <p className="muted tiny">{rangeSummary}</p>
           </div>
           <div className="overview-cell">
-            <span className="tiny">Último dato</span>
+            <span className="tiny">\u00daltimo dato</span>
             <strong>{overviewSummary.updated}</strong>
             <p className="muted tiny">Fuente: {overviewSummary.source}</p>
           </div>
@@ -470,9 +470,9 @@ export default function App() {
       <section className={`card controls mb4 ${filtersOpen ? 'open' : 'collapsed'}`}>
         <div className="controls-header">
           <div>
-            <h2>Filtros rápidos</h2>
+            <h2>Filtros r\u00e1pidos</h2>
             <p className="muted tiny">
-              Define ubicación, rango y métricas para ajustar la lectura histórica y el pronóstico.
+              Define ubicaci\u00f3n, rango y m\u00e9tricas para ajustar la lectura hist\u00f3rica y el pron\u00f3stico.
             </p>
           </div>
           <button type="button" className="btn small ghost" onClick={() => setFiltersOpen((prev) => !prev)}>
@@ -554,7 +554,7 @@ export default function App() {
               className="btn small"
               onClick={() => setShowTrend((prev) => !prev)}
               disabled={isFutureRange}
-              title={isFutureRange ? 'La tendencia no aplica a pronósticos futuros' : ''}
+              title={isFutureRange ? 'La tendencia no aplica a pron\u00f3sticos futuros' : ''}
             >
               {showTrend ? 'Ocultar tendencia' : 'Ver tendencia'}
             </button>
@@ -579,7 +579,7 @@ export default function App() {
           </p>
 
           <div className="refresh-controls mt2">
-            <span className="tiny">Actualización automática</span>
+            <span className="tiny">Actualizaci\u00f3n autom\u00e1tica</span>
             <div className="seg compact">
               {REFRESH_OPTIONS.map((option) => (
                 <button
@@ -604,7 +604,7 @@ export default function App() {
           <div>
             <h2>Serie diaria</h2>
             <p className="muted tiny">
-              {rangeSummary} - {metric === 'intensity' ? 'Intensidad máxima por día' : 'Acumulado diario (mm)'}
+              {rangeSummary} - {metric === 'intensity' ? 'Intensidad m\u00e1xima por d\u00eda' : 'Acumulado diario (mm)'}
             </p>
           </div>
           <button type="button" className="btn small ghost" onClick={() => setChartOpen((prev) => !prev)}>
@@ -627,18 +627,18 @@ export default function App() {
             {series.error && (
               <div className="error-banner mb3">
                 <strong>No fue posible actualizar la serie.</strong>
-                <p>{series.error.message || 'No pudimos contactar la API. Revisa tu conexión o intenta nuevamente.'}</p>
+                <p>{series.error.message || 'No pudimos contactar la API. Revisa tu conexi\u00f3n o intenta nuevamente.'}</p>
               </div>
             )}
 
             {metaSummary && (
               <div className="meta-panel">
                 <div className="meta-item">
-                  <strong>Última actualización</strong>
+                  <strong>\u00daltima actualizaci\u00f3n</strong>
                   <span>{metaSummary.updated}</span>
                 </div>
                 <div className="meta-item">
-                  <strong>Ubicación</strong>
+                  <strong>Ubicaci\u00f3n</strong>
                   <span>{metaSummary.location}</span>
                 </div>
                 <div className="meta-item">
@@ -656,9 +656,9 @@ export default function App() {
               <div className="alert-card">
                 <strong>Datos por confirmar</strong>
                 <p>
-                  Detectamos {anomalyReport.points.length} valores diarios fuera del rango habitual (percentil 95 ≈{' '}
-                  {formatNumber(anomalyReport.reference)} {metric === 'intensity' ? 'mm/h' : 'mm'}). Verifica estos días
-                  con IDEAM, NASA POWER/CHIRPS o tus pluviómetros locales antes de tomar decisiones.
+                  Detectamos {anomalyReport.points.length} valores diarios fuera del rango habitual (percentil 95 \u2248{' '}
+                  {formatNumber(anomalyReport.reference)} {metric === 'intensity' ? 'mm/h' : 'mm'}). Verifica estos d\u00edas
+                  con IDEAM, NASA POWER/CHIRPS o tus pluvi\u00f3metros locales antes de tomar decisiones.
                 </p>
                 <ul>
                   {anomalyReport.points.slice(0, 4).map((point) => (
@@ -675,13 +675,13 @@ export default function App() {
                   <strong>Cruce con Open-Meteo</strong>
                   {referenceDaily.data?.coverage.from && (
                     <span className="tiny muted">
-                      {formatDisplayDate(referenceDaily.data.coverage.from)} →{' '}
+                      {formatDisplayDate(referenceDaily.data.coverage.from)} \u2192{' '}
                       {formatDisplayDate(referenceDaily.data.coverage.to ?? referenceDaily.data.coverage.from)}
                     </span>
                   )}
                 </div>
                 {referenceDaily.isLoading && (
-                  <p className="muted tiny">Descargando lluvia diaria de referencia…</p>
+                  <p className="muted tiny">Descargando lluvia diaria de referencia\u2026</p>
                 )}
                 {referenceDaily.error && (
                   <p className="muted tiny">
@@ -691,27 +691,33 @@ export default function App() {
                 {!referenceDaily.isLoading && !referenceDaily.error && (
                   <>
                     {referenceDaily.data?.note && <p className="muted tiny">{referenceDaily.data.note}</p>}
-                    {referenceComparison && referenceComparison.flagged.length > 0 ? (
-                      <>
-                        <p>
-                          Detectamos {referenceComparison.flagged.length} días con diferencia ≥{' '}
-                          {REFERENCE_DIFF_THRESHOLD_MM} mm entre la app y Open-Meteo.
-                        </p>
-                        <ul>
-                          {referenceComparison.flagged.slice(0, 4).map((item) => (
-                            <li key={item.date}>
-                              {item.label}: {formatNumber(item.appValue)} vs {formatNumber(item.referenceValue)} mm (
-                              {formatSigned(item.delta)} mm)
-                            </li>
-                          ))}
-                        </ul>
+                    {referenceDaily.data?.days?.length ? (
+                      referenceComparison && referenceComparison.flagged.length > 0 ? (
+                        <>
+                          <p>
+                            Detectamos {referenceComparison.flagged.length} d\u00edas con diferencia \u2265{' '}
+                            {REFERENCE_DIFF_THRESHOLD_MM} mm entre la app y Open-Meteo.
+                          </p>
+                          <ul>
+                            {referenceComparison.flagged.slice(0, 4).map((item) => (
+                              <li key={item.date}>
+                                {item.label}: {formatNumber(item.appValue)} vs {formatNumber(item.referenceValue)} mm (
+                                {formatSigned(item.delta)} mm)
+                              </li>
+                            ))}
+                          </ul>
+                          <p className="muted tiny">
+                            Valida estas fechas con IDEAM, CHIRPS o tus sensores locales antes de descartar la se\u00f1al.
+                          </p>
+                        </>
+                      ) : (
                         <p className="muted tiny">
-                          Valida estas fechas con IDEAM, CHIRPS o tus sensores locales antes de descartar la señal.
+                          Sin diferencias mayores a {REFERENCE_DIFF_THRESHOLD_MM} mm frente a la referencia diaria disponible.
                         </p>
-                      </>
+                      )
                     ) : (
                       <p className="muted tiny">
-                        Sin diferencias mayores a {REFERENCE_DIFF_THRESHOLD_MM} mm frente a la referencia diaria disponible.
+                        A\u00fan no hay datos hist\u00f3ricos para este rango; espera registros oficiales para comparar.
                       </p>
                     )}
                   </>
@@ -724,7 +730,7 @@ export default function App() {
             <div className="mt3">
               <DailyHeatmap daily={dailyData} metric={metric} />
               <details className="glossary">
-                <summary>Cómo leer la intensidad</summary>
+                <summary>C\u00f3mo leer la intensidad</summary>
                 <ul>
                   <li>0-5 mm: Llovizna ligera, humedece sin generar escorrentia.</li>
                   <li>5-20 mm: Lluvia moderada, posible pausa corta en labores.</li>
@@ -752,7 +758,7 @@ export default function App() {
               <div className="narrative-card">
                 {quickImpact && (
                   <p>
-                    <strong>Lectura rápida:</strong> {quickImpact}
+                    <strong>Lectura r\u00e1pida:</strong> {quickImpact}
                   </p>
                 )}
                 {chartNarrative && <p className="chart-narrative">{chartNarrative}</p>}
@@ -766,10 +772,10 @@ export default function App() {
       <section className={`card mb4 mobile-fold ${agroOpen ? 'open' : 'collapsed'}`}>
         <div className="fold-toggle-row">
           <div>
-            <h2>Condiciones agroenergéticas</h2>
+            <h2>Condiciones agroenerg\u00e9ticas</h2>
             <p className="muted tiny">
-              Temperatura y humedad del suelo, ET0, radiación y viento para apoyar ganaderos,
-              agricultores y generación renovable.
+              Temperatura y humedad del suelo, ET0, radiaci\u00f3n y viento para apoyar ganaderos,
+              agricultores y generaci\u00f3n renovable.
             </p>
           </div>
           <button type="button" className="btn small ghost" onClick={() => setAgroOpen((prev) => !prev)}>
@@ -785,13 +791,13 @@ export default function App() {
               </div>
             )}
             <details className="glossary mt2">
-              <summary>Cómo leer estas variables</summary>
+              <summary>C\u00f3mo leer estas variables</summary>
               <ul>
-                <li>Temp. ambiente 18-32 C: confortable. &lt;15 C implica amaneceres fríos y &gt;32 C demanda sombra e hidratación.</li>
-                <li>Sensación térmica &gt;35 C: riesgo de estrés para personal y ganado.</li>
-                <li>Humedad relativa &lt;40 %: ambiente seco, incrementa demanda hídrica; &gt;85 % favorece hongos.</li>
+                <li>Temp. ambiente 18-32 C: confortable. &lt;15 C implica amaneceres fr\u00edos y &gt;32 C demanda sombra e hidrataci\u00f3n.</li>
+                <li>Sensaci\u00f3n t\u00e9rmica &gt;35 C: riesgo de estr\u00e9s para personal y ganado.</li>
+                <li>Humedad relativa &lt;40 %: ambiente seco, incrementa demanda h\u00eddrica; &gt;85 % favorece hongos.</li>
                 <li>Lluvia 24h: &lt;5 mm se absorbe rapido; &gt;30 mm provoca charcos y compactacion.</li>
-                <li>ET0 &gt;4 mm indica alta demanda de riego. Radiación &gt;4 kWh/m2 favorece la generación solar.</li>
+                <li>ET0 &gt;4 mm indica alta demanda de riego. Radiaci\u00f3n &gt;4 kWh/m2 favorece la generaci\u00f3n solar.</li>
               </ul>
             </details>
           </div>
@@ -802,7 +808,7 @@ export default function App() {
       <section className={`card mb4 mobile-fold ${hourlyOpen ? 'open' : 'collapsed'}`}>
         <div className="fold-toggle-row">
           <div>
-            <h2>Distribución horaria</h2>
+            <h2>Distribuci\u00f3n horaria</h2>
             <p className="muted tiny">
               Identifica horarios con lluvia o ventanas secas (intensidad en mm/h).
             </p>
@@ -822,10 +828,10 @@ export default function App() {
               </div>
             )}
             <details className="glossary mt2">
-              <summary>Cómo leer la distribución</summary>
+              <summary>C\u00f3mo leer la distribuci\u00f3n</summary>
               <ul>
                 <li>Bandas intensas al amanecer indican suelos saturados: retrasa la entrada de maquinaria.</li>
-                <li>Bloques continuos &gt;60 % señalan varios días lluviosos. Busca ventanas pálidas (&lt;30 %) para labores críticas.</li>
+                <li>Bloques continuos &gt;60 % se\u00f1alan varios d\u00edas lluviosos. Busca ventanas p\u00e1lidas (&lt;30 %) para labores cr\u00edticas.</li>
                 <li>Celdas claras aisladas equivalen a horas de baja probabilidad, ideales para riego o mantenimiento.</li>
               </ul>
             </details>
@@ -839,7 +845,7 @@ export default function App() {
           <div>
             <h2>Insights automatizados</h2>
             <p className="muted tiny">
-              Basados en umbrales de impacto y cálculos del paquete insight-engine.
+              Basados en umbrales de impacto y c\u00e1lculos del paquete insight-engine.
             </p>
           </div>
           <button type="button" className="btn small ghost" onClick={() => setInsightsOpen((prev) => !prev)}>
@@ -855,7 +861,7 @@ export default function App() {
                   <strong>{formatNumber(insightSummary.totalRain)} mm</strong>
                 </span>
                 <span className="insights-chip">
-                  <span className="chip-label">Días con dato</span>
+                  <span className="chip-label">D\u00edas con dato</span>
                   <strong>{insightSummary.count.toLocaleString('es-CO')}</strong>
                 </span>
               </div>
@@ -867,11 +873,11 @@ export default function App() {
                   <p>{sectorNarratives.agriculture}</p>
                 </div>
                 <div>
-                  <strong>Ganadería</strong>
+                  <strong>Ganader\u00eda</strong>
                   <p>{sectorNarratives.livestock}</p>
                 </div>
                 <div>
-                  <strong>Energías renovables</strong>
+                  <strong>Energ\u00edas renovables</strong>
                   <p>{sectorNarratives.energy}</p>
                 </div>
               </div>
@@ -879,7 +885,7 @@ export default function App() {
             {insights.error ? (
               <div className="error-banner">
                 <strong>No fue posible generar insights.</strong>
-                <p>{insights.error.message || 'No logramos conectar con la API de insights. Vuelve a intentarlo cuando tengas conexión estable.'}</p>
+                <p>{insights.error.message || 'No logramos conectar con la API de insights. Vuelve a intentarlo cuando tengas conexi\u00f3n estable.'}</p>
               </div>
             ) : insights.data ? (
               insights.data.insights.length ? (
@@ -887,7 +893,7 @@ export default function App() {
                   {insights.data.insights.map((item) => (
                     <li key={item.id} className="insight-item">
                       {(() => {
-                        const meta = INSIGHT_KIND_META[item.kind] ?? { label: item.kind, tone: 'trend', icon: 'ℹ️' };
+                        const meta = INSIGHT_KIND_META[item.kind] ?? { label: item.kind, tone: 'trend', icon: '\u2139\ufe0f' };
                         return (
                           <span className={`insight-pill ${meta.tone}`}>
                             <span className="insight-pill-icon" aria-hidden="true">
@@ -902,7 +908,7 @@ export default function App() {
                   ))}
                 </ul>
               ) : (
-                <div className="empty-state">Sin hallazgos relevantes con los umbrales actuales. Ajústalos para más sensibilidad.</div>
+                <div className="empty-state">Sin hallazgos relevantes con los umbrales actuales. Aj\u00fastalos para m\u00e1s sensibilidad.</div>
               )
             ) : (
               <div className="skeleton">
@@ -1189,22 +1195,22 @@ function buildKpis(
   return [
     {
       id: 'max',
-      label: metric === 'intensity' ? 'Máximo registrado' : 'Máximo diario',
+      label: metric === 'intensity' ? 'M\u00e1ximo registrado' : 'M\u00e1ximo diario',
       value: `${formatNumber(summary.maxValue)} ${unit}`,
       note: [formatDisplayDate(summary.maxValueDate), history?.max != null ? formatDeltaText(summary.maxValue, history.max, unit) : null]
         .filter(Boolean)
-        .join(' · '),
+        .join(' \u00b7 '),
     },
     {
       id: 'avg',
       label: 'Promedio diario',
       value: `${formatNumber(summary.average)} ${averageUnit}`,
       note: [
-        `${summary.count.toLocaleString('es-CO')} días analizados`,
+        `${summary.count.toLocaleString('es-CO')} d\u00edas analizados`,
         history?.average != null ? formatDeltaText(summary.average, history.average, averageUnit) : null,
       ]
         .filter(Boolean)
-        .join(' · '),
+        .join(' \u00b7 '),
     },
     {
       id: 'trend',
@@ -1244,10 +1250,10 @@ function formatDeltaText(current: number, baseline: number, unit: string): strin
   if (!Number.isFinite(current) || !Number.isFinite(baseline)) return '';
   const delta = Number((current - baseline).toFixed(2));
   if (Math.abs(delta) < 0.01) {
-    return `sin cambio vs. 5 años`;
+    return `sin cambio vs. 5 a\u00f1os`;
   }
-  const prefix = delta >= 0 ? '+' : '−';
-  return `${prefix}${formatNumber(Math.abs(delta))} ${unit} vs. 5 años`;
+  const prefix = delta >= 0 ? '+' : '\u2212';
+  return `${prefix}${formatNumber(Math.abs(delta))} ${unit} vs. 5 a\u00f1os`;
 }
 
 function buildMetaSummary(
@@ -1277,10 +1283,10 @@ function buildImpactNarrative(summary: ChartSummary, metric: Metric, tense: Tens
   const unit = metric === 'intensity' ? 'mm/h' : 'mm';
   const impact = impactFromBadge(badge.label, tense);
   const lead = tense === 'future' ? 'Se proyectan' : 'Se acumularon';
-  const peakVerb = tense === 'future' ? 'podría alcanzar' : 'alcanzó';
+  const peakVerb = tense === 'future' ? 'podr\u00eda alcanzar' : 'alcanz\u00f3';
   return `${lead} ${formatNumber(summary.totalRain)} mm en ${summary.count.toLocaleString(
     'es-CO'
-  )} días. El pico diario ${peakVerb} ${formatNumber(summary.maxValue)} ${unit} (${badge.label}). ${impact}`;
+  )} d\u00edas. El pico diario ${peakVerb} ${formatNumber(summary.maxValue)} ${unit} (${badge.label}). ${impact}`;
 }
 
 function buildIntensityBadge(value: number, metric: Metric): KPIBadge | undefined {
@@ -1293,16 +1299,16 @@ function buildIntensityBadge(value: number, metric: Metric): KPIBadge | undefine
 }
 
 function impactFromBadge(label: string, tense: Tense): string {
-  const caution = tense === 'future' ? 'podrían' : 'pudieron';
+  const caution = tense === 'future' ? 'podr\u00edan' : 'pudieron';
   switch (label) {
     case 'Evento fuerte':
-      return `Anegamientos y retrasos logísticos ${caution} requerir ventanas secas antes de ingresar maquinaria.`;
+      return `Anegamientos y retrasos log\u00edsticos ${caution} requerir ventanas secas antes de ingresar maquinaria.`;
     case 'Temporal':
       return `Suelos saturados y charcos puntuales ${caution} frenar labores pesadas.`;
     case 'Lluvia moderada':
       return `Mojado general ${caution} interrumpir labores breves; aprovecha ventanas menores a 5 mm.`;
     default:
-      return 'Condiciones suaves, útiles para mantenimiento ligero y aplicaciones foliares.';
+      return 'Condiciones suaves, \u00fatiles para mantenimiento ligero y aplicaciones foliares.';
   }
 }
 
@@ -1321,11 +1327,11 @@ function buildSectorNarratives(
   agricultureParts.push(
     `${isFuture ? 'Se proyectan' : 'Se analizaron'} ${summary.count.toLocaleString(
       'es-CO'
-    )} días con ${formatNumber(summary.totalRain)} mm (${formatNumber(summary.average)} mm/día).`
+    )} d\u00edas con ${formatNumber(summary.totalRain)} mm (${formatNumber(summary.average)} mm/d\u00eda).`
   );
   if (badge?.label === 'Evento fuerte') {
     agricultureParts.push(
-      `${isFuture ? 'La lluvia más intensa proyectada sugiere' : 'La lluvia más intensa sugirió'} atrasar siembra, fertilización foliar y entrada de maquinaria hasta que el lote drene.`
+      `${isFuture ? 'La lluvia m\u00e1s intensa proyectada sugiere' : 'La lluvia m\u00e1s intensa sugiri\u00f3'} atrasar siembra, fertilizaci\u00f3n foliar y entrada de maquinaria hasta que el lote drene.`
   );
   } else if (badge?.label === 'Temporal') {
     agricultureParts.push(
@@ -1337,28 +1343,28 @@ function buildSectorNarratives(
     );
   } else {
     agricultureParts.push(
-      `${isFuture ? 'Humedad regular proyectada' : 'Humedad regular observada'}: vigila malezas y usa las ventanas con menos de 10 mm para cosecha mecánica.`
+      `${isFuture ? 'Humedad regular proyectada' : 'Humedad regular observada'}: vigila malezas y usa las ventanas con menos de 10 mm para cosecha mec\u00e1nica.`
     );
   }
 
   const livestockParts: string[] = [];
   if (badge && (badge.label === 'Temporal' || badge.label === 'Evento fuerte')) {
     livestockParts.push(
-      `${isFuture ? 'Pasturas en zonas bajas podrían encharcarse' : 'Pasturas en zonas bajas se encharcaron'}; rota hatos a potreros altos y refuerza caminos.`
+      `${isFuture ? 'Pasturas en zonas bajas podr\u00edan encharcarse' : 'Pasturas en zonas bajas se encharcaron'}; rota hatos a potreros altos y refuerza caminos.`
     );
   } else if (summary.average < 4) {
     livestockParts.push(
-      `${isFuture ? 'Secuencia más seca proyectada' : 'Secuencia más seca observada'}; provee sombra, sales y agua fresca para evitar estrés térmico.`
+      `${isFuture ? 'Secuencia m\u00e1s seca proyectada' : 'Secuencia m\u00e1s seca observada'}; provee sombra, sales y agua fresca para evitar estr\u00e9s t\u00e9rmico.`
     );
   } else {
     livestockParts.push(
-      `${isFuture ? 'Humedad media favorecería el rebrote' : 'Humedad media favoreció el rebrote'}, pero revisa corrales en jornadas superiores a 20 mm.`
+      `${isFuture ? 'Humedad media favorecer\u00eda el rebrote' : 'Humedad media favoreci\u00f3 el rebrote'}, pero revisa corrales en jornadas superiores a 20 mm.`
     );
   }
   if (baselines.wind != null) {
     livestockParts.push(
       baselines.wind >= 8
-        ? `Viento medio ${(baselines.wind ?? 0).toFixed(1)} m/s ${isFuture ? 'ayudaría' : 'ayudó'} a ventilar establos.`
+        ? `Viento medio ${(baselines.wind ?? 0).toFixed(1)} m/s ${isFuture ? 'ayudar\u00eda' : 'ayud\u00f3'} a ventilar establos.`
         : `Viento suave ${(baselines.wind ?? 0).toFixed(1)} m/s: monitorea insectos y calor acumulado.`
     );
   }
@@ -1367,19 +1373,19 @@ function buildSectorNarratives(
   if (baselines.solarKwh != null) {
     energyParts.push(
       baselines.solarKwh >= 4.5
-        ? `Radiación ${(baselines.solarKwh ?? 0).toFixed(1)} kWh/m2: ${isFuture ? 'daría' : 'dio'} buen rendimiento fotovoltaico y para secado de forraje.`
-        : `Radiación limitada (${(baselines.solarKwh ?? 0).toFixed(1)} kWh/m2); ${isFuture ? 'reduce' : 'redujo'} expectativas de generación solar.`
+        ? `Radiaci\u00f3n ${(baselines.solarKwh ?? 0).toFixed(1)} kWh/m2: ${isFuture ? 'dar\u00eda' : 'dio'} buen rendimiento fotovoltaico y para secado de forraje.`
+        : `Radiaci\u00f3n limitada (${(baselines.solarKwh ?? 0).toFixed(1)} kWh/m2); ${isFuture ? 'reduce' : 'redujo'} expectativas de generaci\u00f3n solar.`
     );
   }
   if (baselines.wind != null) {
     energyParts.push(
       baselines.wind >= 9
-        ? `Viento ${(baselines.wind ?? 0).toFixed(1)} m/s ${isFuture ? 'soportaria' : 'soporto'} turbinas menores y ventilación forzada.`
-        : `Viento por debajo de ${(baselines.wind ?? 0).toFixed(1)} m/s: enfócate en capturar ventana solar.`
+        ? `Viento ${(baselines.wind ?? 0).toFixed(1)} m/s ${isFuture ? 'soportaria' : 'soporto'} turbinas menores y ventilaci\u00f3n forzada.`
+        : `Viento por debajo de ${(baselines.wind ?? 0).toFixed(1)} m/s: enf\u00f3cate en capturar ventana solar.`
     );
   }
   if (!energyParts.length) {
-    energyParts.push('Sin lecturas recientes de radiacion ni viento; mantente atento a la próxima actualización.');
+    energyParts.push('Sin lecturas recientes de radiacion ni viento; mantente atento a la pr\u00f3xima actualizaci\u00f3n.');
   }
 
   return {
@@ -1426,10 +1432,10 @@ function buildAgroNarrative(series: Series | undefined, tense: Tense): string | 
       notes.push(
         `${isFuture ? 'Se proyecta' : 'Se observo'} calor alto (${temp.toFixed(1)} C) con sensacion ${(feels ?? temp).toFixed(
           1
-        )} C; prioriza sombra, hidratación y labores cortas.`
+        )} C; prioriza sombra, hidrataci\u00f3n y labores cortas.`
       );
     } else if (temp <= 16) {
-      notes.push(`${isFuture ? 'Se proyectan' : 'Se observaron'} mañanas frescas (${temp.toFixed(1)} C): protege viveros y riegos tempranos.`);
+      notes.push(`${isFuture ? 'Se proyectan' : 'Se observaron'} ma\u00f1anas frescas (${temp.toFixed(1)} C): protege viveros y riegos tempranos.`);
     } else {
       notes.push(`${isFuture ? 'Se espera' : 'Hubo'} franja confortable (${temp.toFixed(1)} C) para trabajo continuo a campo.`);
     }
@@ -1437,9 +1443,9 @@ function buildAgroNarrative(series: Series | undefined, tense: Tense): string | 
 
   if (humidity != null) {
     if (humidity >= 85) {
-      notes.push(`Humedad elevada (${humidity.toFixed(0)} %) ${isFuture ? 'favorecería' : 'favoreció'} hongos; ventila invernaderos.`);
+      notes.push(`Humedad elevada (${humidity.toFixed(0)} %) ${isFuture ? 'favorecer\u00eda' : 'favoreci\u00f3'} hongos; ventila invernaderos.`);
     } else if (humidity <= 40) {
-      notes.push(`Humedad baja (${humidity.toFixed(0)} %) ${isFuture ? 'elevaría' : 'elevó'} demanda hídrica y riesgo de polvo.`);
+      notes.push(`Humedad baja (${humidity.toFixed(0)} %) ${isFuture ? 'elevar\u00eda' : 'elev\u00f3'} demanda h\u00eddrica y riesgo de polvo.`);
     } else {
       notes.push(`Humedad en equilibrio (${humidity.toFixed(0)} %).`);
     }
@@ -1450,38 +1456,38 @@ function buildAgroNarrative(series: Series | undefined, tense: Tense): string | 
       notes.push(
         `${isFuture ? 'Lluvia abundante proyectada' : 'Lluvia abundante observada'} (${rain.toFixed(
           1
-        )} mm/24 h) ${isFuture ? 'saturaría' : 'saturó'} suelos; espera drenaje antes de entrar maquinaria.`
+        )} mm/24 h) ${isFuture ? 'saturar\u00eda' : 'satur\u00f3'} suelos; espera drenaje antes de entrar maquinaria.`
       );
     } else if (rain >= 12) {
-      notes.push(`Lluvia útil (${rain.toFixed(1)} mm) ${isFuture ? 'recargaría' : 'recargó'} humedad superficial.`);
+      notes.push(`Lluvia \u00fatil (${rain.toFixed(1)} mm) ${isFuture ? 'recargar\u00eda' : 'recarg\u00f3'} humedad superficial.`);
     } else if (rain < 5) {
       notes.push(`Solo ${rain.toFixed(1)} mm en 24 h: ten listo riego suplementario.`);
     }
   } else {
-    notes.push(`${isFuture ? 'Sin acumulado esperado' : 'Sin acumulado observado'} en las últimas 24 h.`);
+    notes.push(`${isFuture ? 'Sin acumulado esperado' : 'Sin acumulado observado'} en las \u00faltimas 24 h.`);
   }
 
   if (evap != null) {
     notes.push(
       evap >= 5
-        ? `ET0 de ${evap.toFixed(1)} mm ${isFuture ? 'indicaría' : 'indicó'} demanda hídrica alta.`
-        : `ET0 ${evap.toFixed(1)} mm ${isFuture ? 'mantendría' : 'mantuvo'} consumo moderado.`
+        ? `ET0 de ${evap.toFixed(1)} mm ${isFuture ? 'indicar\u00eda' : 'indic\u00f3'} demanda h\u00eddrica alta.`
+        : `ET0 ${evap.toFixed(1)} mm ${isFuture ? 'mantendr\u00eda' : 'mantuvo'} consumo moderado.`
     );
   }
 
   if (solarKwh != null) {
     notes.push(
       solarKwh >= 4.5
-        ? `Radiación ${(solarKwh ?? 0).toFixed(1)} kWh/m2 ${isFuture ? 'habilitaría' : 'habilitó'} buena generación solar.`
-        : `Radiación limitada ${(solarKwh ?? 0).toFixed(1)} kWh/m2; planifica secado con más tiempo.`
+        ? `Radiaci\u00f3n ${(solarKwh ?? 0).toFixed(1)} kWh/m2 ${isFuture ? 'habilitar\u00eda' : 'habilit\u00f3'} buena generaci\u00f3n solar.`
+        : `Radiaci\u00f3n limitada ${(solarKwh ?? 0).toFixed(1)} kWh/m2; planifica secado con m\u00e1s tiempo.`
     );
   }
 
   if (wind != null) {
     notes.push(
       wind >= 9
-        ? `Viento ${(wind ?? 0).toFixed(1)} m/s: ${isFuture ? 'aseguraría' : 'aseguró'} cubiertas y controla deriva de pulverizaciones.`
-        : `Viento suave ${(wind ?? 0).toFixed(1)} m/s ${isFuture ? 'mantendría' : 'mantuvo'} condiciones estables para equipos expuestos.`
+        ? `Viento ${(wind ?? 0).toFixed(1)} m/s: ${isFuture ? 'asegurar\u00eda' : 'asegur\u00f3'} cubiertas y controla deriva de pulverizaciones.`
+        : `Viento suave ${(wind ?? 0).toFixed(1)} m/s ${isFuture ? 'mantendr\u00eda' : 'mantuvo'} condiciones estables para equipos expuestos.`
     );
   }
 
@@ -1549,11 +1555,11 @@ function buildHourlyNarrative(series: Series | undefined, tense: Tense): string 
       )}.`
     );
   } else {
-    notes.push(`Sin ventanas secas mayores a 3 h en las ${isFuture ? 'próximas' : 'últimas'} 72 h.`);
+    notes.push(`Sin ventanas secas mayores a 3 h en las ${isFuture ? 'pr\u00f3ximas' : '\u00faltimas'} 72 h.`);
   }
   notes.push(
     wetShare >= 50
-      ? `Más del 50% de las horas ${isFuture ? 'proyectadas' : 'recientes'} tuvieron lluvia significativa; agenda labores bajo techo.`
+      ? `M\u00e1s del 50% de las horas ${isFuture ? 'proyectadas' : 'recientes'} tuvieron lluvia significativa; agenda labores bajo techo.`
       : `Solo ${wetShare}% de las horas ${isFuture ? 'proyectadas' : 'observadas'} muestran lluvia >2 mm/h; aprovecha las franjas restantes para riego o mantenimiento.`
   );
 
@@ -1622,7 +1628,7 @@ function summarizeTrend(trend: TrendPoint[] | null): { value: string; note: stri
   if (!first || !last) {
     return {
       value: 'Sin datos',
-      note: 'Necesitamos más puntos para calcular la tendencia.',
+      note: 'Necesitamos m\u00e1s puntos para calcular la tendencia.',
     };
   }
   const diff = last.value - first.value;
@@ -1733,24 +1739,24 @@ function buildChartNarrative(
     parts.push(
       `Entre ${rangeLabel} ${isFuture ? 'se proyectan' : 'se acumularon'} ${formatNumber(
         summary.totalRain
-      )} mm${isFuture ? ' proyectados' : ''} distribuidos en ${summary.count} días con datos.`
+      )} mm${isFuture ? ' proyectados' : ''} distribuidos en ${summary.count} d\u00edas con datos.`
     );
     if (summary.maxValueDate) {
       parts.push(
-        `El día más lluvioso ${isFuture ? 'proyectado sería' : 'fue'} ${formatDisplayDate(
+        `El d\u00eda m\u00e1s lluvioso ${isFuture ? 'proyectado ser\u00eda' : 'fue'} ${formatDisplayDate(
           summary.maxValueDate
         )}, con ${formatNumber(summary.maxValue)} mm en 24 horas.`
       );
     }
   } else {
     parts.push(
-      `${isFuture ? 'Se proyectan' : 'Se analizaron'} ${summary.count} días de intensidades entre ${rangeLabel}.`
+      `${isFuture ? 'Se proyectan' : 'Se analizaron'} ${summary.count} d\u00edas de intensidades entre ${rangeLabel}.`
     );
     if (summary.maxValueDate) {
       parts.push(
-        `La ráfaga máxima ${isFuture ? 'proyectada ocurriría' : 'ocurrió'} el ${formatDisplayDate(
+        `La r\u00e1faga m\u00e1xima ${isFuture ? 'proyectada ocurrir\u00eda' : 'ocurri\u00f3'} el ${formatDisplayDate(
           summary.maxValueDate
-        )} y ${isFuture ? 'alcanzaría' : 'alcanzó'} ${formatNumber(summary.maxValue)} mm/h.`
+        )} y ${isFuture ? 'alcanzar\u00eda' : 'alcanz\u00f3'} ${formatNumber(summary.maxValue)} mm/h.`
       );
     }
   }

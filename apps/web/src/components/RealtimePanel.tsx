@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { Series } from '@pkg/core';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Tooltip as ChartTooltip } from 'chart.js';
@@ -46,29 +46,29 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 type TimelineEvent = { id: string; time: string; label: string; detail: string };
 const LIVE_TIPS = [
   {
-    title: 'Último dato + Hace X min',
+    title: '\u00daltimo dato + Hace X min',
     body:
-      'Muestra la latencia real del sensor. Si supera los 30 minutos, valida la conectividad antes de tomar decisiones críticas.',
+      'Muestra la latencia real del sensor. Si supera los 30 minutos, valida la conectividad antes de tomar decisiones cr\u00edticas.',
   },
   {
     title: 'Lluvia horaria vs. Intensidad',
     body:
-      'El primer valor refleja el acumulado de la última hora y el segundo el pico puntual (mm/h). Picos altos con poco acumulado implican ráfagas cortas.',
+      'El primer valor refleja el acumulado de la \u00faltima hora y el segundo el pico puntual (mm/h). Picos altos con poco acumulado implican r\u00e1fagas cortas.',
   },
   {
-    title: 'Pronóstico 24 h',
+    title: 'Pron\u00f3stico 24 h',
     body:
-      'Resume el máximo esperado para la siguiente jornada. Si el pico proyectado supera tu umbral operativo, reprograma labores o incrementa el monitoreo.',
+      'Resume el m\u00e1ximo esperado para la siguiente jornada. Si el pico proyectado supera tu umbral operativo, reprograma labores o incrementa el monitoreo.',
   },
   {
     title: 'Variables ambientales',
     body:
-      'Temperatura, humedad, viento y presión ayudan a anticipar estrés térmico, ventanas de asperjado o cambios de frente. Contrasta estos valores con los promedios históricos.',
+      'Temperatura, humedad, viento y presi\u00f3n ayudan a anticipar estr\u00e9s t\u00e9rmico, ventanas de asperjado o cambios de frente. Contrasta estos valores con los promedios hist\u00f3ricos.',
   },
   {
-    title: 'Viento y presión',
+    title: 'Viento y presi\u00f3n',
     body:
-      'Viento menor a 3 m/s es ideal para aspersiones; por encima de 9 m/s suele causar deriva. Presiones cercanas a 100 kPa indican estabilidad, mientras caídas rápidas anticipan sistemas de lluvia.',
+      'Viento menor a 3 m/s es ideal para aspersiones; por encima de 9 m/s suele causar deriva. Presiones cercanas a 100 kPa indican estabilidad, mientras ca\u00eddas r\u00e1pidas anticipan sistemas de lluvia.',
   },
 ];
 
@@ -198,7 +198,7 @@ export function RealtimePanel({ series, busy }: RealtimePanelProps) {
         <div>
           <h2>Monitoreo en vivo</h2>
           <p className="muted tiny">
-            {snapshot ? `Último dato: ${snapshot.lastDisplay}` : 'Sin observaciones en el rango actual.'}
+            {snapshot ? `\u00daltimo dato: ${snapshot.lastDisplay}` : 'Sin observaciones en el rango actual.'}
           </p>
         </div>
         {snapshot && (
@@ -210,7 +210,7 @@ export function RealtimePanel({ series, busy }: RealtimePanelProps) {
 
       <div className="threshold-controls">
         <label>
-          <span>Intensidad crítica (mm/h)</span>
+          <span>Intensidad cr\u00edtica (mm/h)</span>
           <input
             type="number"
             min={0}
@@ -220,7 +220,7 @@ export function RealtimePanel({ series, busy }: RealtimePanelProps) {
           />
         </label>
         <label>
-          <span>Latencia máxima (min)</span>
+          <span>Latencia m\u00e1xima (min)</span>
           <input
             type="number"
             min={10}
@@ -241,7 +241,7 @@ export function RealtimePanel({ series, busy }: RealtimePanelProps) {
         <>
           <div className="realtime-meta">
             <div>
-              <span className="tiny">Ubicación</span>
+              <span className="tiny">Ubicaci\u00f3n</span>
               <strong>{snapshot.locationLabel}</strong>
               <p className="muted tiny">{snapshot.sourceLabel ?? 'Fuente no disponible'}</p>
             </div>
@@ -251,12 +251,12 @@ export function RealtimePanel({ series, busy }: RealtimePanelProps) {
               <p className="muted tiny">Hora local mostrada en la serie</p>
             </div>
             <div>
-              <span className="tiny">Pronóstico 24h</span>
+              <span className="tiny">Pron\u00f3stico 24h</span>
               <strong>{formatNumber(snapshot.forecastTotal, 1)} mm</strong>
               <p className="muted tiny">
                 {snapshot.hasForecast
                   ? `Intensidad pico esperada: ${formatNumber(snapshot.forecastPeak, 1)} mm/h`
-                  : 'Sin proyección disponible'}
+                  : 'Sin proyecci\u00f3n disponible'}
               </p>
             </div>
           </div>
@@ -287,21 +287,21 @@ export function RealtimePanel({ series, busy }: RealtimePanelProps) {
             <div className="latency-track">
               <div className="latency-fill" style={{ width: `${latencyPercent}%` }} />
             </div>
-            <p className="muted tiny">0 min = actualizado · {userThresholds.latency} min = umbral crítico</p>
+            <p className="muted tiny">0 min = actualizado \u00b7 {userThresholds.latency} min = umbral cr\u00edtico</p>
           </div>
 
           {sparkline && sparklineChart && (
             <div className="realtime-sparkline">
               <div className="sparkline-meta">
-                <span className="tiny">Intensidad últimas 24 h</span>
+                <span className="tiny">Intensidad \u00faltimas 24 h</span>
                 <strong>{formatNumber(sparkline.latest, 1, 'mm/h')}</strong>
                 <p className="muted tiny">
-                  Pico reciente: {formatNumber(sparkline.peak, 1, 'mm/h')} · {sparkline.latestLabel}
+                  Pico reciente: {formatNumber(sparkline.peak, 1, 'mm/h')} \u00b7 {sparkline.latestLabel}
                 </p>
               </div>
               <div className="sparkline-chart">
                 <Line data={sparklineChart.data} options={sparklineChart.options} height={60} />
-                <p className="muted tiny sparkline-legend">Sólido: intensidad · Punteado: acumulado.</p>
+                <p className="muted tiny sparkline-legend">S\u00f3lido: intensidad \u00b7 Punteado: acumulado.</p>
               </div>
             </div>
           )}
@@ -324,15 +324,15 @@ export function RealtimePanel({ series, busy }: RealtimePanelProps) {
           )}
         </>
       ) : (
-        <div className="empty-state">Ajusta el rango o la ubicación para ver datos en vivo.</div>
+        <div className="empty-state">Ajusta el rango o la ubicaci\u00f3n para ver datos en vivo.</div>
       )}
 
       {snapshot && (
         <div className="realtime-guide mt3">
           <div className="help-header">
-            <strong>Cómo leer el monitoreo en vivo</strong>
+            <strong>C\u00f3mo leer el monitoreo en vivo</strong>
             <button type="button" className="btn small" onClick={() => setGuideOpen((prev) => !prev)}>
-              {guideOpen ? 'Ocultar guía' : 'Mostrar guía'}
+              {guideOpen ? 'Ocultar gu\u00eda' : 'Mostrar gu\u00eda'}
             </button>
           </div>
           {guideOpen && (
@@ -443,7 +443,7 @@ function buildSparkline(series?: Series | null): Sparkline | null {
 
 function formatLocation(series: Series): string {
   const parts = [series.key?.depto, series.key?.muni].filter(Boolean);
-  return parts.length ? parts.join(' · ') : 'Ubicación no definida';
+  return parts.length ? parts.join(' \u00b7 ') : 'Ubicaci\u00f3n no definida';
 }
 
 function buildMetrics(point: Series['hourly'][number]): SnapshotMetric[] {
@@ -452,7 +452,7 @@ function buildMetrics(point: Series['hourly'][number]): SnapshotMetric[] {
     id: 'rain',
     label: 'Lluvia horaria',
     value: formatNumber(point.prcp, 2, 'mm'),
-    note: 'Último acumulado registrado',
+    note: '\u00daltimo acumulado registrado',
   });
   metrics.push({
     id: 'intensity',
@@ -477,7 +477,7 @@ function buildMetrics(point: Series['hourly'][number]): SnapshotMetric[] {
   });
   metrics.push({
     id: 'pressure',
-    label: 'Presión',
+    label: 'Presi\u00f3n',
     value: formatNumber(point.pressure, 1, 'kPa'),
   });
   return metrics;
@@ -516,7 +516,7 @@ function formatRelativeLabel(timestamp: number, now: number): { label: string; i
   }
   if (timestamp > now) {
     const minutesAhead = Math.round((timestamp - now) / 60000);
-    return { label: `Próximo dato en ${minutesAhead} min`, isStale: false, minutes: 0 };
+    return { label: `Pr\u00f3ximo dato en ${minutesAhead} min`, isStale: false, minutes: 0 };
   }
   const minutesDiff = Math.max(0, Math.round((now - timestamp) / 60000));
   if (minutesDiff < 1) return { label: 'Actualizado hace instantes', isStale: false, minutes: minutesDiff };
@@ -571,12 +571,12 @@ function buildRealtimeAlerts(latest: SnapshotLatest | undefined, thresholds: Use
   if (latest.rain != null && latest.rain >= 3) {
     alerts.push({
       id: 'rain',
-      label: latest.rain >= 10 ? 'Lluvia fuerte' : 'Lluvia útil',
+      label: latest.rain >= 10 ? 'Lluvia fuerte' : 'Lluvia \u00fatil',
       tone: latest.rain >= 10 ? 'alert' : 'warn',
       message:
         latest.rain >= 10
           ? 'Considera pausar la entrada de maquinaria hasta que drene el lote.'
-          : 'Humedece el suelo; verifica escorrentía en zonas bajas.',
+          : 'Humedece el suelo; verifica escorrent\u00eda en zonas bajas.',
     });
   }
   const intensityThreshold = thresholds?.intensity ?? DEFAULT_THRESHOLDS.intensity;
@@ -585,7 +585,7 @@ function buildRealtimeAlerts(latest: SnapshotLatest | undefined, thresholds: Use
       id: 'intensity',
       label: 'Pico de intensidad',
       tone: 'alert',
-      message: `Intensidad >${intensityThreshold.toFixed(1)} mm/h; evita labores de aspersión o riego superficial.`,
+      message: `Intensidad >${intensityThreshold.toFixed(1)} mm/h; evita labores de aspersi\u00f3n o riego superficial.`,
     });
   }
   if (latest.temp != null) {
@@ -594,14 +594,14 @@ function buildRealtimeAlerts(latest: SnapshotLatest | undefined, thresholds: Use
         id: 'heat',
         label: 'Calor elevado',
         tone: 'warn',
-        message: 'Prioriza sombra e hidratación para personal y ganado.',
+        message: 'Prioriza sombra e hidrataci\u00f3n para personal y ganado.',
       });
     } else if (latest.temp <= 16) {
       alerts.push({
         id: 'cool',
-        label: 'Mañana fría',
+        label: 'Ma\u00f1ana fr\u00eda',
         tone: 'calm',
-        message: 'Protege viveros y planifica riegos más tarde para evitar shock térmico.',
+        message: 'Protege viveros y planifica riegos m\u00e1s tarde para evitar shock t\u00e9rmico.',
       });
     }
   }
@@ -618,7 +618,7 @@ function buildRealtimeAlerts(latest: SnapshotLatest | undefined, thresholds: Use
         id: 'humidity-low',
         label: 'Ambiente seco',
         tone: 'warn',
-        message: 'Incrementa la demanda hídrica y la presencia de polvo.',
+        message: 'Incrementa la demanda h\u00eddrica y la presencia de polvo.',
       });
     }
   }
@@ -687,15 +687,15 @@ function buildTimelineEvents(
       id: 'accum',
       time: sparkline.latestLabel,
       label: 'Acumulado 24 h',
-      detail: `${formatNumber(total, 1, 'mm')} registrados en las últimas 24 h.`,
+      detail: `${formatNumber(total, 1, 'mm')} registrados en las \u00faltimas 24 h.`,
     });
   }
   if (snapshot?.hasForecast && snapshot.forecastPeak >= thresholds.intensity) {
     events.push({
       id: 'forecast',
-      time: 'Próximas horas',
+      time: 'Pr\u00f3ximas horas',
       label: 'Pico proyectado',
-      detail: `Se esperan ${formatNumber(snapshot.forecastPeak, 1, 'mm/h')} en las próximas 24 h.`,
+      detail: `Se esperan ${formatNumber(snapshot.forecastPeak, 1, 'mm/h')} en las pr\u00f3ximas 24 h.`,
     });
   }
   return events.slice(-5).reverse();

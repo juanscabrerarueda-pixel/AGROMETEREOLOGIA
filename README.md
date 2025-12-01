@@ -61,7 +61,7 @@ Si usas otro proveedor (Netlify, etc.), mantén `apps/web/dist` como carpeta pú
 
 ### Procedimiento seguro para editar App.tsx
 
-1. **Trabaja desde la versión limpia:** si notas caracteres `?�`, restáuralo con `git checkout 4aac256 -- apps/web/src/App.tsx`.
+1. **Trabaja desde la versión limpia:** si notas caracteres extraños (como `�`), restáuralo con `git checkout 4aac256 -- apps/web/src/App.tsx` o revisa el histórico limpio en `clean_App.tsx`.
 2. **Convierte a UTF‑8 una sola vez** si necesitas añadir tildes reales:
    ```bash
    python - <<'PY'

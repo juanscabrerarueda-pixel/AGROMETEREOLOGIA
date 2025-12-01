@@ -41,6 +41,14 @@ const thresholdsSchema = z
   })
   .partial();
 
+const fieldsTransformer = (value: unknown) => {
+  if (typeof value !== 'string' || !value.trim().length) return undefined;
+  return value
+    .split(',')
+    .map((field) => field.trim())
+    .filter((field) => field.length);
+};
+
 const querySchema = z.object({
   depto: z.string().trim().min(1, 'depto requerido'),
   muni: z
@@ -50,6 +58,7 @@ const querySchema = z.object({
     .transform((value) => (value && value.length ? value : undefined)),
   from: z.string().trim().min(1, 'from requerido'),
   to: z.string().trim().min(1, 'to requerido'),
+  fields: z.string().optional().transform(fieldsTransformer),
   thresholds: z
     .string()
     .optional()
@@ -68,7 +77,9 @@ const querySchema = z.object({
     }),
 });
 
-const FIELDS: (keyof import('@pkg/core').HourlyPoint)[] = [
+type HourlyField = keyof import('@pkg/core').HourlyPoint;
+
+const DEFAULT_FIELDS: HourlyField[] = [
   'prcp',
   'prcpRate',
   'temp',
@@ -97,10 +108,15 @@ router.get('/', async (req, res, next) => {
         ...(parsed.thresholds?.appWindows ?? {}),
       },
     };
+    const requestedFields = (parsed.fields ?? []) as HourlyField[];
+    const fields = requestedFields.length
+      ? Array.from(new Set<HourlyField>([...DEFAULT_FIELDS, ...requestedFields]))
+      : DEFAULT_FIELDS;
+
     const series = await getSeries(provider, cache, {
       key: { depto: parsed.depto, muni: parsed.muni },
       range: { from: parsed.from, to: parsed.to },
-      fields: FIELDS,
+      fields,
     });
     const insights = insightsFromSeries(series, thresholds);
     res.json({ seriesMeta: series.meta, insights });

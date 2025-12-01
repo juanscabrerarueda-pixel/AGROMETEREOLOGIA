@@ -16,7 +16,7 @@ function resolveTomorrowIso(series: Series): string {
 
   const tomorrow = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1));
 
-  const tzOffsetMinutes = parseTzOffset(series.meta?.tz);
+  const tzOffsetMinutes = resolveOffsetMinutes(series.meta?.tz, tomorrow.getTime());
 
   if (tzOffsetMinutes !== null) {
 
@@ -45,6 +45,86 @@ function parseTzOffset(tz?: string): number | null {
   const minutes = Number(match[2] ?? '0');
 
   return hours * 60 + Math.sign(hours) * minutes;
+
+}
+
+function resolveOffsetMinutes(tz: string | undefined, timestampMs: number): number | null {
+
+  if (!tz) return null;
+
+  const numeric = parseTzOffset(tz);
+
+  if (numeric !== null) return numeric;
+
+  return offsetFromTimeZone(tz, timestampMs);
+
+}
+
+function offsetFromTimeZone(timeZone: string, timestampMs: number): number | null {
+
+  try {
+
+    const dtf = new Intl.DateTimeFormat('en-US', {
+
+      timeZone,
+
+      hour12: false,
+
+      year: 'numeric',
+
+      month: '2-digit',
+
+      day: '2-digit',
+
+      hour: '2-digit',
+
+      minute: '2-digit',
+
+      second: '2-digit',
+
+    });
+
+    const parts = dtf.formatToParts(new Date(timestampMs));
+
+    const data: Record<string, string> = {};
+
+    for (const part of parts) {
+
+      data[part.type] = part.value;
+
+    }
+
+    const { year, month, day, hour, minute, second } = data;
+
+    if (!year || !month || !day || !hour || !minute || !second) {
+
+      return null;
+
+    }
+
+    const asUtc = Date.UTC(
+
+      Number(year),
+
+      Number(month) - 1,
+
+      Number(day),
+
+      Number(hour),
+
+      Number(minute),
+
+      Number(second)
+
+    );
+
+    return Math.round((asUtc - timestampMs) / 60000);
+
+  } catch {
+
+    return null;
+
+  }
 
 }
 
