@@ -642,26 +642,20 @@ body {
 }
 
 .controls .seg {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 10px;
 }
-.controls .seg.stack {
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+.controls .seg.stack .btn {
+  flex: 1 1 clamp(160px, 26%, 220px);
 }
-.controls .seg.stack.compact {
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 8px;
+.controls .seg.stack.compact .btn {
+  flex: 1 1 120px;
 }
-
 .controls .seg .btn {
-  width: 100%;
-  min-width: 0;
+  width: auto;
+  min-width: clamp(130px, 22vw, 180px);
   text-align: center;
-}
-.controls .btn {
-  width: 100%;
-  min-width: 0;
 }
 
 
@@ -1585,17 +1579,20 @@ body {
   }
 
   .controls .seg {
+    display: grid;
     grid-template-columns: 1fr;
     gap: 10px;
   }
 
   .controls .seg.stack,
   .controls .seg.stack.compact {
+    display: grid;
     grid-template-columns: 1fr;
   }
 
   .controls .seg .btn {
     width: 100%;
+    min-width: 0;
   }
 
   .kpis {
